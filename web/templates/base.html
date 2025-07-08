@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Gottesdienst-Formatter{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: rgb(81, 165, 71);
+            --primary-dark: rgb(61, 135, 51);
+            --light-bg: #f8f9fa;
+        }
+        
+        .navbar {
+            background-color: var(--primary-color) !important;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+        
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .footer {
+            background-color: var(--light-bg);
+            color: #666;
+            padding: 20px 0;
+            margin-top: 50px;
+        }
+        
+        .logo {
+            max-height: 50px;
+            margin-right: 15px;
+        }
+        
+        .main-content {
+            min-height: calc(100vh - 200px);
+        }
+        
+        .file-upload-area {
+            border: 2px dashed var(--primary-color);
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            background-color: #f8f9fa;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .file-upload-area:hover {
+            background-color: #e9ecef;
+            border-color: var(--primary-dark);
+        }
+        
+        .result-box {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: monospace;
+            white-space: pre-wrap;
+            font-size: 14px;
+        }
+        
+        .alert {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('index') }}">
+                <img src="https://www.kirche-dithmarschen.de/uploads/PgB1LbhF/568x0_568x0/logo_3__msi___png.webp" alt="Logo" class="logo">
+                <span>Gottesdienst-Formatter</span>
+            </a>
+        </div>
+    </nav>
+
+    <div class="container main-content">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8">
+                    <p class="mb-0">
+                        <strong>Gottesdienst-Formatter für Boyens Medien</strong><br>
+                        Konvertiert Excel-Tabellen automatisch in das geforderte Fließtext-Format
+                    </p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <p class="mb-0">
+                        <small>&copy; 2024 Pastor Simon Luthe<br>
+                        Kirchenkreis Dithmarschen</small>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

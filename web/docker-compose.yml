@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  gottesdienst-formatter:
+    build: .
+    container_name: gottesdienst-formatter
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./uploads:/app/uploads
+    restart: unless-stopped
+    environment:
+      - FLASK_ENV=production
+      - FLASK_DEBUG=false
