@@ -13,7 +13,7 @@ from datetime import datetime
 import io
 import zipfile
 import json
-from churchdesk_api import ChurchDeskAPI, EventAnalyzer
+from churchdesk_api import ChurchDeskAPI, EventAnalyzer, create_multi_org_client, ORGANIZATIONS
 
 app = Flask(__name__)
 app.secret_key = 'gottesdienst-formatter-secret-key'
@@ -208,21 +208,25 @@ def download_file():
 
 @app.route('/fetch_churchdesk_events', methods=['POST'])
 def fetch_churchdesk_events():
-    """Fetch events from ChurchDesk API"""
+    """Fetch events from ChurchDesk API for multiple organizations"""
     try:
         # Get form data
         year = int(request.form.get('year'))
         month = int(request.form.get('month'))
-        organization_id = int(request.form.get('organization_id'))
+        selected_orgs = request.form.getlist('selected_organizations')
         
-        # Get API token from environment or use provided one
-        api_token = os.getenv('CHURCHDESK_API_TOKEN', 'd4ec66780546786c92b916f873ee713181c1b695d32e7ba9839e760eaecd3fa1')
+        if not selected_orgs:
+            flash('Bitte wählen Sie mindestens eine Organisation aus')
+            return redirect(url_for('index'))
         
-        # Create API client
-        api_client = ChurchDeskAPI(api_token, organization_id)
+        # Convert to integers
+        selected_org_ids = [int(org_id) for org_id in selected_orgs]
         
-        # Fetch events for the specified month
-        events = api_client.get_monthly_events(year, month)
+        # Create multi-organization API client
+        multi_client = create_multi_org_client(selected_org_ids)
+        
+        # Fetch events for the specified month from all selected organizations
+        events = multi_client.get_monthly_events(year, month, gottesdienst_only=True)
         
         # Process events for display
         processed_events = []
@@ -232,6 +236,11 @@ def fetch_churchdesk_events():
                 # Add formatted date/time for display
                 formatted_event['formatted_date'] = format_date(formatted_event['startDate'])
                 formatted_event['formatted_time'] = format_time(formatted_event['startDate'])
+                
+                # Add organization info
+                formatted_event['organization_name'] = event.get('organization_name', 'Unbekannt')
+                formatted_event['organization_id'] = event.get('organization_id', 0)
+                
                 processed_events.append(formatted_event)
         
         # Sort by date
@@ -244,6 +253,10 @@ def fetch_churchdesk_events():
             9: 'September', 10: 'Oktober', 11: 'November', 12: 'Dezember'
         }
         
+        # Get organization names for display
+        selected_org_names = [ORGANIZATIONS.get(org_id, {}).get('name', f'Org {org_id}') 
+                             for org_id in selected_org_ids]
+        
         return render_template('churchdesk_events.html', 
                              events=processed_events,
                              events_json=json.dumps([{
@@ -252,11 +265,14 @@ def fetch_churchdesk_events():
                                  'startDate': e['startDate'].isoformat(),
                                  'location': e['location'],
                                  'contributor': e['contributor'],
-                                 'parishes': e['parishes']
+                                 'parishes': e['parishes'],
+                                 'organization_id': e.get('organization_id', 0),
+                                 'organization_name': e.get('organization_name', 'Unbekannt')
                              } for e in processed_events]),
                              year=year,
                              month=month,
-                             month_name=month_names[month])
+                             month_name=month_names[month],
+                             selected_organizations=selected_org_names)
         
     except Exception as e:
         flash('Fehler beim Abrufen der ChurchDesk Events: {}'.format(str(e)))

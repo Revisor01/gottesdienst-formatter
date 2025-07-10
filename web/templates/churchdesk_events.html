@@ -5,7 +5,14 @@
     <div class="col-md-12">
         <div class="card mt-4">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h4 class="mb-0">ChurchDesk Gottesdienste - {{ month_name }} {{ year }}</h4>
+                <div>
+                    <h4 class="mb-0">ChurchDesk Gottesdienste - {{ month_name }} {{ year }}</h4>
+                    {% if selected_organizations %}
+                    <small class="text-muted">
+                        Organisationen: {{ selected_organizations|join(', ') }}
+                    </small>
+                    {% endif %}
+                </div>
                 <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
                     <i class="fas fa-arrow-left"></i> Zurück
                 </a>
@@ -50,6 +57,7 @@
                                 <th>Ort</th>
                                 <th>Mitwirkender</th>
                                 <th>Gemeinde</th>
+                                <th>Organisation</th>
                                 <th>Status</th>
                                 <th>Aktion</th>
                             </tr>
@@ -97,6 +105,9 @@
                                     {% endif %}
                                 </td>
                                 <td>
+                                    <small class="text-muted">{{ event.organization_name }}</small>
+                                </td>
+                                <td>
                                     {% if event.analysis.is_complete %}
                                         <span class="badge bg-success">
                                             <i class="fas fa-check"></i> Vollständig
@@ -118,7 +129,7 @@
                             
                             <!-- Hidden details row -->
                             <tr id="details-{{ event.id }}" class="details-row" style="display:none;">
-                                <td colspan="8">
+                                <td colspan="9">
                                     <div class="card border-0 bg-light">
                                         <div class="card-body">
                                             <h6>Vollständige Informationen:</h6>

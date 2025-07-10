@@ -20,7 +20,7 @@
                             <div class="mb-3">
                                 <label for="year" class="form-label">Jahr</label>
                                 <select name="year" id="year" class="form-control" required>
-                                    <option value="2025">2025</option>
+                                    <option value="2025" selected>2025</option>
                                     <option value="2024">2024</option>
                                     <option value="2026">2026</option>
                                 </select>
@@ -36,7 +36,7 @@
                                     <option value="4">April</option>
                                     <option value="5">Mai</option>
                                     <option value="6">Juni</option>
-                                    <option value="7">Juli</option>
+                                    <option value="7" selected>Juli</option>
                                     <option value="8">August</option>
                                     <option value="9">September</option>
                                     <option value="10">Oktober</option>
@@ -47,8 +47,57 @@
                         </div>
                         <div class="col-md-4">
                             <div class="mb-3">
-                                <label for="organization_id" class="form-label">Organisation ID</label>
-                                <input type="number" name="organization_id" id="organization_id" class="form-control" value="2596" required>
+                                <label class="form-label">Alle Organisationen</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="select-all-orgs" checked>
+                                    <label class="form-check-label" for="select-all-orgs">
+                                        Alle auswählen
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Gemeinden auswählen:</label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input org-checkbox" type="checkbox" name="selected_organizations" value="2596" id="org-2596" checked>
+                                    <label class="form-check-label" for="org-2596">
+                                        <strong>Kirchenkreis Dithmarschen</strong><br>
+                                        <small class="text-muted">Zentrale Verwaltung</small>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input org-checkbox" type="checkbox" name="selected_organizations" value="6572" id="org-6572" checked>
+                                    <label class="form-check-label" for="org-6572">
+                                        <strong>KG Heide</strong><br>
+                                        <small class="text-muted">St.-Jürgen-Kirche & Auferstehungskirche</small>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input org-checkbox" type="checkbox" name="selected_organizations" value="2719" id="org-2719" checked>
+                                    <label class="form-check-label" for="org-2719">
+                                        <strong>KG Hennstedt</strong><br>
+                                        <small class="text-muted">St. Secundus-Kirche</small>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input org-checkbox" type="checkbox" name="selected_organizations" value="2729" id="org-2729" checked>
+                                    <label class="form-check-label" for="org-2729">
+                                        <strong>KG Büsum, Wesselburen, Neuenkirchen</strong><br>
+                                        <small class="text-muted">Mehrere Gemeinden der Region</small>
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -125,4 +174,41 @@
         </div>
     </div>
 </div>
+
+<script>
+// Handle organization selection
+document.addEventListener('DOMContentLoaded', function() {
+    const selectAllCheckbox = document.getElementById('select-all-orgs');
+    const orgCheckboxes = document.querySelectorAll('.org-checkbox');
+    
+    function updateSelectAllState() {
+        const checkedCount = document.querySelectorAll('.org-checkbox:checked').length;
+        const totalCount = orgCheckboxes.length;
+        
+        selectAllCheckbox.checked = checkedCount === totalCount;
+        selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < totalCount;
+    }
+    
+    // Select all checkbox handler
+    selectAllCheckbox.addEventListener('change', function() {
+        orgCheckboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
+        });
+    });
+    
+    // Individual checkbox handlers
+    orgCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            updateSelectAllState();
+        });
+    });
+    
+    // Initialize state
+    updateSelectAllState();
+    
+    // Set current month as default
+    const currentMonth = new Date().getMonth() + 1;
+    document.getElementById('month').value = currentMonth;
+});
+</script>
 {% endblock %}
