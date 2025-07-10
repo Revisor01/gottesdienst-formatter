@@ -9,6 +9,7 @@ import requests
 import os
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional
+import pytz
 
 # Configuration for all available organizations
 ORGANIZATIONS = {
@@ -201,7 +202,11 @@ class EventAnalyzer:
         analysis = EventAnalyzer.analyze_event_completeness(event)
         
         if 'startDate' not in analysis['missing_fields']:
-            start_date = datetime.fromisoformat(event['startDate'].replace('Z', '+00:00'))
+            # Parse UTC time and convert to German time (CET/CEST)
+            utc_time = datetime.fromisoformat(event['startDate'].replace('Z', '+00:00'))
+            utc_time = utc_time.replace(tzinfo=pytz.UTC)
+            german_tz = pytz.timezone('Europe/Berlin')
+            start_date = utc_time.astimezone(german_tz)
             
             # Extract location - prefer locationName over location
             location = event.get('locationName') or event.get('location', '')
@@ -338,7 +343,7 @@ def format_boyens_pastor(contributor: str) -> str:
     
     for contrib in contributors:
         # Remove existing prefixes
-        prefixes = ['Pastor ', 'Pastorin ', 'Pfarrer ', 'P. ', 'Pn. ', 'Diakon ', 'Diakonin ', 'D. ', 'Dn. ', 'Prädikant ', 'Prädikantin ']
+        prefixes = ['Pastores ', 'Pastor ', 'Pastorin ', 'Pfarrer ', 'P. ', 'Pn. ', 'Ps. ', 'Diakon ', 'Diakonin ', 'D. ', 'Dn. ', 'Prädikant ', 'Prädikantin ']
         clean_name = contrib
         for prefix in prefixes:
             if clean_name.startswith(prefix):
@@ -351,6 +356,8 @@ def format_boyens_pastor(contributor: str) -> str:
             formatted_contributors.append(f"Dn. {clean_name}")
         elif 'diakon' in contrib_lower:
             formatted_contributors.append(f"D. {clean_name}")
+        elif 'pastores' in contrib_lower:
+            formatted_contributors.append(f"Ps. {clean_name}")
         elif 'pastorin' in contrib_lower:
             formatted_contributors.append(f"Pn. {clean_name}")
         elif 'pastor' in contrib_lower or 'pfarrer' in contrib_lower:

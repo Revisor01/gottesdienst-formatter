@@ -114,10 +114,11 @@ The deployment uses GitHub for code distribution:
 2. **Deploy to server**:
    ```bash
    ssh root@185.248.143.234
-   cd /opt/kk-termine
+   cd /opt/gottesdienst-formatter
    git pull origin main
-   docker-compose build --no-cache
-   docker-compose up -d
+   cd web
+   docker compose build --no-cache
+   docker compose up -d
    ```
 
 ### ChurchDesk API Integration
