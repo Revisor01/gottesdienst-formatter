@@ -93,9 +93,43 @@ No formal test suite is currently implemented. Testing is done manually:
 3. Check German date/time formatting
 4. Validate service type abbreviations
 
+## Deployment
+
+### Server Information
+- **Server**: 185.248.143.234
+- **User**: root (not simon)
+- **Application Path**: /opt/ (not /var/www/)
+- **Access**: `ssh root@185.248.143.234`
+
+### Deployment Process
+The deployment uses GitHub for code distribution:
+
+1. **Push changes to GitHub**:
+   ```bash
+   git add .
+   git commit -m "Description of changes"
+   git push origin main
+   ```
+
+2. **Deploy to server**:
+   ```bash
+   ssh root@185.248.143.234
+   cd /opt/kk-termine
+   git pull origin main
+   docker-compose build --no-cache
+   docker-compose up -d
+   ```
+
+### ChurchDesk API Integration
+The application integrates with ChurchDesk API for multiple church organizations:
+- Organization tokens are configured in `churchdesk_api.py`
+- Multi-organization support for fetching church service data
+- Boyens Media format compliance with intelligent location extraction
+
 ## Common Development Tasks
 
 - **Add new service type**: Update `format_service_type()` function in both scripts
 - **Modify date formatting**: Update `format_date()` function 
 - **Change output format**: Modify the formatting logic in `process_excel_file()`
 - **Add new Excel columns**: Update `required_columns` list and processing logic
+- **Deploy changes**: Push to GitHub, then pull and rebuild on server

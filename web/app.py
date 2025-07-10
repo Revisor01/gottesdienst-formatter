@@ -60,7 +60,9 @@ def format_service_type(titel):
     
     titel_lower = titel.lower()
     
-    if 'abendmahl' in titel_lower:
+    if 'tauffest' in titel_lower:
+        return 'Tauffest'
+    elif 'abendmahl' in titel_lower:
         return 'Gd. m. A.'
     elif 'taufe' in titel_lower:
         return 'Gd. m. T.'

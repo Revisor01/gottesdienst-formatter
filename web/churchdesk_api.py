@@ -288,13 +288,14 @@ def extract_boyens_location(location_name: str, location_obj: Dict = None) -> st
     # Special mappings
     LOCATION_MAPPINGS = {
         'st. annen-kirche': 'St. Annen',
-        'st. marien-kirche': 'Marien-Kirche',
+        'st. marien-kirche': 'Eddelak',
+        'marien-kirche': 'Eddelak',
         'st. laurentius-kirche': 'Lunden',
         'st. rochus-kirche': 'Schlichting',
         'st. andreas-kirche': 'Weddingstedt',
         'st. secundus-kirche': 'Hennstedt',
         'st. bartholomäus': 'Wesselburen',
-        'kreuzkirche wesseln': 'Kreuzkirche Wesseln'
+        'kreuzkirche wesseln': 'Wesseln'
     }
     
     for church_pattern, boyens_name in LOCATION_MAPPINGS.items():
@@ -307,15 +308,22 @@ def extract_boyens_location(location_name: str, location_obj: Dict = None) -> st
 def format_boyens_pastor(contributor: str) -> str:
     """
     Format pastor name according to Boyens Media standards:
-    - Diakon → D.
-    - Pastor → P.
+    - Diakonin/Diakon → D.
     - Pastorin → Pn.
+    - Pastor → P.
     - Multiple pastors: combine with &
+    - Special cases: Kirchspiel-Pastor:innen, Konfirmand:innen etc.
     """
     if not contributor:
         return ""
     
     name = str(contributor).strip()
+    
+    # Handle special cases first
+    if 'kirchspiel-pastor:innen' in name.lower():
+        return 'Kirchspiel-Pastor:innen'
+    if 'konfirmand:innen' in name.lower():
+        return 'Konfirmand:innen'
     
     # Handle multiple contributors separated by various delimiters
     delimiters = [', ', ' & ', ' und ', ' + ', ' / ']
@@ -330,26 +338,32 @@ def format_boyens_pastor(contributor: str) -> str:
     
     for contrib in contributors:
         # Remove existing prefixes
-        prefixes = ['Pastor ', 'Pastorin ', 'P. ', 'Pn. ', 'Diakon ', 'D. ', 'Prädikant ', 'Prädikantin ']
+        prefixes = ['Pastor ', 'Pastorin ', 'Pfarrer ', 'P. ', 'Pn. ', 'Diakon ', 'Diakonin ', 'D. ', 'Dn. ', 'Prädikant ', 'Prädikantin ']
         clean_name = contrib
         for prefix in prefixes:
             if clean_name.startswith(prefix):
                 clean_name = clean_name[len(prefix):].strip()
                 break
         
-        # Determine new prefix based on original text
+        # Determine new prefix based on original text - be more specific in detection
         contrib_lower = contrib.lower()
-        if 'diakon' in contrib_lower:
+        if 'diakonin' in contrib_lower:
+            formatted_contributors.append(f"Dn. {clean_name}")
+        elif 'diakon' in contrib_lower:
             formatted_contributors.append(f"D. {clean_name}")
-        elif 'pastorin' in contrib_lower or 'pn.' in contrib_lower:
+        elif 'pastorin' in contrib_lower:
             formatted_contributors.append(f"Pn. {clean_name}")
-        elif 'pastor' in contrib_lower or 'p.' in contrib_lower:
+        elif 'pastor' in contrib_lower or 'pfarrer' in contrib_lower:
+            formatted_contributors.append(f"P. {clean_name}")
+        elif 'pn.' in contrib_lower:
+            formatted_contributors.append(f"Pn. {clean_name}")
+        elif 'p.' in contrib_lower:
             formatted_contributors.append(f"P. {clean_name}")
         elif 'prädikant' in contrib_lower:
             formatted_contributors.append(f"Prädikant {clean_name}")
         else:
-            # Default to Pastor if unclear
-            formatted_contributors.append(f"P. {clean_name}")
+            # Keep original if unclear - don't assume Pastor
+            formatted_contributors.append(clean_name)
     
     return ' & '.join(formatted_contributors)
 
