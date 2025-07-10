@@ -104,22 +104,52 @@ No formal test suite is currently implemented. Testing is done manually:
 ### Deployment Process
 The deployment uses GitHub for code distribution:
 
+**Complete One-Line Deployment:**
+```bash
+# Push and deploy in one command
+git add . && git commit -m "Description of changes" && git push && ssh root@185.248.143.234 "cd /opt/gottesdienst-formatter && git pull origin main && cd web && docker compose build && docker compose down && docker compose up -d"
+```
+
+**Step-by-Step Deployment:**
+
 1. **Push changes to GitHub**:
    ```bash
    git add .
    git commit -m "Description of changes"
-   git push origin main
+   git push
    ```
 
 2. **Deploy to server**:
    ```bash
-   ssh root@185.248.143.234
-   cd /opt/gottesdienst-formatter
-   git pull origin main
-   cd web
-   docker compose build --no-cache
-   docker compose up -d
+   ssh root@185.248.143.234 "cd /opt/gottesdienst-formatter && git pull origin main && cd web && docker compose build && docker compose down && docker compose up -d"
    ```
+
+**Manual Server Steps (if needed):**
+```bash
+# Connect to server
+ssh root@185.248.143.234
+
+# Navigate to project directory
+cd /opt/gottesdienst-formatter
+
+# Pull latest code
+git pull origin main
+
+# Navigate to web directory
+cd web
+
+# Build and restart containers
+docker compose build
+docker compose down
+docker compose up -d
+```
+
+**Server Details:**
+- **Server IP**: 185.248.143.234
+- **Application URL**: http://185.248.143.234:5001
+- **Server Path**: `/opt/gottesdienst-formatter`
+- **Web Directory**: `/opt/gottesdienst-formatter/web`
+- **Docker Compose File**: `/opt/gottesdienst-formatter/web/docker-compose.yml`
 
 ### ChurchDesk API Integration
 The application integrates with ChurchDesk API for multiple church organizations:
