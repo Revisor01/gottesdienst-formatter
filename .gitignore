@@ -47,4 +47,8 @@ gottesdienste_formatiert.txt
 
 # OS
 .DS_Store
-Thumbs.db.claude/
+Thumbs.db
+
+# Claude Code Configuration
+.claude/
+CLAUDE.md
