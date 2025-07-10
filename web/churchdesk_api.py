@@ -18,14 +18,14 @@ ORGANIZATIONS = {
         'description': 'Zentrale Verwaltung'
     },
     6572: {
-        'name': 'KG Heide',
+        'name': 'Kirchspiel Heide & Region',
         'token': '7b0cf910b378c6d2482419f4e785fc95b18c1ec6fbfdd6dea48085b58f52e894',
-        'description': 'St.-Jürgen-Kirche & Auferstehungskirche'
+        'description': 'Heide (St.-Jürgen, Erlöser, Auferstehung), Nordhastedt, Wesseln, Hemmingstedt'
     },
     2719: {
-        'name': 'KG Hennstedt',
+        'name': 'KG Hennstedt & Region',
         'token': 'c2d76c9414f6aac773c1643a98131123dbfc2ae7c31e4d2e864974c131dccedf',
-        'description': 'St. Secundus-Kirche'
+        'description': 'Hennstedt (St. Secundus-Kirche, Kapelle), Kita Lummerland'
     },
     2729: {
         'name': 'KG Büsum, Wesselburen, Neuenkirchen',
