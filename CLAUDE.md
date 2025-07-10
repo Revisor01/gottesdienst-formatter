@@ -97,6 +97,7 @@ No formal test suite is currently implemented. Testing is done manually:
 
 ### Server Information
 - **Server**: 185.248.143.234
+- **Application URL**: http://gd.kkd-fahrtenbuch.de
 - **User**: root (not simon)
 - **Application Path**: /opt/ (not /var/www/)
 - **Access**: `ssh root@185.248.143.234`
@@ -146,7 +147,8 @@ docker compose up -d
 
 **Server Details:**
 - **Server IP**: 185.248.143.234
-- **Application URL**: http://185.248.143.234:5001
+- **Application URL**: http://gd.kkd-fahrtenbuch.de
+- **Internal Port**: 5001 (mapped via reverse proxy)
 - **Server Path**: `/opt/gottesdienst-formatter`
 - **Web Directory**: `/opt/gottesdienst-formatter/web`
 - **Docker Compose File**: `/opt/gottesdienst-formatter/web/docker-compose.yml`
