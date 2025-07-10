@@ -360,10 +360,10 @@ def convert_churchdesk_events_to_boyens(events):
         day_events = sorted(events_by_date[date], key=lambda x: x['startDate'])
         
         for event in day_events:
-            # Extract Boyens-conform location
-            location = extract_boyens_location(event['location'])
+            # Extract Boyens-conform location for export (Urlauberseelsorge → Büsum)
+            location = extract_boyens_location(event['location'], for_export=True)
             if not location and event['parishes']:
-                location = event['parishes'][0].get('title', '')
+                location = extract_boyens_location(event['parishes'][0].get('title', ''), for_export=True)
             
             # Format time
             time_str = format_time(event['startDate'])

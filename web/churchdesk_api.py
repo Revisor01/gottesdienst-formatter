@@ -226,7 +226,10 @@ class EventAnalyzer:
                 parish_name = event['parishes'][0].get('title', '')
             
             # Use location or parish as fallback
-            final_location = location or parish_name
+            raw_location = location or parish_name
+            
+            # Apply location mapping for display (keep Urlauberseelsorge as is)
+            final_location = extract_boyens_location(raw_location, for_export=False)
             
             return {
                 'id': event['id'],
@@ -242,7 +245,7 @@ class EventAnalyzer:
         return None
 
 
-def extract_boyens_location(location_name: str, location_obj: Dict = None) -> str:
+def extract_boyens_location(location_name: str, location_obj: Dict = None, for_export: bool = True) -> str:
     """
     Extract location name according to Boyens Media format rules:
     - Single church per city: just city name
@@ -267,9 +270,15 @@ def extract_boyens_location(location_name: str, location_obj: Dict = None) -> st
         # Check if city has multiple churches
         city_lower = city.lower()
         if any(multi_city in city_lower for multi_city in MULTI_CHURCH_CITIES):
-            # Special case for standard church names
-            if 'st. clemens' in church.lower():
-                return city  # "Büsum" instead of "Büsum, St. Clemens-Kirche"
+            # Special case for Büsum churches
+            if city_lower == 'büsum':
+                if 'st. clemens' in church.lower():
+                    return "Büsum"  # St. Clemens is main church = just Büsum
+                elif 'perlebucht' in church.lower():
+                    return "Büsum, Perlebucht"  # Keep Perlebucht specification
+                else:
+                    return f"Büsum, {church}"
+            # Special case for other multi-church cities
             elif 'gemeindehaus' in church.lower() or 'kapelle' in church.lower():
                 return f"{city}, {church}"
             else:
@@ -288,6 +297,14 @@ def extract_boyens_location(location_name: str, location_obj: Dict = None) -> st
             # For Heide, always show church name
             if city_lower == 'heide':
                 return location  # Keep "Heide, St.-Jürgen-Kirche"
+            # For Büsum, handle special cases
+            elif city_lower == 'büsum':
+                if 'st. clemens' in church.lower():
+                    return "Büsum"  # St. Clemens is main church = just Büsum
+                elif 'perlebucht' in church.lower():
+                    return "Büsum, Perlebucht"  # Keep Perlebucht specification
+                else:
+                    return f"Büsum, {church}"
             # For other multi-church cities, check church type
             elif 'gemeindehaus' in church.lower() or 'kapelle' in church.lower():
                 return location
@@ -299,20 +316,39 @@ def extract_boyens_location(location_name: str, location_obj: Dict = None) -> st
     # No separator found - likely just city name or direct church name
     location_lower = location.lower()
     
-    # Special mappings
-    LOCATION_MAPPINGS = {
-        'st. annen-kirche': 'St. Annen',
-        'st. marien-kirche': 'Eddelak',
-        'marien-kirche': 'Eddelak',
-        'st. laurentius-kirche': 'Lunden',
-        'st. rochus-kirche': 'Schlichting',
-        'st. andreas-kirche': 'Weddingstedt',
-        'st. secundus-kirche': 'Hennstedt',
-        'st. bartholomäus': 'Wesselburen',
-        'kreuzkirche wesseln': 'Wesseln',
-        'kirche wesseln': 'Wesseln',
-        'urlauberseelsorge büsum': 'Urlauberseelsorge'
-    }
+    # Special mappings - different for display vs export
+    if for_export:
+        # Export mappings: Urlauberseelsorge → Büsum
+        LOCATION_MAPPINGS = {
+            'st. annen-kirche': 'St. Annen',
+            'st. marien-kirche': 'Eddelak',
+            'marien-kirche': 'Eddelak',
+            'st. laurentius-kirche': 'Lunden',
+            'st. rochus-kirche': 'Schlichting',
+            'st. andreas-kirche': 'Weddingstedt',
+            'st. secundus-kirche': 'Hennstedt',
+            'st. bartholomäus': 'Wesselburen',
+            'kreuzkirche wesseln': 'Wesseln',
+            'kirche wesseln': 'Wesseln',
+            'urlauberseelsorge büsum': 'Büsum',
+            'urlauberseelsorge': 'Büsum'
+        }
+    else:
+        # Display mappings: keep Urlauberseelsorge as is
+        LOCATION_MAPPINGS = {
+            'st. annen-kirche': 'St. Annen',
+            'st. marien-kirche': 'Eddelak',
+            'marien-kirche': 'Eddelak',
+            'st. laurentius-kirche': 'Lunden',
+            'st. rochus-kirche': 'Schlichting',
+            'st. andreas-kirche': 'Weddingstedt',
+            'st. secundus-kirche': 'Hennstedt',
+            'st. bartholomäus': 'Wesselburen',
+            'kreuzkirche wesseln': 'Wesseln',
+            'kirche wesseln': 'Wesseln',
+            'urlauberseelsorge büsum': 'Urlauberseelsorge',
+            'urlauberseelsorge': 'Urlauberseelsorge'
+        }
     
     for church_pattern, boyens_name in LOCATION_MAPPINGS.items():
         if church_pattern in location_lower:
