@@ -13,7 +13,7 @@ from datetime import datetime
 import io
 import zipfile
 import json
-from churchdesk_api import ChurchDeskAPI, EventAnalyzer, create_multi_org_client, ORGANIZATIONS
+from churchdesk_api import ChurchDeskAPI, EventAnalyzer, create_multi_org_client, ORGANIZATIONS, extract_boyens_location, format_boyens_pastor
 
 app = Flask(__name__)
 app.secret_key = 'gottesdienst-formatter-secret-key'
@@ -315,7 +315,7 @@ def export_selected_events():
 
 
 def convert_churchdesk_events_to_boyens(events):
-    """Convert ChurchDesk events to Boyens format"""
+    """Convert ChurchDesk events to Boyens format with location extraction"""
     # Group events by date
     events_by_date = {}
     
@@ -331,7 +331,8 @@ def convert_churchdesk_events_to_boyens(events):
             'title': event['title'],
             'location': event['location'],
             'contributor': event['contributor'],
-            'parishes': event['parishes']
+            'parishes': event['parishes'],
+            'organization_name': event.get('organization_name', '')
         })
     
     # Sort dates
@@ -349,8 +350,8 @@ def convert_churchdesk_events_to_boyens(events):
         day_events = sorted(events_by_date[date], key=lambda x: x['startDate'])
         
         for event in day_events:
-            # Format location
-            location = event['location']
+            # Extract Boyens-conform location
+            location = extract_boyens_location(event['location'])
             if not location and event['parishes']:
                 location = event['parishes'][0].get('title', '')
             
@@ -360,8 +361,8 @@ def convert_churchdesk_events_to_boyens(events):
             # Format service type
             service_type = format_service_type(event['title'])
             
-            # Format pastor
-            pastor = format_pastor(event['contributor'])
+            # Format pastor with Boyens standards
+            pastor = format_boyens_pastor(event['contributor'])
             
             # Build line
             line = "{}: {}, {}".format(location, time_str, service_type)

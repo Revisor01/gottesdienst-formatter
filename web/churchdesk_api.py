@@ -18,19 +18,24 @@ ORGANIZATIONS = {
         'description': 'Zentrale Verwaltung'
     },
     6572: {
-        'name': 'Kirchspiel Heide & Region',
+        'name': 'Kirchspiel Heide',
         'token': '7b0cf910b378c6d2482419f4e785fc95b18c1ec6fbfdd6dea48085b58f52e894',
-        'description': 'Heide (St.-Jürgen, Erlöser, Auferstehung), Nordhastedt, Wesseln, Hemmingstedt'
+        'description': 'Heide (St.-Jürgen, Erlöser, Auferstehung), Nordhastedt, Wesseln, Hemmingstedt, Eddelak'
     },
     2719: {
-        'name': 'KG Hennstedt & Region',
+        'name': 'KG Hennstedt (alt)',
         'token': 'c2d76c9414f6aac773c1643a98131123dbfc2ae7c31e4d2e864974c131dccedf',
-        'description': 'Hennstedt (St. Secundus-Kirche, Kapelle), Kita Lummerland'
+        'description': 'Nur Hennstedt Hauptkirche'
+    },
+    2725: {
+        'name': 'Kirchspiel Eider',
+        'token': '3afe57b4ae54ece02ff568993777028b47995601ecab92097e30a66f4d90494d',
+        'description': 'Hennstedt, Lunden, Hemme, St. Annen, Schlichting, Weddingstedt, Ostrohe, Stelle-Wittenwurth'
     },
     2729: {
-        'name': 'KG Büsum, Wesselburen, Neuenkirchen',
+        'name': 'Kirchspiel West',
         'token': 'bZq4GLCvhUbkYFQrDVDAe3cTs8hVlyQqEUmQ6xW5Tjw2EMEm3lCgYI6LSj3lrhvf7MTDIHL3TdrVXYdV',
-        'description': 'Mehrere Gemeinden der Region'
+        'description': 'Büsum, Neuenkirchen, Wesselburen, Urlauberseelsorge'
     }
 }
 
@@ -221,6 +226,132 @@ class EventAnalyzer:
             }
         
         return None
+
+
+def extract_boyens_location(location_name: str, location_obj: Dict = None) -> str:
+    """
+    Extract location name according to Boyens Media format rules:
+    - Single church per city: just city name
+    - Multiple churches per city: "City, Church Name"
+    - Special handling for known multi-church cities
+    """
+    if not location_name:
+        return ""
+    
+    # Multi-church cities that need church specification
+    MULTI_CHURCH_CITIES = ['heide', 'brunsbüttel', 'büsum']
+    
+    # Clean and normalize location name
+    location = location_name.strip()
+    
+    # Handle pipe separator format: "City | Church"
+    if ' | ' in location:
+        parts = location.split(' | ')
+        city = parts[0].strip()
+        church = parts[1].strip()
+        
+        # Check if city has multiple churches
+        city_lower = city.lower()
+        if any(multi_city in city_lower for multi_city in MULTI_CHURCH_CITIES):
+            # Special case for standard church names
+            if 'st. clemens' in church.lower():
+                return city  # "Büsum" instead of "Büsum, St. Clemens-Kirche"
+            elif 'gemeindehaus' in church.lower() or 'kapelle' in church.lower():
+                return f"{city}, {church}"
+            else:
+                return f"{city}, {church}"
+        else:
+            return city  # Single church cities: just city name
+    
+    # Handle comma separator format: "City, Church"
+    if ', ' in location:
+        parts = location.split(', ', 1)
+        city = parts[0].strip()
+        church = parts[1].strip()
+        
+        city_lower = city.lower()
+        if any(multi_city in city_lower for multi_city in MULTI_CHURCH_CITIES):
+            # For Heide, always show church name
+            if city_lower == 'heide':
+                return location  # Keep "Heide, St.-Jürgen-Kirche"
+            # For other multi-church cities, check church type
+            elif 'gemeindehaus' in church.lower() or 'kapelle' in church.lower():
+                return location
+            else:
+                return city  # Standard churches: just city
+        else:
+            return city  # Single church cities: just city name
+    
+    # No separator found - likely just city name or direct church name
+    location_lower = location.lower()
+    
+    # Special mappings
+    LOCATION_MAPPINGS = {
+        'st. annen-kirche': 'St. Annen',
+        'st. marien-kirche': 'Marien-Kirche',
+        'st. laurentius-kirche': 'Lunden',
+        'st. rochus-kirche': 'Schlichting',
+        'st. andreas-kirche': 'Weddingstedt',
+        'st. secundus-kirche': 'Hennstedt',
+        'st. bartholomäus': 'Wesselburen',
+        'kreuzkirche wesseln': 'Kreuzkirche Wesseln'
+    }
+    
+    for church_pattern, boyens_name in LOCATION_MAPPINGS.items():
+        if church_pattern in location_lower:
+            return boyens_name
+    
+    return location
+
+
+def format_boyens_pastor(contributor: str) -> str:
+    """
+    Format pastor name according to Boyens Media standards:
+    - Diakon → D.
+    - Pastor → P.
+    - Pastorin → Pn.
+    - Multiple pastors: combine with &
+    """
+    if not contributor:
+        return ""
+    
+    name = str(contributor).strip()
+    
+    # Handle multiple contributors separated by various delimiters
+    delimiters = [', ', ' & ', ' und ', ' + ', ' / ']
+    contributors = [name]
+    
+    for delimiter in delimiters:
+        if delimiter in name:
+            contributors = [c.strip() for c in name.split(delimiter)]
+            break
+    
+    formatted_contributors = []
+    
+    for contrib in contributors:
+        # Remove existing prefixes
+        prefixes = ['Pastor ', 'Pastorin ', 'P. ', 'Pn. ', 'Diakon ', 'D. ', 'Prädikant ', 'Prädikantin ']
+        clean_name = contrib
+        for prefix in prefixes:
+            if clean_name.startswith(prefix):
+                clean_name = clean_name[len(prefix):].strip()
+                break
+        
+        # Determine new prefix based on original text
+        contrib_lower = contrib.lower()
+        if 'diakon' in contrib_lower:
+            formatted_contributors.append(f"D. {clean_name}")
+        elif 'pastorin' in contrib_lower or 'pn.' in contrib_lower:
+            formatted_contributors.append(f"Pn. {clean_name}")
+        elif 'pastor' in contrib_lower or 'p.' in contrib_lower:
+            formatted_contributors.append(f"P. {clean_name}")
+        elif 'prädikant' in contrib_lower:
+            formatted_contributors.append(f"Prädikant {clean_name}")
+        else:
+            # Default to Pastor if unclear
+            formatted_contributors.append(f"P. {clean_name}")
+    
+    return ' & '.join(formatted_contributors)
 
 
 class MultiOrganizationChurchDeskAPI:
