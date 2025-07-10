@@ -175,13 +175,22 @@ class EventAnalyzer:
             'parishes': event.get('parishes', [])
         }
         
+        # German translations for field names
+        field_translations = {
+            'title': 'Titel',
+            'startDate': 'Startdatum',
+            'location': 'Ort',
+            'contributor': 'Mitwirkender',
+            'parishes': 'Gemeinde'
+        }
+        
         missing_fields = []
         
         for field, value in required_fields.items():
             if not value:
-                missing_fields.append(field)
+                missing_fields.append(field_translations[field])
             elif field == 'parishes' and len(value) == 0:
-                missing_fields.append(field)
+                missing_fields.append(field_translations[field])
         
         completeness_score = (len(required_fields) - len(missing_fields)) / len(required_fields)
         
@@ -324,12 +333,6 @@ def format_boyens_pastor(contributor: str) -> str:
     
     name = str(contributor).strip()
     
-    # Handle special cases first
-    if 'kirchspiel-pastor:innen' in name.lower():
-        return 'Kirchspiel-Pastor:innen'
-    if 'konfirmand:innen' in name.lower():
-        return 'Konfirmand:innen'
-    
     # Handle multiple contributors separated by various delimiters
     delimiters = [', ', ' & ', ' und ', ' + ', ' / ']
     contributors = [name]
@@ -342,6 +345,15 @@ def format_boyens_pastor(contributor: str) -> str:
     formatted_contributors = []
     
     for contrib in contributors:
+        # Handle special cases for individual contributors
+        contrib_lower = contrib.lower()
+        if 'kirchspiel-pastor:innen' in contrib_lower:
+            formatted_contributors.append('Kirchspiel-Pastor:innen')
+            continue
+        if 'konfirmand:innen' in contrib_lower:
+            formatted_contributors.append('Konfirmand:innen')
+            continue
+        
         # Remove existing prefixes
         prefixes = ['Pastores ', 'Pastor ', 'Pastorin ', 'Pfarrer ', 'P. ', 'Pn. ', 'Ps. ', 'Diakon ', 'Diakonin ', 'D. ', 'Dn. ', 'Prädikant ', 'Prädikantin ']
         clean_name = contrib
@@ -351,7 +363,6 @@ def format_boyens_pastor(contributor: str) -> str:
                 break
         
         # Determine new prefix based on original text - be more specific in detection
-        contrib_lower = contrib.lower()
         if 'diakonin' in contrib_lower:
             formatted_contributors.append(f"Dn. {clean_name}")
         elif 'diakon' in contrib_lower:

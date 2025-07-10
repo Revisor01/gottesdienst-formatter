@@ -62,12 +62,20 @@ def format_service_type(titel):
     
     if 'tauffest' in titel_lower:
         return 'Tauffest'
+    elif 'diamantene konfirmation' in titel_lower:
+        return 'Diamantene Konfirmation'
+    elif 'goldene konfirmation' in titel_lower:
+        return 'Goldene Konfirmation'
+    elif 'silberne konfirmation' in titel_lower:
+        return 'Silberne Konfirmation'
+    elif 'konfirmation' in titel_lower:
+        return 'Konfirmation'
     elif 'abendmahl' in titel_lower:
         return 'Gd. m. A.'
     elif 'taufe' in titel_lower:
         return 'Gd. m. T.'
-    elif 'konfirmation' in titel_lower:
-        return 'Konfirmation'
+    elif 'abendsegen' in titel_lower:
+        return 'Abendsegen'
     elif 'kinderkirche' in titel_lower or 'kinder' in titel_lower:
         return 'Kinderkirche'
     elif 'familie' in titel_lower:

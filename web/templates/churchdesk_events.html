@@ -45,21 +45,35 @@
                     </div>
                 </div>
                 
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover">
-                        <thead class="table-dark">
+                <div class="table-responsive" style="max-height: 70vh; overflow-y: auto;">
+                    <table class="table table-striped table-hover table-sm" id="events-table">
+                        <thead class="table-dark sticky-top">
                             <tr>
-                                <th width="50">
+                                <th width="50" class="sortable" data-sort="select">
                                     <input type="checkbox" id="header-select-all">
                                 </th>
-                                <th>Datum & Zeit</th>
-                                <th>Titel</th>
-                                <th>Ort</th>
-                                <th>Mitwirkender</th>
-                                <th>Gemeinde</th>
-                                <th>Organisation</th>
-                                <th>Status</th>
-                                <th>Aktion</th>
+                                <th class="sortable" data-sort="date" style="cursor: pointer;">
+                                    Datum & Zeit <i class="fas fa-sort"></i>
+                                </th>
+                                <th class="sortable" data-sort="title" style="cursor: pointer;">
+                                    Titel <i class="fas fa-sort"></i>
+                                </th>
+                                <th class="sortable" data-sort="location" style="cursor: pointer;">
+                                    Ort <i class="fas fa-sort"></i>
+                                </th>
+                                <th class="sortable" data-sort="contributor" style="cursor: pointer;">
+                                    Mitwirkender <i class="fas fa-sort"></i>
+                                </th>
+                                <th class="sortable" data-sort="parish" style="cursor: pointer;">
+                                    Gemeinde <i class="fas fa-sort"></i>
+                                </th>
+                                <th class="sortable" data-sort="organization" style="cursor: pointer;">
+                                    Organisation <i class="fas fa-sort"></i>
+                                </th>
+                                <th class="sortable" data-sort="status" style="cursor: pointer;">
+                                    Status <i class="fas fa-sort"></i>
+                                </th>
+                                <th width="80">Aktion</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -96,7 +110,13 @@
                                 <td>
                                     {% if event.parishes %}
                                         {% for parish in event.parishes %}
-                                            <span class="badge bg-secondary">{{ parish.title }}</span>
+                                            <span class="badge bg-secondary">
+                                                {% if parish.title.startswith('KG ') %}
+                                                    {{ parish.title[3:] }}
+                                                {% else %}
+                                                    {{ parish.title }}
+                                                {% endif %}
+                                            </span>
                                         {% endfor %}
                                     {% else %}
                                         <span class="text-danger">
@@ -115,7 +135,12 @@
                                     {% else %}
                                         <span class="badge bg-warning">
                                             <i class="fas fa-exclamation-triangle"></i> 
-                                            {{ event.analysis.missing_fields|length }} Felder fehlen
+                                            {% set missing_count = event.analysis.missing_fields|length %}
+                                            {% if missing_count == 1 %}
+                                                1 Feld fehlt
+                                            {% else %}
+                                                {{ missing_count }} Felder fehlen
+                                            {% endif %}
                                         </span>
                                     {% endif %}
                                 </td>
@@ -242,6 +267,87 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize counts
     updateSelectedCount();
     updateSelectAllState();
+    
+    // Table sorting functionality
+    const table = document.getElementById('events-table');
+    const sortableHeaders = document.querySelectorAll('.sortable');
+    let currentSort = { column: null, direction: 'asc' };
+    
+    sortableHeaders.forEach(header => {
+        if (header.dataset.sort !== 'select') {
+            header.addEventListener('click', function() {
+                const sortBy = this.dataset.sort;
+                const tbody = table.querySelector('tbody');
+                const rows = Array.from(tbody.querySelectorAll('tr.event-row'));
+                
+                // Toggle direction if same column
+                if (currentSort.column === sortBy) {
+                    currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+                } else {
+                    currentSort.direction = 'asc';
+                }
+                currentSort.column = sortBy;
+                
+                // Update sort icons
+                sortableHeaders.forEach(h => {
+                    const icon = h.querySelector('i');
+                    if (icon) icon.className = 'fas fa-sort';
+                });
+                const icon = this.querySelector('i');
+                if (icon) icon.className = currentSort.direction === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down';
+                
+                // Sort rows
+                rows.sort((a, b) => {
+                    let aVal, bVal;
+                    
+                    switch(sortBy) {
+                        case 'date':
+                            aVal = a.querySelector('td:nth-child(2) div').textContent.trim();
+                            bVal = b.querySelector('td:nth-child(2) div').textContent.trim();
+                            break;
+                        case 'title':
+                            aVal = a.querySelector('td:nth-child(3)').textContent.trim();
+                            bVal = b.querySelector('td:nth-child(3)').textContent.trim();
+                            break;
+                        case 'location':
+                            aVal = a.querySelector('td:nth-child(4)').textContent.trim();
+                            bVal = b.querySelector('td:nth-child(4)').textContent.trim();
+                            break;
+                        case 'contributor':
+                            aVal = a.querySelector('td:nth-child(5)').textContent.trim();
+                            bVal = b.querySelector('td:nth-child(5)').textContent.trim();
+                            break;
+                        case 'parish':
+                            aVal = a.querySelector('td:nth-child(6)').textContent.trim();
+                            bVal = b.querySelector('td:nth-child(6)').textContent.trim();
+                            break;
+                        case 'organization':
+                            aVal = a.querySelector('td:nth-child(7)').textContent.trim();
+                            bVal = b.querySelector('td:nth-child(7)').textContent.trim();
+                            break;
+                        case 'status':
+                            aVal = a.querySelector('td:nth-child(8)').textContent.trim();
+                            bVal = b.querySelector('td:nth-child(8)').textContent.trim();
+                            break;
+                        default:
+                            aVal = '';
+                            bVal = '';
+                    }
+                    
+                    const result = aVal.localeCompare(bVal, 'de');
+                    return currentSort.direction === 'asc' ? result : -result;
+                });
+                
+                // Reorder rows in DOM
+                rows.forEach(row => {
+                    tbody.appendChild(row);
+                    // Also move the corresponding details row
+                    const detailsRow = document.getElementById('details-' + row.dataset.eventId);
+                    if (detailsRow) tbody.appendChild(detailsRow);
+                });
+            });
+        }
+    });
 });
 </script>
 {% endblock %}
