@@ -18,6 +18,21 @@ from churchdesk_api import ChurchDeskAPI, EventAnalyzer, create_multi_org_client
 app = Flask(__name__)
 app.secret_key = 'gottesdienst-formatter-secret-key'
 
+def format_parish_name(parish_title):
+    """Format parish name for display using location mappings"""
+    if not parish_title:
+        return ""
+    
+    # Remove KG prefix if present
+    if parish_title.startswith('KG '):
+        parish_title = parish_title[3:]
+    
+    # Apply location mapping for display (not export)
+    return extract_boyens_location(parish_title, for_export=False)
+
+# Register template filter
+app.jinja_env.filters['format_parish'] = format_parish_name
+
 def format_date(date_obj):
     """Formatiert Datum im gewünschten Format"""
     if pd.isna(date_obj):

@@ -111,11 +111,7 @@
                                     {% if event.parishes %}
                                         {% for parish in event.parishes %}
                                             <span class="badge bg-secondary">
-                                                {% if parish.title.startswith('KG ') %}
-                                                    {{ parish.title[3:] }}
-                                                {% else %}
-                                                    {{ parish.title }}
-                                                {% endif %}
+                                                {{ parish.title | format_parish }}
                                             </span>
                                         {% endfor %}
                                     {% else %}

@@ -273,7 +273,7 @@ def extract_boyens_location(location_name: str, location_obj: Dict = None, for_e
             # Special case for Büsum churches
             if city_lower == 'büsum':
                 if 'st. clemens' in church.lower():
-                    return "Büsum"  # St. Clemens is main church = just Büsum
+                    return "Büsum, St. Clemens"  # St. Clemens is main church = just Büsum
                 elif 'perlebucht' in church.lower():
                     return "Büsum, Perlebucht"  # Keep Perlebucht specification
                 else:
@@ -300,7 +300,7 @@ def extract_boyens_location(location_name: str, location_obj: Dict = None, for_e
             # For Büsum, handle special cases
             elif city_lower == 'büsum':
                 if 'st. clemens' in church.lower():
-                    return "Büsum"  # St. Clemens is main church = just Büsum
+                    return "Büsum, St. Clemens"  # St. Clemens is main church = just Büsum
                 elif 'perlebucht' in church.lower():
                     return "Büsum, Perlebucht"  # Keep Perlebucht specification
                 else:
@@ -318,7 +318,6 @@ def extract_boyens_location(location_name: str, location_obj: Dict = None, for_e
     
     # Special mappings - different for display vs export
     if for_export:
-        # Export mappings: Urlauberseelsorge → Büsum
         LOCATION_MAPPINGS = {
             'st. annen-kirche': 'St. Annen',
             'st. marien-kirche': 'Eddelak',
@@ -334,7 +333,6 @@ def extract_boyens_location(location_name: str, location_obj: Dict = None, for_e
             'urlauberseelsorge': 'Büsum'
         }
     else:
-        # Display mappings: keep Urlauberseelsorge as is
         LOCATION_MAPPINGS = {
             'st. annen-kirche': 'St. Annen',
             'st. marien-kirche': 'Eddelak',
