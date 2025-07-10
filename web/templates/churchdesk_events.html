@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-12">
+        <div class="card mt-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">ChurchDesk Gottesdienste - {{ month_name }} {{ year }}</h4>
+                <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Zurück
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> 
+                            <strong>{{ events|length }}</strong> Gottesdienste gefunden
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <form method="POST" action="{{ url_for('export_selected_events') }}" id="export-form" style="display:inline;">
+                            <input type="hidden" name="events_data" value="{{ events_json }}">
+                            <div id="selected-events-container"></div>
+                            <button type="submit" class="btn btn-success" id="export-btn" disabled>
+                                <i class="fas fa-download"></i> Ausgewählte exportieren (<span id="selected-count">0</span>)
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="select-all">
+                        <label class="form-check-label" for="select-all">
+                            <strong>Alle auswählen</strong>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th width="50">
+                                    <input type="checkbox" id="header-select-all">
+                                </th>
+                                <th>Datum & Zeit</th>
+                                <th>Titel</th>
+                                <th>Ort</th>
+                                <th>Mitwirkender</th>
+                                <th>Gemeinde</th>
+                                <th>Status</th>
+                                <th>Aktion</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for event in events %}
+                            <tr class="event-row" data-event-id="{{ event.id }}">
+                                <td>
+                                    <input type="checkbox" class="event-select" value="{{ event.id }}" 
+                                           name="selected_events" 
+                                           {% if event.analysis.is_complete %}checked{% endif %}>
+                                </td>
+                                <td>
+                                    <div class="fw-bold">{{ event.formatted_date }}</div>
+                                    <small class="text-muted">{{ event.formatted_time }}</small>
+                                </td>
+                                <td>{{ event.title }}</td>
+                                <td>
+                                    {% if event.location %}
+                                        {{ event.location }}
+                                    {% else %}
+                                        <span class="text-danger">
+                                            <i class="fas fa-exclamation-triangle"></i> Fehlt
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if event.contributor %}
+                                        {{ event.contributor }}
+                                    {% else %}
+                                        <span class="text-danger">
+                                            <i class="fas fa-exclamation-triangle"></i> Fehlt
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if event.parishes %}
+                                        {% for parish in event.parishes %}
+                                            <span class="badge bg-secondary">{{ parish.title }}</span>
+                                        {% endfor %}
+                                    {% else %}
+                                        <span class="text-danger">
+                                            <i class="fas fa-exclamation-triangle"></i> Fehlt
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if event.analysis.is_complete %}
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check"></i> Vollständig
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-warning">
+                                            <i class="fas fa-exclamation-triangle"></i> 
+                                            {{ event.analysis.missing_fields|length }} Felder fehlen
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-info" 
+                                            onclick="toggleDetails('{{ event.id }}')">
+                                        <i class="fas fa-eye"></i> Details
+                                    </button>
+                                </td>
+                            </tr>
+                            
+                            <!-- Hidden details row -->
+                            <tr id="details-{{ event.id }}" class="details-row" style="display:none;">
+                                <td colspan="8">
+                                    <div class="card border-0 bg-light">
+                                        <div class="card-body">
+                                            <h6>Vollständige Informationen:</h6>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <strong>Beschreibung:</strong><br>
+                                                    {{ event.original_event.description|safe if event.original_event.description else 'Keine Beschreibung' }}
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <strong>Fehlende Felder:</strong><br>
+                                                    {% if event.analysis.missing_fields %}
+                                                        {% for field in event.analysis.missing_fields %}
+                                                            <span class="badge bg-danger">{{ field }}</span>
+                                                        {% endfor %}
+                                                    {% else %}
+                                                        <span class="text-success">Alle Felder vorhanden</span>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="row mt-2">
+                                                <div class="col-md-6">
+                                                    <strong>Vollständigkeit:</strong> 
+                                                    {{ (event.analysis.completeness_score * 100)|round }}%
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <strong>ChurchDesk ID:</strong> {{ event.id }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                {% if not events %}
+                <div class="alert alert-warning text-center">
+                    <i class="fas fa-calendar-times"></i>
+                    <h5>Keine Gottesdienste gefunden</h5>
+                    <p>Für den gewählten Zeitraum wurden keine Gottesdienste in ChurchDesk gefunden.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Toggle details for individual events
+function toggleDetails(eventId) {
+    const detailsRow = document.getElementById('details-' + eventId);
+    if (detailsRow.style.display === 'none') {
+        detailsRow.style.display = 'table-row';
+    } else {
+        detailsRow.style.display = 'none';
+    }
+}
+
+// Handle select all functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const selectAllCheckbox = document.getElementById('header-select-all');
+    const eventCheckboxes = document.querySelectorAll('.event-select');
+    const selectedCountSpan = document.getElementById('selected-count');
+    const exportBtn = document.getElementById('export-btn');
+    const selectedEventsContainer = document.getElementById('selected-events-container');
+    
+    function updateSelectedCount() {
+        const selectedCheckboxes = document.querySelectorAll('.event-select:checked');
+        const selectedCount = selectedCheckboxes.length;
+        selectedCountSpan.textContent = selectedCount;
+        exportBtn.disabled = selectedCount === 0;
+        
+        // Update hidden form fields for selected events
+        selectedEventsContainer.innerHTML = '';
+        selectedCheckboxes.forEach(checkbox => {
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'selected_events';
+            hiddenInput.value = checkbox.value;
+            selectedEventsContainer.appendChild(hiddenInput);
+        });
+    }
+    
+    function updateSelectAllState() {
+        const checkedCount = document.querySelectorAll('.event-select:checked').length;
+        const totalCount = eventCheckboxes.length;
+        
+        selectAllCheckbox.checked = checkedCount === totalCount;
+        selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < totalCount;
+    }
+    
+    // Select all checkbox handler
+    selectAllCheckbox.addEventListener('change', function() {
+        eventCheckboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
+        });
+        updateSelectedCount();
+    });
+    
+    // Individual checkbox handlers
+    eventCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            updateSelectAllState();
+            updateSelectedCount();
+        });
+    });
+    
+    // Initialize counts
+    updateSelectedCount();
+    updateSelectAllState();
+});
+</script>
+{% endblock %}

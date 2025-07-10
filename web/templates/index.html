@@ -2,8 +2,71 @@
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-8">
+    <div class="col-md-10">
+        
+        <!-- ChurchDesk API Section -->
         <div class="card mt-4">
+            <div class="card-header">
+                <h4 class="mb-0">ChurchDesk API - Gottesdienste abrufen</h4>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">
+                    Rufen Sie Gottesdienste direkt aus ChurchDesk ab und wählen Sie aus, welche in das Boyens Format exportiert werden sollen.
+                </p>
+                
+                <form method="POST" action="{{ url_for('fetch_churchdesk_events') }}">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="year" class="form-label">Jahr</label>
+                                <select name="year" id="year" class="form-control" required>
+                                    <option value="2025">2025</option>
+                                    <option value="2024">2024</option>
+                                    <option value="2026">2026</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="month" class="form-label">Monat</label>
+                                <select name="month" id="month" class="form-control" required>
+                                    <option value="1">Januar</option>
+                                    <option value="2">Februar</option>
+                                    <option value="3">März</option>
+                                    <option value="4">April</option>
+                                    <option value="5">Mai</option>
+                                    <option value="6">Juni</option>
+                                    <option value="7">Juli</option>
+                                    <option value="8">August</option>
+                                    <option value="9">September</option>
+                                    <option value="10">Oktober</option>
+                                    <option value="11">November</option>
+                                    <option value="12">Dezember</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="organization_id" class="form-label">Organisation ID</label>
+                                <input type="number" name="organization_id" id="organization_id" class="form-control" value="2596" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-success btn-lg w-100">
+                        <i class="fas fa-cloud-download-alt"></i> Gottesdienste von ChurchDesk abrufen
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Divider -->
+        <div class="text-center my-4">
+            <h5 class="text-muted">oder</h5>
+        </div>
+        
+        <!-- Excel Upload Section -->
+        <div class="card">
             <div class="card-header">
                 <h4 class="mb-0">Excel-Datei hochladen</h4>
             </div>

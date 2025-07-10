@@ -12,7 +12,12 @@
             </div>
             <div class="card-body">
                 <div class="alert alert-success">
-                    <strong>Erfolgreich!</strong> Die Excel-Datei wurde erfolgreich verarbeitet und in das Boyens Medien Format konvertiert.
+                    <strong>Erfolgreich!</strong> 
+                    {% if source == 'ChurchDesk' %}
+                        Die ChurchDesk Events wurden erfolgreich verarbeitet und in das Boyens Medien Format konvertiert.
+                    {% else %}
+                        Die Excel-Datei wurde erfolgreich verarbeitet und in das Boyens Medien Format konvertiert.
+                    {% endif %}
                 </div>
                 
                 <div class="row mb-3">

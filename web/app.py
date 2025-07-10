@@ -12,6 +12,8 @@ import tempfile
 from datetime import datetime
 import io
 import zipfile
+import json
+from churchdesk_api import ChurchDeskAPI, EventAnalyzer
 
 app = Flask(__name__)
 app.secret_key = 'gottesdienst-formatter-secret-key'
@@ -202,6 +204,159 @@ def download_file():
         download_name='gottesdienste_formatiert.txt',
         mimetype='text/plain'
     )
+
+
+@app.route('/fetch_churchdesk_events', methods=['POST'])
+def fetch_churchdesk_events():
+    """Fetch events from ChurchDesk API"""
+    try:
+        # Get form data
+        year = int(request.form.get('year'))
+        month = int(request.form.get('month'))
+        organization_id = int(request.form.get('organization_id'))
+        
+        # Get API token from environment or use provided one
+        api_token = os.getenv('CHURCHDESK_API_TOKEN', 'd4ec66780546786c92b916f873ee713181c1b695d32e7ba9839e760eaecd3fa1')
+        
+        # Create API client
+        api_client = ChurchDeskAPI(api_token, organization_id)
+        
+        # Fetch events for the specified month
+        events = api_client.get_monthly_events(year, month)
+        
+        # Process events for display
+        processed_events = []
+        for event in events:
+            formatted_event = EventAnalyzer.format_event_for_boyens(event)
+            if formatted_event:
+                # Add formatted date/time for display
+                formatted_event['formatted_date'] = format_date(formatted_event['startDate'])
+                formatted_event['formatted_time'] = format_time(formatted_event['startDate'])
+                processed_events.append(formatted_event)
+        
+        # Sort by date
+        processed_events.sort(key=lambda x: x['startDate'])
+        
+        # Month names for display
+        month_names = {
+            1: 'Januar', 2: 'Februar', 3: 'März', 4: 'April',
+            5: 'Mai', 6: 'Juni', 7: 'Juli', 8: 'August',
+            9: 'September', 10: 'Oktober', 11: 'November', 12: 'Dezember'
+        }
+        
+        return render_template('churchdesk_events.html', 
+                             events=processed_events,
+                             events_json=json.dumps([{
+                                 'id': e['id'],
+                                 'title': e['title'],
+                                 'startDate': e['startDate'].isoformat(),
+                                 'location': e['location'],
+                                 'contributor': e['contributor'],
+                                 'parishes': e['parishes']
+                             } for e in processed_events]),
+                             year=year,
+                             month=month,
+                             month_name=month_names[month])
+        
+    except Exception as e:
+        flash('Fehler beim Abrufen der ChurchDesk Events: {}'.format(str(e)))
+        return redirect(url_for('index'))
+
+
+@app.route('/export_selected_events', methods=['POST'])
+def export_selected_events():
+    """Export selected events to Boyens format"""
+    try:
+        # Get selected events data
+        events_data = request.form.get('events_data')
+        selected_event_ids = request.form.getlist('selected_events')
+        
+        if not events_data or not selected_event_ids:
+            flash('Keine Events ausgewählt')
+            return redirect(url_for('index'))
+        
+        # Parse events data
+        events = json.loads(events_data)
+        
+        # Filter selected events
+        selected_events = [e for e in events if str(e['id']) in selected_event_ids]
+        
+        if not selected_events:
+            flash('Keine gültigen Events ausgewählt')
+            return redirect(url_for('index'))
+        
+        # Convert to Boyens format
+        formatted_text = convert_churchdesk_events_to_boyens(selected_events)
+        
+        return render_template('result.html', 
+                             formatted_text=formatted_text, 
+                             count=len(selected_events),
+                             source='ChurchDesk')
+        
+    except Exception as e:
+        flash('Fehler beim Exportieren der Events: {}'.format(str(e)))
+        return redirect(url_for('index'))
+
+
+def convert_churchdesk_events_to_boyens(events):
+    """Convert ChurchDesk events to Boyens format"""
+    # Group events by date
+    events_by_date = {}
+    
+    for event in events:
+        start_date = datetime.fromisoformat(event['startDate'])
+        date_key = start_date.date()
+        
+        if date_key not in events_by_date:
+            events_by_date[date_key] = []
+        
+        events_by_date[date_key].append({
+            'startDate': start_date,
+            'title': event['title'],
+            'location': event['location'],
+            'contributor': event['contributor'],
+            'parishes': event['parishes']
+        })
+    
+    # Sort dates
+    sorted_dates = sorted(events_by_date.keys())
+    
+    output_lines = []
+    
+    for date in sorted_dates:
+        # Format date
+        date_obj = datetime.combine(date, datetime.min.time())
+        date_str = format_date(date_obj)
+        output_lines.append("{}:".format(date_str))
+        
+        # Sort events by time for this date
+        day_events = sorted(events_by_date[date], key=lambda x: x['startDate'])
+        
+        for event in day_events:
+            # Format location
+            location = event['location']
+            if not location and event['parishes']:
+                location = event['parishes'][0].get('title', '')
+            
+            # Format time
+            time_str = format_time(event['startDate'])
+            
+            # Format service type
+            service_type = format_service_type(event['title'])
+            
+            # Format pastor
+            pastor = format_pastor(event['contributor'])
+            
+            # Build line
+            line = "{}: {}, {}".format(location, time_str, service_type)
+            if pastor:
+                line += ", {}".format(pastor)
+            
+            output_lines.append(line)
+        
+        output_lines.append("")  # Empty line after each date
+    
+    return '\n'.join(output_lines)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
