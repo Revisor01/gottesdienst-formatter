@@ -309,7 +309,9 @@ def extract_boyens_location(location_name: str, location_obj: Dict = None) -> st
         'st. andreas-kirche': 'Weddingstedt',
         'st. secundus-kirche': 'Hennstedt',
         'st. bartholomäus': 'Wesselburen',
-        'kreuzkirche wesseln': 'Wesseln'
+        'kreuzkirche wesseln': 'Wesseln',
+        'kirche wesseln': 'Wesseln',
+        'urlauberseelsorge büsum': 'Urlauberseelsorge'
     }
     
     for church_pattern, boyens_name in LOCATION_MAPPINGS.items():
