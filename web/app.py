@@ -8,15 +8,18 @@ Pastor Simon Luthe - Kirchenkreis Dithmarschen
 from flask import Flask, render_template, request, send_file, flash, redirect, url_for
 import pandas as pd
 import os
+import secrets
 import tempfile
 from datetime import datetime
 import io
 import zipfile
 import json
-from churchdesk_api import ChurchDeskAPI, EventAnalyzer, create_multi_org_client, ORGANIZATIONS, extract_boyens_location, format_boyens_pastor
+from churchdesk_api import ChurchDeskAPI, EventAnalyzer, create_multi_org_client, extract_boyens_location
+from formatting import format_date, format_time, format_service_type, format_pastor
+from config import ORGANIZATIONS
 
 app = Flask(__name__)
-app.secret_key = 'gottesdienst-formatter-secret-key'
+app.secret_key = os.getenv('SECRET_KEY') or secrets.token_hex(32)
 
 def format_parish_name(parish_title):
     """Format parish name for display using location mappings"""
@@ -32,97 +35,6 @@ def format_parish_name(parish_title):
 
 # Register template filter
 app.jinja_env.filters['format_parish'] = format_parish_name
-
-def format_date(date_obj):
-    """Formatiert Datum im gewünschten Format"""
-    if pd.isna(date_obj):
-        return ""
-    
-    weekday_map = {
-        0: 'Montag', 1: 'Dienstag', 2: 'Mittwoch', 3: 'Donnerstag',
-        4: 'Freitag', 5: 'Sonnabend', 6: 'Sonntag'
-    }
-    
-    weekday = weekday_map.get(date_obj.weekday(), 'Unbekannt')
-    day = date_obj.day
-    
-    month_map = {
-        1: 'Januar', 2: 'Februar', 3: 'März', 4: 'April',
-        5: 'Mai', 6: 'Juni', 7: 'Juli', 8: 'August',
-        9: 'September', 10: 'Oktober', 11: 'November', 12: 'Dezember'
-    }
-    month = month_map.get(date_obj.month, 'Unbekannt')
-    
-    return "{}, {}. {}".format(weekday, day, month)
-
-def format_time(date_obj):
-    """Extrahiert und formatiert Uhrzeit aus datetime"""
-    if pd.isna(date_obj):
-        return ""
-    
-    hour = date_obj.hour
-    minute = date_obj.minute
-    
-    if minute == 0:
-        return "{} Uhr".format(hour)
-    else:
-        return "{}.{:02d} Uhr".format(hour, minute)
-
-def format_service_type(titel):
-    """Formatiert den Gottesdiensttyp"""
-    if pd.isna(titel):
-        return "Gd."
-    
-    titel_lower = titel.lower()
-    
-    if 'tauffest' in titel_lower:
-        return 'Tauffest'
-    elif 'diamantene konfirmation' in titel_lower:
-        return 'Diamantene Konfirmation'
-    elif 'goldene konfirmation' in titel_lower:
-        return 'Goldene Konfirmation'
-    elif 'silberne konfirmation' in titel_lower:
-        return 'Silberne Konfirmation'
-    elif 'konfirmation' in titel_lower:
-        return 'Konfirmation'
-    elif 'abendmahl' in titel_lower:
-        return 'Gd. m. A.'
-    elif 'taufe' in titel_lower:
-        return 'Gd. m. T.'
-    elif 'abendsegen' in titel_lower:
-        return 'Abendsegen'
-    elif 'kinderkirche' in titel_lower or 'kinder' in titel_lower:
-        return 'Kinderkirche'
-    elif 'familie' in titel_lower:
-        return 'Familiengd.'
-    elif 'andacht' in titel_lower:
-        return 'Andacht'
-    else:
-        return 'Gd.'
-
-def format_pastor(mitwirkender):
-    """Formatiert Pastor/Pastorin Namen"""
-    if pd.isna(mitwirkender):
-        return ""
-    
-    name = str(mitwirkender).strip()
-    
-    prefixes = ['Pastor ', 'Pastorin ', 'P. ', 'Pn. ', 'Diakon ', 'Prädikant ']
-    for prefix in prefixes:
-        if name.startswith(prefix):
-            name = name[len(prefix):]
-            break
-    
-    if any(word in mitwirkender.lower() for word in ['pastorin', 'pn.']):
-        return "Pn. {}".format(name)
-    elif any(word in mitwirkender.lower() for word in ['pastor', 'p.']):
-        return "P. {}".format(name)
-    elif 'diakon' in mitwirkender.lower():
-        return "Diakon {}".format(name)
-    elif 'prädikant' in mitwirkender.lower():
-        return "Prädikant {}".format(name)
-    else:
-        return "P. {}".format(name)
 
 def process_excel_file(file_path):
     """Verarbeitet Excel-Datei und gibt formatierten Text zurück"""
@@ -170,7 +82,7 @@ def process_excel_file(file_path):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', organizations=ORGANIZATIONS)
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -387,7 +299,7 @@ def convert_churchdesk_events_to_boyens(events):
             service_type = format_service_type(event['title'])
             
             # Format pastor with Boyens standards
-            pastor = format_boyens_pastor(event['contributor'])
+            pastor = format_pastor(event['contributor'])
             
             # Build line
             line = "{}: {}, {}".format(location, time_str, service_type)
