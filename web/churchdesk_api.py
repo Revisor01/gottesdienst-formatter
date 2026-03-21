@@ -10,35 +10,8 @@ import os
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional
 import pytz
-
-# Configuration for all available organizations
-ORGANIZATIONS = {
-    2596: {
-        'name': 'Kirchenkreis Dithmarschen',
-        'token': 'd4ec66780546786c92b916f873ee713181c1b695d32e7ba9839e760eaecd3fa1',
-        'description': 'Zentrale Verwaltung'
-    },
-    6572: {
-        'name': 'Kirchspiel Heide',
-        'token': '7b0cf910b378c6d2482419f4e785fc95b18c1ec6fbfdd6dea48085b58f52e894',
-        'description': 'Heide (St.-Jürgen, Erlöser, Auferstehung), Nordhastedt, Wesseln, Hemmingstedt, Eddelak'
-    },
-    2719: {
-        'name': 'KG Hennstedt (alt)',
-        'token': 'c2d76c9414f6aac773c1643a98131123dbfc2ae7c31e4d2e864974c131dccedf',
-        'description': 'Nur Hennstedt Hauptkirche'
-    },
-    2725: {
-        'name': 'Kirchspiel Eider',
-        'token': '3afe57b4ae54ece02ff568993777028b47995601ecab92097e30a66f4d90494d',
-        'description': 'Hennstedt, Lunden, Hemme, St. Annen, Schlichting, Weddingstedt, Ostrohe, Stelle-Wittenwurth'
-    },
-    2729: {
-        'name': 'Kirchspiel West',
-        'token': 'bZq4GLCvhUbkYFQrDVDAe3cTs8hVlyQqEUmQ6xW5Tjw2EMEm3lCgYI6LSj3lrhvf7MTDIHL3TdrVXYdV',
-        'description': 'Büsum, Neuenkirchen, Wesselburen, Urlauberseelsorge'
-    }
-}
+from config import ORGANIZATIONS
+from formatting import format_pastor
 
 class ChurchDeskAPI:
     """Client for ChurchDesk API interactions"""
@@ -273,7 +246,7 @@ def extract_boyens_location(location_name: str, location_obj: Dict = None, for_e
             # Special case for Büsum churches
             if city_lower == 'büsum':
                 if 'st. clemens' in church.lower():
-                    return "Büsum, St. Clemens"  # St. Clemens is main church = just Büsum
+                    return "Büsum"  # St. Clemens is main church = just Büsum
                 elif 'perlebucht' in church.lower():
                     return "Büsum, Perlebucht"  # Keep Perlebucht specification
                 else:
@@ -353,73 +326,6 @@ def extract_boyens_location(location_name: str, location_obj: Dict = None, for_e
             return boyens_name
     
     return location
-
-
-def format_boyens_pastor(contributor: str) -> str:
-    """
-    Format pastor name according to Boyens Media standards:
-    - Diakonin/Diakon → D.
-    - Pastorin → Pn.
-    - Pastor → P.
-    - Multiple pastors: combine with &
-    - Special cases: Kirchspiel-Pastor:innen, Konfirmand:innen etc.
-    """
-    if not contributor:
-        return ""
-    
-    name = str(contributor).strip()
-    
-    # Handle multiple contributors separated by various delimiters
-    delimiters = [', ', ' & ', ' und ', ' + ', ' / ']
-    contributors = [name]
-    
-    for delimiter in delimiters:
-        if delimiter in name:
-            contributors = [c.strip() for c in name.split(delimiter)]
-            break
-    
-    formatted_contributors = []
-    
-    for contrib in contributors:
-        # Handle special cases for individual contributors
-        contrib_lower = contrib.lower()
-        if 'kirchspiel-pastor:innen' in contrib_lower:
-            formatted_contributors.append('Kirchspiel-Pastor:innen')
-            continue
-        if 'konfirmand:innen' in contrib_lower:
-            formatted_contributors.append('Konfirmand:innen')
-            continue
-        
-        # Remove existing prefixes
-        prefixes = ['Pastores ', 'Pastor ', 'Pastorin ', 'Pfarrer ', 'P. ', 'Pn. ', 'Ps. ', 'Diakon ', 'Diakonin ', 'D. ', 'Dn. ', 'Prädikant ', 'Prädikantin ']
-        clean_name = contrib
-        for prefix in prefixes:
-            if clean_name.startswith(prefix):
-                clean_name = clean_name[len(prefix):].strip()
-                break
-        
-        # Determine new prefix based on original text - be more specific in detection
-        if 'diakonin' in contrib_lower:
-            formatted_contributors.append(f"Dn. {clean_name}")
-        elif 'diakon' in contrib_lower:
-            formatted_contributors.append(f"D. {clean_name}")
-        elif 'pastores' in contrib_lower:
-            formatted_contributors.append(f"Ps. {clean_name}")
-        elif 'pastorin' in contrib_lower:
-            formatted_contributors.append(f"Pn. {clean_name}")
-        elif 'pastor' in contrib_lower or 'pfarrer' in contrib_lower:
-            formatted_contributors.append(f"P. {clean_name}")
-        elif 'pn.' in contrib_lower:
-            formatted_contributors.append(f"Pn. {clean_name}")
-        elif 'p.' in contrib_lower:
-            formatted_contributors.append(f"P. {clean_name}")
-        elif 'prädikant' in contrib_lower:
-            formatted_contributors.append(f"Prädikant {clean_name}")
-        else:
-            # Keep original if unclear - don't assume Pastor
-            formatted_contributors.append(clean_name)
-    
-    return ' & '.join(formatted_contributors)
 
 
 class MultiOrganizationChurchDeskAPI:
@@ -517,7 +423,6 @@ def create_api_client() -> ChurchDeskAPI:
     organization_id = os.getenv('CHURCHDESK_ORGANIZATION_ID')
     
     if not api_token:
-        # Try to use default token for org 2596
         api_token = ORGANIZATIONS.get(2596, {}).get('token')
     
     if not organization_id:
