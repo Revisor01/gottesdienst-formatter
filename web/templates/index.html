@@ -60,46 +60,25 @@
                     
                     <div class="mb-3">
                         <label class="form-label">Kirchspiele auswählen:</label>
+                        {% if organizations %}
                         <div class="row">
-                            <div class="col-md-6">
+                            {% for org_id, org in organizations.items() %}
+                            <div class="col-md-6 {% if not loop.first and loop.index0 % 2 == 0 %}mt-2{% endif %}">
                                 <div class="form-check">
-                                    <input class="form-check-input org-checkbox" type="checkbox" name="selected_organizations" value="2596" id="org-2596">
-                                    <label class="form-check-label" for="org-2596">
-                                        <strong>Kirchenkreis Dithmarschen</strong><br>
-                                        <small class="text-muted">Zentrale Verwaltung</small>
+                                    <input class="form-check-input org-checkbox" type="checkbox" name="selected_organizations" value="{{ org_id }}" id="org-{{ org_id }}" {% if org_id != 2596 %}checked{% endif %}>
+                                    <label class="form-check-label" for="org-{{ org_id }}">
+                                        <strong>{{ org.name }}</strong><br>
+                                        {% if org.description %}<small class="text-muted">{{ org.description }}</small>{% endif %}
                                     </label>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-check">
-                                    <input class="form-check-input org-checkbox" type="checkbox" name="selected_organizations" value="6572" id="org-6572" checked>
-                                    <label class="form-check-label" for="org-6572">
-                                        <strong>Kirchspiel Heide</strong><br>
-                                        <small class="text-muted">Heide (St.-Jürgen, Erlöser, Auferstehung), Nordhastedt, Wesseln, Hemmingstedt, Eddelak</small>
-                                    </label>
-                                </div>
-                            </div>
+                            {% endfor %}
                         </div>
-                        <div class="row mt-2">
-                            <div class="col-md-6">
-                                <div class="form-check">
-                                    <input class="form-check-input org-checkbox" type="checkbox" name="selected_organizations" value="2725" id="org-2725" checked>
-                                    <label class="form-check-label" for="org-2725">
-                                        <strong>Kirchspiel Eider</strong><br>
-                                        <small class="text-muted">Hennstedt, Lunden, Hemme, St. Annen, Schlichting, Weddingstedt, Ostrohe, Stelle-Wittenwurth</small>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-check">
-                                    <input class="form-check-input org-checkbox" type="checkbox" name="selected_organizations" value="2729" id="org-2729" checked>
-                                    <label class="form-check-label" for="org-2729">
-                                        <strong>Kirchspiel West</strong><br>
-                                        <small class="text-muted">Büsum, Neuenkirchen, Wesselburen, Urlauberseelsorge</small>
-                                    </label>
-                                </div>
-                            </div>
+                        {% else %}
+                        <div class="alert alert-warning">
+                            Keine Organisationen konfiguriert. Bitte CHURCHDESK_ORG_IDS und zugehörige Env-Vars setzen.
                         </div>
+                        {% endif %}
                     </div>
                     
                     <button type="submit" class="btn btn-success btn-lg w-100">

@@ -10,108 +10,13 @@ Verwendung:
 3. Ergebnis wird in 'gottesdienste_formatiert.txt' gespeichert
 """
 
-import pandas as pd
 import sys
-from datetime import datetime
 import os
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'web'))
+from formatting import format_date, format_time, format_service_type, format_pastor
 
-def format_date(date_obj):
-    """Formatiert Datum im gewünschten Format (z.B. 'Sonnabend, 5. April')"""
-    if pd.isna(date_obj):
-        return ""
-    
-    # Wochentag auf Deutsch
-    weekday_map = {
-        0: 'Montag', 1: 'Dienstag', 2: 'Mittwoch', 3: 'Donnerstag',
-        4: 'Freitag', 5: 'Sonnabend', 6: 'Sonntag'
-    }
-    
-    weekday = weekday_map.get(date_obj.weekday(), 'Unbekannt')
-    day = date_obj.day
-    
-    month_map = {
-        1: 'Januar', 2: 'Februar', 3: 'März', 4: 'April',
-        5: 'Mai', 6: 'Juni', 7: 'Juli', 8: 'August',
-        9: 'September', 10: 'Oktober', 11: 'November', 12: 'Dezember'
-    }
-    month = month_map.get(date_obj.month, 'Unbekannt')
-    
-    return "{}, {}. {}".format(weekday, day, month)
-
-def format_time(date_obj):
-    """Extrahiert und formatiert Uhrzeit aus datetime"""
-    if pd.isna(date_obj):
-        return ""
-    
-    hour = date_obj.hour
-    minute = date_obj.minute
-    
-    if minute == 0:
-        return "{} Uhr".format(hour)
-    else:
-        return "{}.{:02d} Uhr".format(hour, minute)
-
-def format_service_type(titel):
-    """Formatiert den Gottesdiensttyp"""
-    if pd.isna(titel):
-        return "Gd."
-    
-    # Mapping für häufige Gottesdiensttypen
-    type_map = {
-        'gottesdienst': 'Gd.',
-        'abendmahl': 'Gd. m. A.',
-        'taufe': 'Gd. m. T.',
-        'konfirmation': 'Konfirmation',
-        'kinderkirche': 'Kinderkirche',
-        'familiengottesdienst': 'Familiengd.',
-        'andacht': 'Andacht'
-    }
-    
-    titel_lower = titel.lower()
-    
-    # Spezielle Behandlung für verschiedene Gottesdiensttypen
-    if 'abendmahl' in titel_lower:
-        return 'Gd. m. A.'
-    elif 'taufe' in titel_lower:
-        return 'Gd. m. T.'
-    elif 'konfirmation' in titel_lower:
-        return 'Konfirmation'
-    elif 'kinderkirche' in titel_lower or 'kinder' in titel_lower:
-        return 'Kinderkirche'
-    elif 'familie' in titel_lower:
-        return 'Familiengd.'
-    elif 'andacht' in titel_lower:
-        return 'Andacht'
-    else:
-        return 'Gd.'
-
-def format_pastor(mitwirkender):
-    """Formatiert Pastor/Pastorin Namen"""
-    if pd.isna(mitwirkender):
-        return ""
-    
-    # Bereinige den Namen
-    name = str(mitwirkender).strip()
-    
-    # Entferne häufige Präfixe falls vorhanden
-    prefixes = ['Pastor ', 'Pastorin ', 'P. ', 'Pn. ', 'Diakon ', 'Prädikant ']
-    for prefix in prefixes:
-        if name.startswith(prefix):
-            name = name[len(prefix):]
-            break
-    
-    # Füge korrektes Präfix hinzu basierend auf Geschlecht (vereinfacht)
-    # Hier könnte eine erweiterte Logik implementiert werden
-    if any(word in mitwirkender.lower() for word in ['pastorin', 'pn.']):
-        return "Pn. {}".format(name)
-    elif any(word in mitwirkender.lower() for word in ['pastor', 'p.']):
-        return "P. {}".format(name)
-    elif 'diakon' in mitwirkender.lower():
-        return "Diakon {}".format(name)
-    elif 'prädikant' in mitwirkender.lower():
-        return "Prädikant {}".format(name)
-    else:
-        return "P. {}".format(name)
+import pandas as pd
+from datetime import datetime
 
 def main():
     try:
