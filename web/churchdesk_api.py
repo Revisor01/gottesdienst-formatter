@@ -239,7 +239,7 @@ def extract_boyens_location(location_name: str, location_obj: Dict = None, for_e
         parts = location.split(' | ')
         city = parts[0].strip()
         church = parts[1].strip()
-        
+
         # Check if city has multiple churches
         city_lower = city.lower()
         if any(multi_city in city_lower for multi_city in MULTI_CHURCH_CITIES):
@@ -251,38 +251,45 @@ def extract_boyens_location(location_name: str, location_obj: Dict = None, for_e
                     return "Büsum, Perlebucht"  # Keep Perlebucht specification
                 else:
                     return f"Büsum, {church}"
-            # Special case for other multi-church cities
-            elif 'gemeindehaus' in church.lower() or 'kapelle' in church.lower():
+            # Special case for Heide: remove -Kirche suffix (D-27)
+            elif city_lower == 'heide':
+                if church.endswith('-Kirche') or church.endswith('-kirche'):
+                    church = church[:-len('-Kirche')]
+                return f"{city}, {church}"
+            # Special case for Brunsbüttel: keep church name (D-27)
+            elif city_lower == 'brunsbüttel':
                 return f"{city}, {church}"
             else:
                 return f"{city}, {church}"
         else:
             return city  # Single church cities: just city name
-    
+
     # Handle comma separator format: "City, Church"
     if ', ' in location:
         parts = location.split(', ', 1)
         city = parts[0].strip()
         church = parts[1].strip()
-        
+
         city_lower = city.lower()
         if any(multi_city in city_lower for multi_city in MULTI_CHURCH_CITIES):
-            # For Heide, always show church name
+            # For Heide: show church name but remove -Kirche suffix (D-27)
             if city_lower == 'heide':
-                return location  # Keep "Heide, St.-Jürgen-Kirche"
-            # For Büsum, handle special cases
+                if church.endswith('-Kirche') or church.endswith('-kirche'):
+                    church = church[:-len('-Kirche')]
+                return f"{city}, {church}"
+            # For Büsum, handle special cases (D-28)
             elif city_lower == 'büsum':
                 if 'st. clemens' in church.lower():
-                    return "Büsum, St. Clemens"  # St. Clemens is main church = just Büsum
+                    return "Büsum"  # St. Clemens is main church = just Büsum
                 elif 'perlebucht' in church.lower():
                     return "Büsum, Perlebucht"  # Keep Perlebucht specification
                 else:
                     return f"Büsum, {church}"
-            # For other multi-church cities, check church type
-            elif 'gemeindehaus' in church.lower() or 'kapelle' in church.lower():
-                return location
+            # For Brunsbüttel: keep church name (D-27)
+            elif city_lower == 'brunsbüttel':
+                return location  # Keep "Brunsbüttel, Jakobuskirche"
             else:
-                return city  # Standard churches: just city
+                return city  # Standard single-church cities: just city
         else:
             return city  # Single church cities: just city name
     
