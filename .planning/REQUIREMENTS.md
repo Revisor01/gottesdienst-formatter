@@ -66,32 +66,32 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FMT-01 | — | Pending |
-| FMT-02 | — | Pending |
-| FMT-03 | — | Pending |
-| FMT-04 | — | Pending |
-| FMT-05 | — | Pending |
-| FMT-06 | — | Pending |
-| FMT-07 | — | Pending |
-| FMT-08 | — | Pending |
-| FMT-09 | — | Pending |
-| CODE-01 | — | Pending |
-| CODE-02 | — | Pending |
-| CODE-03 | — | Pending |
-| CODE-04 | — | Pending |
-| SEC-01 | — | Pending |
-| SEC-02 | — | Pending |
-| TEST-01 | — | Pending |
-| TEST-02 | — | Pending |
-| DEPLOY-01 | — | Pending |
-| DEPLOY-02 | — | Pending |
-| DEPLOY-03 | — | Pending |
+| FMT-01 | Phase 2 | Pending |
+| FMT-02 | Phase 2 | Pending |
+| FMT-03 | Phase 2 | Pending |
+| FMT-04 | Phase 2 | Pending |
+| FMT-05 | Phase 2 | Pending |
+| FMT-06 | Phase 2 | Pending |
+| FMT-07 | Phase 2 | Pending |
+| FMT-08 | Phase 2 | Pending |
+| FMT-09 | Phase 2 | Pending |
+| CODE-01 | Phase 1 | Pending |
+| CODE-02 | Phase 1 | Pending |
+| CODE-03 | Phase 1 | Pending |
+| CODE-04 | Phase 1 | Pending |
+| SEC-01 | Phase 1 | Pending |
+| SEC-02 | Phase 1 | Pending |
+| TEST-01 | Phase 3 | Pending |
+| TEST-02 | Phase 3 | Pending |
+| DEPLOY-01 | Phase 3 | Pending |
+| DEPLOY-02 | Phase 3 | Pending |
+| DEPLOY-03 | Phase 3 | Pending |
 
 **Coverage:**
 - v1 requirements: 20 total
-- Mapped to phases: 0
-- Unmapped: 20 ⚠️
+- Mapped to phases: 20
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-21*
-*Last updated: 2026-03-21 after initial definition*
+*Last updated: 2026-03-21 after roadmap creation*
