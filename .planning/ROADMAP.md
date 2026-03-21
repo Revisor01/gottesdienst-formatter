@@ -21,7 +21,10 @@ Brownfield-Stabilisierung eines funktionierenden, aber technisch verschuldeten F
   2. Formatierungslogik (Datum, Zeit, Gottesdienst-Typ, Pastor-Titel) existiert in einem zentralen Modul, das von allen Codepfaden importiert wird
   3. Eine neue ChurchDesk-Organisation wird durch Hinzufügen eines Eintrags in Konfiguration (kein Code-Change) eingebunden
   4. Es gibt eine einzige `format_pastor()`-Funktion — die drei bisherigen Varianten sind entfernt
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 01-01-PLAN.md — Zentrale Module (formatting.py, config.py) erstellen und app.py bereinigen
+- [ ] 01-02-PLAN.md — Verbleibende Consumer umstellen (churchdesk_api.py, docker-compose, index.html, Standalone-Script)
 
 ### Phase 2: Formatierung
 **Goal**: Der generierte Fließtext ist 1:1 mit der Boyens-Vorgabe — ohne redaktionelle Nacharbeit übernehmbar
@@ -50,6 +53,6 @@ Brownfield-Stabilisierung eines funktionierenden, aber technisch verschuldeten F
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Stabilisierung | 0/? | Not started | - |
+| 1. Stabilisierung | 0/2 | Planned | - |
 | 2. Formatierung | 0/? | Not started | - |
 | 3. Pipeline | 0/? | Not started | - |
