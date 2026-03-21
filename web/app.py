@@ -36,47 +36,108 @@ def format_parish_name(parish_title):
 # Register template filter
 app.jinja_env.filters['format_parish'] = format_parish_name
 
+def _extract_suffix(titel):
+    """Extrahiert Zusatzinfos wie 'anschl. Kirchcafé' aus dem Titel (D-12)"""
+    titel_lower = titel.lower() if titel else ''
+    for marker in [', anschl', ',anschl']:
+        idx = titel_lower.find(marker)
+        if idx != -1:
+            return titel[idx:]  # includes leading comma
+    return ''
+
+
+def _build_location_entries(day_items):
+    """
+    Gruppiert Termineintraege nach Ort und wendet jeweils-Logik an (D-20, D-29, D-31).
+
+    day_items: Liste von Dicts mit keys: location, time_str, service_type, pastor, suffix
+
+    Gibt sortierte Liste von Zeilen zurueck: ["Ort: Eintrag1; Eintrag2, jeweils Pn. X", ...]
+    """
+    location_entries = {}  # {location: [{'time', 'service_type', 'pastor', 'suffix'}]}
+
+    for item in day_items:
+        loc = item['location']
+        if loc not in location_entries:
+            location_entries[loc] = []
+        location_entries[loc].append(item)
+
+    lines = []
+    for location in sorted(location_entries.keys()):  # D-29: alphabetisch
+        entries = location_entries[location]
+        pastors = [e['pastor'] for e in entries]
+
+        # D-20 / FMT-08: jeweils-Logik
+        if len(entries) > 1 and len(set(pastors)) == 1 and pastors[0]:
+            # Alle Eintraege haben denselben Pastor → Pastor einmal am Ende
+            entry_strings = []
+            for e in entries:
+                s = "{}, {}".format(e['time_str'], e['service_type'])
+                if e.get('suffix'):
+                    s += e['suffix']
+                entry_strings.append(s)
+            line = "{}: {}, jeweils {}".format(location, '; '.join(entry_strings), pastors[0])
+        else:
+            # Unterschiedliche Pastoren → Pastor bei jedem Eintrag einzeln
+            entry_strings = []
+            for e in entries:
+                s = "{}, {}".format(e['time_str'], e['service_type'])
+                if e.get('suffix'):
+                    s += e['suffix']
+                if e['pastor']:
+                    s += ", {}".format(e['pastor'])
+                entry_strings.append(s)
+            line = "{}: {}".format(location, '; '.join(entry_strings))  # D-31
+
+        lines.append(line)
+
+    return lines
+
+
 def process_excel_file(file_path):
     """Verarbeitet Excel-Datei und gibt formatierten Text zurück"""
     try:
         df = pd.read_excel(file_path)
-        
+
         # Validierung der benötigten Spalten
         required_columns = ['Startdatum', 'Titel', 'Standortnamen', 'Mitwirkender', 'Gemeinden']
         missing_columns = [col for col in required_columns if col not in df.columns]
         if missing_columns:
             raise ValueError("Fehlende Spalten: {}".format(', '.join(missing_columns)))
-        
+
         # Daten nach Datum sortieren
         df = df.sort_values('Startdatum')
-        
+
         # Gruppiere nach Datum
         grouped = df.groupby(df['Startdatum'].dt.date)
-        
+
         output_lines = []
-        
+
         for date, group in grouped:
             # Datum formatieren
             date_str = format_date(pd.to_datetime(date))
             output_lines.append("{}:".format(date_str))
-            
-            # Termine für diesen Tag
+
+            # Sammle Termineintraege fuer diesen Tag
+            day_items = []
             for _, row in group.iterrows():
-                ort = row['Standortnamen'] if not pd.isna(row['Standortnamen']) else row['Gemeinden']
-                zeit = format_time(row['Startdatum'])
-                gd_typ = format_service_type(row['Titel'])
-                pastor = format_pastor(row['Mitwirkender'])
-                
-                line = "{}: {}, {}".format(ort, zeit, gd_typ)
-                if pastor:
-                    line += ", {}".format(pastor)
-                
-                output_lines.append(line)
-            
+                raw_ort = row['Standortnamen'] if not pd.isna(row['Standortnamen']) else row['Gemeinden']
+                location = extract_boyens_location(str(raw_ort), for_export=True)
+                titel = str(row['Titel']) if not pd.isna(row['Titel']) else ''
+                day_items.append({
+                    'location': location,
+                    'time_str': format_time(row['Startdatum']),
+                    'service_type': format_service_type(titel),
+                    'pastor': format_pastor(row['Mitwirkender']),
+                    'suffix': _extract_suffix(titel),
+                })
+
+            # Alphabetisch sortieren, Multi-Termin zusammenfassen, jeweils-Logik anwenden
+            output_lines.extend(_build_location_entries(day_items))
             output_lines.append("")  # Leerzeile nach jedem Tag
-        
+
         return '\n'.join(output_lines), len(df)
-    
+
     except Exception as e:
         raise Exception("Fehler beim Verarbeiten der Excel-Datei: {}".format(str(e)))
 
@@ -255,14 +316,14 @@ def convert_churchdesk_events_to_boyens(events):
     """Convert ChurchDesk events to Boyens format with location extraction"""
     # Group events by date
     events_by_date = {}
-    
+
     for event in events:
         start_date = datetime.fromisoformat(event['startDate'])
         date_key = start_date.date()
-        
+
         if date_key not in events_by_date:
             events_by_date[date_key] = []
-        
+
         events_by_date[date_key].append({
             'startDate': start_date,
             'title': event['title'],
@@ -271,45 +332,42 @@ def convert_churchdesk_events_to_boyens(events):
             'parishes': event['parishes'],
             'organization_name': event.get('organization_name', '')
         })
-    
+
     # Sort dates
     sorted_dates = sorted(events_by_date.keys())
-    
+
     output_lines = []
-    
+
     for date in sorted_dates:
         # Format date
         date_obj = datetime.combine(date, datetime.min.time())
         date_str = format_date(date_obj)
         output_lines.append("{}:".format(date_str))
-        
+
         # Sort events by time for this date
         day_events = sorted(events_by_date[date], key=lambda x: x['startDate'])
-        
+
+        # Sammle Termineintraege fuer diesen Tag
+        day_items = []
         for event in day_events:
             # Extract Boyens-conform location for export (Urlauberseelsorge → Büsum)
             location = extract_boyens_location(event['location'], for_export=True)
             if not location and event['parishes']:
                 location = extract_boyens_location(event['parishes'][0].get('title', ''), for_export=True)
-            
-            # Format time
-            time_str = format_time(event['startDate'])
-            
-            # Format service type
-            service_type = format_service_type(event['title'])
-            
-            # Format pastor with Boyens standards
-            pastor = format_pastor(event['contributor'])
-            
-            # Build line
-            line = "{}: {}, {}".format(location, time_str, service_type)
-            if pastor:
-                line += ", {}".format(pastor)
-            
-            output_lines.append(line)
-        
+
+            titel = event['title'] or ''
+            day_items.append({
+                'location': location,
+                'time_str': format_time(event['startDate']),
+                'service_type': format_service_type(titel),
+                'pastor': format_pastor(event['contributor']),
+                'suffix': _extract_suffix(titel),
+            })
+
+        # Alphabetisch sortieren, Multi-Termin zusammenfassen, jeweils-Logik anwenden
+        output_lines.extend(_build_location_entries(day_items))
         output_lines.append("")  # Empty line after each date
-    
+
     return '\n'.join(output_lines)
 
 if __name__ == '__main__':
