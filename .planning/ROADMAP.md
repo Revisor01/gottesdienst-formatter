@@ -40,7 +40,7 @@ Plans:
 **Plans:** 2 plans
 Plans:
 - [x] 02-01-PLAN.md — Formatierungsfunktionen (format_service_type, format_pastor) auf Boyens-Konformitaet bringen
-- [ ] 02-02-PLAN.md — Output-Assembly: Ort-Sortierung, Multi-Termin-Zusammenfassung, Location-Extraktion
+- [x] 02-02-PLAN.md — Output-Assembly: Ort-Sortierung, Multi-Termin-Zusammenfassung, Location-Extraktion
 
 ### Phase 3: Pipeline
 **Goal**: Ein Git-Push löst automatisch Image-Build und Deployment aus — kein manueller Server-Zugriff mehr nötig; Formatierungslogik ist durch Tests abgesichert
