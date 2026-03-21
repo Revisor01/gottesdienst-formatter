@@ -37,7 +37,10 @@ Plans:
   3. Alle Gottesdienst-Typen (Gd., Gd. m. A., Gd. m. T., Familiengd., Konfirmation, Gd. m. Popularmusik, Gd. m. Konfirmandenprüfung) werden korrekt abgekürzt
   4. Alle Pastor-Titel (P., Pn., Diakon, Prädikantin, R.) werden korrekt ausgegeben — mehrere Pastoren pro Gottesdienst durch Komma getrennt
   5. Orte mit mehreren Kirchen zeigen den Kirchennamen (z.B. "Heide, St.-Jürgen"), Orte mit einer Kirche nur den Ortsnamen
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 02-01-PLAN.md — Formatierungsfunktionen (format_service_type, format_pastor) auf Boyens-Konformitaet bringen
+- [ ] 02-02-PLAN.md — Output-Assembly: Ort-Sortierung, Multi-Termin-Zusammenfassung, Location-Extraktion
 
 ### Phase 3: Pipeline
 **Goal**: Ein Git-Push löst automatisch Image-Build und Deployment aus — kein manueller Server-Zugriff mehr nötig; Formatierungslogik ist durch Tests abgesichert
@@ -55,5 +58,5 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Stabilisierung | 3/3 | Complete   | 2026-03-21 |
-| 2. Formatierung | 0/? | Not started | - |
+| 2. Formatierung | 0/2 | In Progress | - |
 | 3. Pipeline | 0/? | Not started | - |
