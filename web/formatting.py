@@ -4,6 +4,7 @@
 Zentrale Formatierungsfunktionen fuer Boyens-Medien-Output.
 Einzige Quelle der Wahrheit — alle Codepfade importieren von hier.
 """
+import re
 import pandas as pd
 
 
@@ -51,6 +52,10 @@ def format_service_type(titel):
 
     titel_lower = titel.lower()
 
+    # D-10: Sonderformate mit Anfuehrungszeichen direkt uebernehmen
+    if '„' in titel or '"' in titel or '»' in titel:
+        return titel
+
     if 'tauffest' in titel_lower:
         return 'Tauffest'
     elif 'diamantene konfirmation' in titel_lower:
@@ -59,12 +64,28 @@ def format_service_type(titel):
         return 'Goldene Konfirmation'
     elif 'silberne konfirmation' in titel_lower:
         return 'Silberne Konfirmation'
+    # D-08: Konfirmandenprüfung — VOR generischem Konfirmation-Check
+    elif 'konfirmandenprüfung' in titel_lower or 'konfirmandenpruefung' in titel_lower:
+        return 'Gd. m. Konfirmandenprüfung'
+    # D-06: Nummerierte Konfirmation (z.B. "1. Konfirmation")
+    elif re.search(r'(\d+)\.\s*konfirmation', titel_lower):
+        match = re.search(r'(\d+)\.\s*konfirmation', titel_lower)
+        return '{}. Konfirmation'.format(match.group(1))
     elif 'konfirmation' in titel_lower:
         return 'Konfirmation'
+    # D-04: Abendmahl + Taufe kombiniert — VOR den einzelnen Checks
+    elif 'abendmahl' in titel_lower and 'taufe' in titel_lower:
+        return 'Abendmahlgd. m. T.'
     elif 'abendmahl' in titel_lower:
         return 'Gd. m. A.'
     elif 'taufe' in titel_lower:
         return 'Gd. m. T.'
+    # D-07: Popularmusik
+    elif 'popularmusik' in titel_lower:
+        return 'Gd. m. Popularmusik'
+    # D-11: Gemeinschaft
+    elif 'gemeinschaft' in titel_lower:
+        return 'Gd. der Gemeinschaft'
     elif 'abendsegen' in titel_lower:
         return 'Abendsegen'
     elif 'kinderkirche' in titel_lower or 'kinder' in titel_lower:
