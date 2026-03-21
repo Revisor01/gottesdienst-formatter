@@ -101,10 +101,15 @@ def format_service_type(titel):
 def format_pastor(contributor: str) -> str:
     """
     Format pastor name according to Boyens Media standards:
-    - Diakonin/Diakon → Dn./D.
+    - Diakonin → Diakonin (ausgeschrieben)
+    - Diakon → Diakon (ausgeschrieben)
     - Pastorin → Pn.
     - Pastor → P.
-    - Multiple pastors: combine with &
+    - Prädikantin → Prädikantin (ausgeschrieben)
+    - Prädikant → Prädikant (ausgeschrieben)
+    - R. → R. (Referent, Abkuerzung beibehalten)
+    - Multiple pastors: combine with comma (D-18)
+    - & Team: beibehalten (D-19)
     - Special cases: Kirchspiel-Pastor:innen, Konfirmand:innen etc.
     """
     if not contributor:
@@ -112,14 +117,24 @@ def format_pastor(contributor: str) -> str:
 
     name = str(contributor).strip()
 
-    # Handle multiple contributors separated by various delimiters
-    delimiters = [', ', ' & ', ' und ', ' + ', ' / ']
-    contributors = [name]
+    # D-19: "& Team" vor dem Splitten merken und spaeter anhaengen
+    has_team = name.endswith('& Team') or name.endswith('&amp; Team')
+    if has_team:
+        name = name.replace('&amp; Team', '').replace('& Team', '').strip()
 
-    for delimiter in delimiters:
+    # Splitten: erst auf & und und, dann Komma als Fallback
+    contributors = [name]
+    primary_delimiters = [' & ', ' und ', ' + ', ' / ']
+    split_done = False
+    for delimiter in primary_delimiters:
         if delimiter in name:
             contributors = [c.strip() for c in name.split(delimiter)]
+            split_done = True
             break
+
+    # Komma als Fallback-Delimiter (wenn kein & oder und gefunden)
+    if not split_done and ', ' in name:
+        contributors = [c.strip() for c in name.split(', ')]
 
     formatted_contributors = []
 
@@ -135,7 +150,8 @@ def format_pastor(contributor: str) -> str:
 
         # Remove existing prefixes
         prefixes = ['Pastores ', 'Pastor ', 'Pastorin ', 'Pfarrer ', 'P. ', 'Pn. ', 'Ps. ',
-                    'Diakon ', 'Diakonin ', 'D. ', 'Dn. ', 'Prädikant ', 'Prädikantin ']
+                    'Diakon ', 'Diakonin ', 'D. ', 'Dn. ', 'Prädikantin ', 'Prädikant ',
+                    'R. ']
         clean_name = contrib
         for prefix in prefixes:
             if clean_name.startswith(prefix):
@@ -144,9 +160,11 @@ def format_pastor(contributor: str) -> str:
 
         # Determine new prefix based on original text - be more specific in detection
         if 'diakonin' in contrib_lower:
-            formatted_contributors.append("Dn. {}".format(clean_name))
+            # D-15: Diakonin ausgeschrieben
+            formatted_contributors.append("Diakonin {}".format(clean_name))
         elif 'diakon' in contrib_lower:
-            formatted_contributors.append("D. {}".format(clean_name))
+            # D-15: Diakon ausgeschrieben (nicht D.)
+            formatted_contributors.append("Diakon {}".format(clean_name))
         elif 'pastores' in contrib_lower:
             formatted_contributors.append("Ps. {}".format(clean_name))
         elif 'pastorin' in contrib_lower:
@@ -157,10 +175,23 @@ def format_pastor(contributor: str) -> str:
             formatted_contributors.append("Pn. {}".format(clean_name))
         elif 'p.' in contrib_lower:
             formatted_contributors.append("P. {}".format(clean_name))
+        # D-16: Prädikantin vor Prädikant (weil "prädikant" in "prädikantin" enthalten)
+        elif 'prädikantin' in contrib_lower:
+            formatted_contributors.append("Prädikantin {}".format(clean_name))
         elif 'prädikant' in contrib_lower:
             formatted_contributors.append("Prädikant {}".format(clean_name))
+        # D-17: R. als Titel beibehalten
+        elif contrib.startswith('R. '):
+            formatted_contributors.append("R. {}".format(clean_name))
         else:
             # Keep original if unclear - don't assume Pastor
-            formatted_contributors.append(clean_name)
+            formatted_contributors.append(contrib)
 
-    return ' & '.join(formatted_contributors)
+    # D-18: Komma als Trenner (nicht &)
+    result = ', '.join(formatted_contributors)
+
+    # D-19: "& Team" wieder anhaengen
+    if has_team:
+        result += ' & Team'
+
+    return result
