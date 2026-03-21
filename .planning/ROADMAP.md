@@ -39,7 +39,7 @@ Plans:
   5. Orte mit mehreren Kirchen zeigen den Kirchennamen (z.B. "Heide, St.-Jürgen"), Orte mit einer Kirche nur den Ortsnamen
 **Plans:** 2 plans
 Plans:
-- [ ] 02-01-PLAN.md — Formatierungsfunktionen (format_service_type, format_pastor) auf Boyens-Konformitaet bringen
+- [x] 02-01-PLAN.md — Formatierungsfunktionen (format_service_type, format_pastor) auf Boyens-Konformitaet bringen
 - [ ] 02-02-PLAN.md — Output-Assembly: Ort-Sortierung, Multi-Termin-Zusammenfassung, Location-Extraktion
 
 ### Phase 3: Pipeline

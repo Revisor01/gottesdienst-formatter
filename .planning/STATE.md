@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 01-02-PLAN.md — alle Consumer auf neue Module umgestellt, hardcoded Tokens entfernt
-last_updated: "2026-03-21T23:16:33.243Z"
+stopped_at: Completed 02-01-PLAN.md — format_service_type und format_pastor auf Boyens-Standard gebracht
+last_updated: "2026-03-21T23:37:24.074Z"
 progress:
   total_phases: 3
   completed_phases: 1
-  total_plans: 3
-  completed_plans: 3
+  total_plans: 5
+  completed_plans: 4
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-21)
 
 **Core value:** Output muss 1:1 der Boyens-Fließtext-Vorgabe entsprechen — ohne redaktionelle Nacharbeit übernehmbar
-**Current focus:** Phase 01 — stabilisierung
+**Current focus:** Phase 02 — formatierung
 
 ## Current Position
 
-Phase: 2
-Plan: Not started
+Phase: 02 (formatierung) — EXECUTING
+Plan: 2 of 2
 
 ## Performance Metrics
 
@@ -48,6 +48,7 @@ Plan: Not started
 *Updated after each plan completion*
 | Phase 01-stabilisierung P01 | 132s | 3 tasks | 3 files |
 | Phase 01-stabilisierung P02 | 196 | 2 tasks | 5 files |
+| Phase 02-formatierung P01 | 96 | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -61,6 +62,8 @@ Recent decisions affecting current work:
 - [Phase 01-stabilisierung]: format_pastor basiert auf format_boyens_pastor-Logik (vollstaendig mit Delimiter-Splitting) statt simplem app.py-Fallback
 - [Phase 01-stabilisierung]: ORGANIZATIONS-Dict ist leer wenn CHURCHDESK_ORG_IDS nicht gesetzt — kein Fallback auf hardcoded Tokens (SEC-01)
 - [Phase 01-stabilisierung]: web/.env.example mit hardcoded Token aus Juli 2025 mitbereinigt (Rule 1 Auto-fix)
+- [Phase 02-formatierung]: format_service_type Reihenfolge: spezifisch vor generisch (Konfirmandenprüfung vor Konfirmation, Abendmahl+Taufe vor Einzelchecks)
+- [Phase 02-formatierung]: format_pastor Delimiter-Logik: erst & und und, dann Komma als Fallback; Diakon/Diakonin ausgeschrieben; Trennzeichen Komma statt &
 
 ### Pending Todos
 
@@ -73,6 +76,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-21T23:06:14.077Z
-Stopped at: Completed 01-02-PLAN.md — alle Consumer auf neue Module umgestellt, hardcoded Tokens entfernt
+Last session: 2026-03-21T23:37:24.073Z
+Stopped at: Completed 02-01-PLAN.md — format_service_type und format_pastor auf Boyens-Standard gebracht
 Resume file: None
