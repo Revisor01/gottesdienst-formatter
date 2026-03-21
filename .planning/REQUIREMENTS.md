@@ -34,6 +34,12 @@
 - [ ] **TEST-01**: Unit-Tests für alle Formatierungsfunktionen (Datum, Zeit, Gottesdienst-Typ, Pastor-Titel)
 - [ ] **TEST-02**: Test-Fixture mit echtem Boyens-Referenz-Output als Goldstandard
 
+### Deployment
+
+- [ ] **DEPLOY-01**: GitHub Actions Workflow: Build Docker Image und Push zu Container Registry
+- [ ] **DEPLOY-02**: Automatisches Deployment auf Portainer (kein manueller Server-Build mehr)
+- [ ] **DEPLOY-03**: Git Push → Image Build → Portainer Update als vollautomatische Pipeline
+
 ## v2 Requirements
 
 ### Erweiterung
@@ -77,11 +83,14 @@
 | SEC-02 | — | Pending |
 | TEST-01 | — | Pending |
 | TEST-02 | — | Pending |
+| DEPLOY-01 | — | Pending |
+| DEPLOY-02 | — | Pending |
+| DEPLOY-03 | — | Pending |
 
 **Coverage:**
-- v1 requirements: 17 total
+- v1 requirements: 20 total
 - Mapped to phases: 0
-- Unmapped: 17 ⚠️
+- Unmapped: 20 ⚠️
 
 ---
 *Requirements defined: 2026-03-21*
