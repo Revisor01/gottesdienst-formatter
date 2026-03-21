@@ -22,7 +22,7 @@
 - [x] **CODE-01**: Formatierungslogik in einem zentralen Modul (nicht 3x dupliziert über app.py, churchdesk_api.py, standalone-Script)
 - [x] **CODE-02**: Pastor-Formatierung: eine konsolidierte Implementierung statt drei verschiedener
 - [x] **CODE-03**: Klare Schichtentrennung: API-Client / Formatierung / Web-Interface als separate Module
-- [ ] **CODE-04**: Neue ChurchDesk-Organisation hinzufügen erfordert nur Konfiguration, keinen Code-Change
+- [x] **CODE-04**: Neue ChurchDesk-Organisation hinzufügen erfordert nur Konfiguration, keinen Code-Change
 
 ### Sicherheit
 
@@ -78,7 +78,7 @@
 | CODE-01 | Phase 1 | Complete |
 | CODE-02 | Phase 1 | Complete |
 | CODE-03 | Phase 1 | Complete |
-| CODE-04 | Phase 1 | Pending |
+| CODE-04 | Phase 1 | Complete |
 | SEC-01 | Phase 1 | Complete |
 | SEC-02 | Phase 1 | Complete |
 | TEST-01 | Phase 3 | Pending |
