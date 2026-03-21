@@ -21,15 +21,16 @@ Der Output muss 1:1 der Boyens-Fließtext-Vorgabe entsprechen — ohne redaktion
 - ✓ Standort-Extraktion mit Kirchennamen bei Mehrdeutigkeit — existing
 - ✓ Web-Interface mit Download/Clipboard-Funktion — existing
 - ✓ Docker-Deployment auf Produktionsserver — existing
+- ✓ Code-Deduplizierung: Formatierungslogik zentralisiert in web/formatting.py — Phase 1
+- ✓ Saubere Erweiterbarkeit: neue ChurchDesk-Orgs nur per ENV-Vars — Phase 1
+- ✓ API-Tokens aus Quellcode entfernt, ENV-basierte Konfiguration — Phase 1
+- ✓ Pastor-Formatierung konsolidiert: eine Implementierung in web/formatting.py — Phase 1
+- ✓ Saubere Schichtentrennung: API-Client / Formatierung / Web-Interface — Phase 1
 
 ### Active
 
 - [ ] Formatierungs-Output exakt nach Boyens-Vorgabe (alle Abweichungen fixen)
-- [ ] Code-Deduplizierung: Formatierungslogik zentralisieren (3x dupliziert)
-- [ ] Saubere Erweiterbarkeit für weitere Kirchengemeinden (neue ChurchDesk-Orgs)
-- [ ] Hardcoded API-Tokens aus Quellcode entfernen (→ Environment Variables)
 - [ ] Automatisierte Tests für Formatierungsfunktionen
-- [ ] Pastor-Formatierung konsolidieren (3 verschiedene Implementierungen)
 
 ### Out of Scope
 
@@ -79,4 +80,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-21 after initialization*
+*Last updated: 2026-03-22 after Phase 1 completion*
