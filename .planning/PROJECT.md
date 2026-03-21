@@ -27,10 +27,12 @@ Der Output muss 1:1 der Boyens-Fließtext-Vorgabe entsprechen — ohne redaktion
 - ✓ Pastor-Formatierung konsolidiert: eine Implementierung in web/formatting.py — Phase 1
 - ✓ Saubere Schichtentrennung: API-Client / Formatierung / Web-Interface — Phase 1
 
+- ✓ Formatierungs-Output exakt nach Boyens-Vorgabe — Phase 2
+
 ### Active
 
-- [ ] Formatierungs-Output exakt nach Boyens-Vorgabe (alle Abweichungen fixen)
 - [ ] Automatisierte Tests für Formatierungsfunktionen
+- [ ] CI/CD Pipeline (GitHub Actions → Portainer)
 
 ### Out of Scope
 
@@ -80,4 +82,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-22 after Phase 1 completion*
+*Last updated: 2026-03-22 after Phase 2 completion*
