@@ -6,7 +6,7 @@ Brownfield-Stabilisierung eines funktionierenden, aber technisch verschuldeten F
 
 ## Phases
 
-- [ ] **Phase 1: Stabilisierung** - Sicherheitslücken schließen und Codebasis bereinigen (Basis für alles Folgende)
+- [x] **Phase 1: Stabilisierung** - Sicherheitslücken schließen und Codebasis bereinigen (Basis für alles Folgende) (completed 2026-03-21)
 - [ ] **Phase 2: Formatierung** - Output exakt nach Boyens-Vorgabe bringen (Kernzweck des Projekts)
 - [ ] **Phase 3: Pipeline** - Automatisiertes Deployment und Testabdeckung (sicherer Dauerbetrieb)
 
@@ -21,10 +21,10 @@ Brownfield-Stabilisierung eines funktionierenden, aber technisch verschuldeten F
   2. Formatierungslogik (Datum, Zeit, Gottesdienst-Typ, Pastor-Titel) existiert in einem zentralen Modul, das von allen Codepfaden importiert wird
   3. Eine neue ChurchDesk-Organisation wird durch Hinzufügen eines Eintrags in Konfiguration (kein Code-Change) eingebunden
   4. Es gibt eine einzige `format_pastor()`-Funktion — die drei bisherigen Varianten sind entfernt
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 Plans:
 - [x] 01-01-PLAN.md — Zentrale Module (formatting.py, config.py) erstellen und app.py bereinigen
-- [ ] 01-02-PLAN.md — Verbleibende Consumer umstellen (churchdesk_api.py, docker-compose, index.html, Standalone-Script)
+- [x] 01-02-PLAN.md — Verbleibende Consumer umstellen (churchdesk_api.py, docker-compose, index.html, Standalone-Script)
 
 ### Phase 2: Formatierung
 **Goal**: Der generierte Fließtext ist 1:1 mit der Boyens-Vorgabe — ohne redaktionelle Nacharbeit übernehmbar
@@ -53,6 +53,6 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Stabilisierung | 1/2 | In Progress|  |
+| 1. Stabilisierung | 2/2 | Complete   | 2026-03-21 |
 | 2. Formatierung | 0/? | Not started | - |
 | 3. Pipeline | 0/? | Not started | - |

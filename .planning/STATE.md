@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 01-01-PLAN.md — formatting.py und config.py erstellt, app.py bereinigt
-last_updated: "2026-03-21T23:01:12.895Z"
+stopped_at: Completed 01-02-PLAN.md — alle Consumer auf neue Module umgestellt, hardcoded Tokens entfernt
+last_updated: "2026-03-21T23:06:14.079Z"
 progress:
   total_phases: 3
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 2
-  completed_plans: 1
+  completed_plans: 2
 ---
 
 # Project State
@@ -47,6 +47,7 @@ Plan: 2 of 2
 
 *Updated after each plan completion*
 | Phase 01-stabilisierung P01 | 132s | 3 tasks | 3 files |
+| Phase 01-stabilisierung P02 | 196 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -59,6 +60,7 @@ Recent decisions affecting current work:
 - Boyens-Fließtext als Referenzformat: Offizielle Vorgabe vom Chefredakteur, nicht verhandelbar
 - [Phase 01-stabilisierung]: format_pastor basiert auf format_boyens_pastor-Logik (vollstaendig mit Delimiter-Splitting) statt simplem app.py-Fallback
 - [Phase 01-stabilisierung]: ORGANIZATIONS-Dict ist leer wenn CHURCHDESK_ORG_IDS nicht gesetzt — kein Fallback auf hardcoded Tokens (SEC-01)
+- [Phase 01-stabilisierung]: web/.env.example mit hardcoded Token aus Juli 2025 mitbereinigt (Rule 1 Auto-fix)
 
 ### Pending Todos
 
@@ -71,6 +73,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-21T23:01:12.893Z
-Stopped at: Completed 01-01-PLAN.md — formatting.py und config.py erstellt, app.py bereinigt
+Last session: 2026-03-21T23:06:14.077Z
+Stopped at: Completed 01-02-PLAN.md — alle Consumer auf neue Module umgestellt, hardcoded Tokens entfernt
 Resume file: None
