@@ -7,15 +7,15 @@
 
 ### Formatierung
 
-- [ ] **FMT-01**: Output folgt exakt der Boyens-Fließtext-Struktur (Datum-Überschrift, dann Orte alphabetisch, keine Tabellen)
-- [ ] **FMT-02**: Zeitformat korrekt: "9.30 Uhr" (mit Punkt), "17 Uhr" (ohne Minuten bei vollen Stunden)
-- [ ] **FMT-03**: Datumsformat korrekt: "Sonnabend, 5. April" (Sonnabend statt Samstag, kein führendes Null)
-- [ ] **FMT-04**: Gottesdienst-Typ-Abkürzungen vollständig: Gd., Gd. m. A., Gd. m. T., Familiengd., Konfirmation, Abendmahlgd. m. T., Gd. m. Popularmusik, Gd. m. Konfirmandenprüfung
-- [ ] **FMT-05**: Pastor-Titel vollständig: P., Pn., Diakon, Prädikantin, R. (nicht nur P./Pn.)
-- [ ] **FMT-06**: Bei Orten mit mehreren Kirchen den Kirchennamen angeben (z.B. "Heide, St.-Jürgen" vs. "Heide, Auferstehungskirche")
-- [ ] **FMT-07**: Mehrere Termine am gleichen Ort in einer Zeile möglich (z.B. "11 Uhr, Gd. m. A., anschl. Kirchcafé; 15.30 Uhr, Kinderkirche")
-- [ ] **FMT-08**: Zusatzinfos wie "anschl. Kirchcafé", "anschl. Kirchenkaffee" korrekt übernommen
-- [ ] **FMT-09**: Mehrere Pastoren pro Gottesdienst korrekt formatiert (z.B. "Pn. Christ, Pn. Hoffmann, P. Soost")
+- [x] **FMT-01**: Output folgt exakt der Boyens-Fließtext-Struktur (Datum-Überschrift, dann Orte alphabetisch, keine Tabellen)
+- [x] **FMT-02**: Zeitformat korrekt: "9.30 Uhr" (mit Punkt), "17 Uhr" (ohne Minuten bei vollen Stunden)
+- [x] **FMT-03**: Datumsformat korrekt: "Sonnabend, 5. April" (Sonnabend statt Samstag, kein führendes Null)
+- [x] **FMT-04**: Gottesdienst-Typ-Abkürzungen vollständig: Gd., Gd. m. A., Gd. m. T., Familiengd., Konfirmation, Abendmahlgd. m. T., Gd. m. Popularmusik, Gd. m. Konfirmandenprüfung
+- [x] **FMT-05**: Pastor-Titel vollständig: P., Pn., Diakon, Prädikantin, R. (nicht nur P./Pn.)
+- [x] **FMT-06**: Bei Orten mit mehreren Kirchen den Kirchennamen angeben (z.B. "Heide, St.-Jürgen" vs. "Heide, Auferstehungskirche")
+- [x] **FMT-07**: Mehrere Termine am gleichen Ort in einer Zeile möglich (z.B. "11 Uhr, Gd. m. A., anschl. Kirchcafé; 15.30 Uhr, Kinderkirche")
+- [x] **FMT-08**: Zusatzinfos wie "anschl. Kirchcafé", "anschl. Kirchenkaffee" korrekt übernommen
+- [x] **FMT-09**: Mehrere Pastoren pro Gottesdienst korrekt formatiert (z.B. "Pn. Christ, Pn. Hoffmann, P. Soost")
 
 ### Code-Qualität
 
@@ -66,15 +66,15 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FMT-01 | Phase 2 | Pending |
-| FMT-02 | Phase 2 | Pending |
-| FMT-03 | Phase 2 | Pending |
-| FMT-04 | Phase 2 | Pending |
-| FMT-05 | Phase 2 | Pending |
-| FMT-06 | Phase 2 | Pending |
-| FMT-07 | Phase 2 | Pending |
-| FMT-08 | Phase 2 | Pending |
-| FMT-09 | Phase 2 | Pending |
+| FMT-01 | Phase 2 | Complete |
+| FMT-02 | Phase 2 | Complete |
+| FMT-03 | Phase 2 | Complete |
+| FMT-04 | Phase 2 | Complete |
+| FMT-05 | Phase 2 | Complete |
+| FMT-06 | Phase 2 | Complete |
+| FMT-07 | Phase 2 | Complete |
+| FMT-08 | Phase 2 | Complete |
+| FMT-09 | Phase 2 | Complete |
 | CODE-01 | Phase 1 | Complete |
 | CODE-02 | Phase 1 | Complete |
 | CODE-03 | Phase 1 | Complete |
