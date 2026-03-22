@@ -84,8 +84,14 @@ None yet.
 - API-Tokens sind im Git-History kompromittiert — müssen nach SEC-01 rotiert werden
 - Büsum/Urlauberseelsorge-Mapping ist fragil (zuletzt zweimal gebrochen) — Tests in Phase 3 sind kritisch
 
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260322-dpr | Fix location extraction: remove Kirche suffix, fix separators, strip church names | 2026-03-22 | e668a72 | [260322-dpr](./quick/260322-dpr-fix-location-extraction-remove-kirche-su/) |
+
 ## Session Continuity
 
-Last session: 2026-03-22T07:40:21.600Z
-Stopped at: Checkpoint 03-02 Task 2: Server-Migration — wartet auf menschliche Verifikation
+Last session: 2026-03-22
+Stopped at: Completed quick task 260322-dpr: Location extraction fixes
 Resume file: None
