@@ -81,9 +81,9 @@ def _match_service_type(titel):
         return 'Gd. der Gemeinschaft'
     elif 'abendsegen' in titel_lower:
         return 'Abendsegen'
-    elif 'kinderkirche' in titel_lower or 'kinder' in titel_lower:
+    elif 'kinderkirche' in titel_lower or 'kindergottesdienst' in titel_lower:
         return 'Kinderkirche'
-    elif 'familie' in titel_lower:
+    elif 'familiengottesdienst' in titel_lower or 'familiengd' in titel_lower:
         return 'Familiengd.'
     elif 'andacht' in titel_lower:
         return 'Andacht'
@@ -92,27 +92,13 @@ def _match_service_type(titel):
 
 
 def format_service_type(titel):
-    """Formatiert den Gottesdiensttyp"""
+    """Formatiert den Gottesdiensttyp — strikt nach Boyens, nur Typ-Abkürzung, keine Untertitel."""
     if not titel:
         return "Gd."
 
-    # D-10: Sonderformate mit Anfuehrungszeichen direkt uebernehmen (vor allem anderen)
-    if '„' in titel or '"' in titel or '»' in titel:
-        return titel
-
-    # FMT-10: Doppelpunkt-Split fuer Typ + Untertitel
+    # Bei Doppelpunkt: nur den Teil vor dem Doppelpunkt für Typ-Matching nutzen
     if ':' in titel:
-        parts = titel.split(':', 1)
-        typ_teil = parts[0].strip()
-        untertitel = parts[1].strip() if len(parts) > 1 else ''
-
-        # Typ-Teil durch normales Matching schicken
-        typ_formatiert = _match_service_type(typ_teil)
-
-        if untertitel:
-            return '{} {}'.format(typ_formatiert, untertitel)
-        else:
-            return typ_formatiert
+        titel = titel.split(':', 1)[0].strip()
 
     return _match_service_type(titel)
 

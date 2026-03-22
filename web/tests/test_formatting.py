@@ -155,42 +155,25 @@ def test_extract_boyens_location_display(location_name, expected):
 
 
 # ---------------------------------------------------------------------------
-# format_service_type — Sonderformat (Kolon-Titel)
+# format_service_type — Strikt Boyens: nur Typ, keine Untertitel
 # ---------------------------------------------------------------------------
 
 @pytest.mark.parametrize("titel, expected", [
-    # FMT-10: Kolon-Titel — Typ + Untertitel (Untertitel wird beibehalten)
-    ("Gottesdienst mit Tisch-Abendmahl: Brot des Lebens", "Gd. m. A. Brot des Lebens"),
-    # "zum Karfreitag mit Abendmahl" — Abendmahl im Titel ohne Kolon
-    ("Gottesdienst zum Karfreitag mit Abendmahl",          "Gd. m. A."),
-    # Normaler Sondertitel ohne Sondertyp
-    ("Gottesdienst zum Ostersonntag",                      "Gd."),
-])
-def test_format_service_type_sonderformat(titel, expected):
-    assert format_service_type(titel) == expected
-
-
-# ---------------------------------------------------------------------------
-# FMT-10: Doppelpunkt-Titel — Typ + Untertitel
-# ---------------------------------------------------------------------------
-
-@pytest.mark.parametrize("titel, expected", [
-    # Abendmahl-Typ + Untertitel
-    ("Gottesdienst mit Abendmahl: Erntedank",               "Gd. m. A. Erntedank"),
-    # Taufe-Typ + Untertitel
-    ("Gottesdienst mit Taufe: Familiengottesdienst",         "Gd. m. T. Familiengottesdienst"),
-    # Abendmahl+Taufe kombiniert + Untertitel
-    ("Gottesdienst mit Abendmahl und Taufe: Pfingsten",      "Abendmahlgd. m. T. Pfingsten"),
-    # Nur "Gottesdienst" vor Doppelpunkt -> "Gd." + Untertitel
-    ("Gottesdienst: Lichterfest",                            "Gd. Lichterfest"),
-    # Doppelpunkt ohne Untertitel -> Typ allein
+    # Doppelpunkt-Titel: nur Typ vor dem Doppelpunkt matchen, Untertitel wegwerfen
+    ("Gottesdienst mit Tisch-Abendmahl: Brot des Lebens",   "Gd. m. A."),
+    ("Gottesdienst mit Abendmahl: Erntedank",               "Gd. m. A."),
+    ("Gottesdienst mit Taufe: Familiengottesdienst",         "Gd. m. T."),
+    ("Gottesdienst mit Abendmahl und Taufe: Pfingsten",     "Abendmahlgd. m. T."),
+    ("Gottesdienst: Lichterfest",                            "Gd."),
     ("Gottesdienst:",                                        "Gd."),
+    # Abendmahl im Titel ohne Doppelpunkt
+    ("Gottesdienst zum Karfreitag mit Abendmahl",           "Gd. m. A."),
+    # Normaler Sondertitel ohne Sondertyp
+    ("Gottesdienst zum Ostersonntag",                       "Gd."),
+    # Anführungszeichen-Titel: auch nur Typ matchen, nicht 1:1 übernehmen
+    ('\u201eUnterwegs\u201c Brotzeit: Die Wohnzimmerkirche', "Gd."),
+    # Glaube und Gabel etc. — alles nur Gd.
+    ("Glaube und Gabel - Die Familienkirche zum Anbeißen",  "Gd."),
 ])
-def test_fmt10_doppelpunkt_split(titel, expected):
+def test_format_service_type_strikt_boyens(titel, expected):
     assert format_service_type(titel) == expected
-
-
-def test_fmt10_anfuehrungszeichen_unveraendert():
-    """Titel mit typografischen Anfuehrungszeichen werden 1:1 uebernommen."""
-    titel = '\u201eUnterwegs\u201c Brotzeit: Die Wohnzimmerkirche in Heide (Sued)'
-    assert format_service_type(titel) == titel
