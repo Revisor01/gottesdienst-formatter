@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
-from wtforms.validators import DataRequired, Length, ValidationError
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField, TextAreaField
+from wtforms.validators import DataRequired, Length, ValidationError, NumberRange, Optional
 from models import User
 
 
@@ -25,3 +25,12 @@ class EditUserForm(FlaskForm):
         # Leeres Passwort ist OK (= nicht aendern), aber wenn gesetzt dann min 8
         if field.data and len(field.data) < 8:
             raise ValidationError('Mindestens 8 Zeichen')
+
+
+class OrganizationForm(FlaskForm):
+    id = IntegerField('ChurchDesk Org-ID', validators=[DataRequired(), NumberRange(min=1)])
+    name = StringField('Name', validators=[DataRequired(), Length(max=256)])
+    token = StringField('API-Token', validators=[DataRequired()])
+    description = TextAreaField('Beschreibung', validators=[Optional(), Length(max=1024)])
+    is_active = BooleanField('Aktiv')
+    submit = SubmitField('Speichern')
