@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 02-02-PLAN.md — Output-Assembly und Location-Extraktion auf Boyens-Standard gebracht
-last_updated: "2026-03-21T23:45:13.507Z"
+stopped_at: Completed 03-01-PLAN.md — pytest-Infrastruktur und Goldstandard-Tests
+last_updated: "2026-03-22T07:37:16.316Z"
 progress:
   total_phases: 3
   completed_phases: 2
-  total_plans: 5
-  completed_plans: 5
+  total_plans: 7
+  completed_plans: 6
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-21)
 
 **Core value:** Output muss 1:1 der Boyens-Fließtext-Vorgabe entsprechen — ohne redaktionelle Nacharbeit übernehmbar
-**Current focus:** Phase 02 — formatierung
+**Current focus:** Phase 03 — pipeline
 
 ## Current Position
 
-Phase: 3
-Plan: Not started
+Phase: 03 (pipeline) — EXECUTING
+Plan: 2 of 2
 
 ## Performance Metrics
 
@@ -50,6 +50,7 @@ Plan: Not started
 | Phase 01-stabilisierung P02 | 196 | 2 tasks | 5 files |
 | Phase 02-formatierung P01 | 96 | 2 tasks | 1 files |
 | Phase 02-formatierung P02 | 10min | 2 tasks | 2 files |
+| Phase 03-pipeline P01 | 173s | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -68,6 +69,8 @@ Recent decisions affecting current work:
 - [Phase 02-formatierung]: jeweils-Logik nur bei identischem Pastor UND mehr als einem Eintrag am selben Ort
 - [Phase 02-formatierung]: _build_location_entries() als geteilte Hilfsfunktion fuer Excel- und ChurchDesk-Pfad
 - [Phase 02-formatierung]: Heide -Kirche Suffix entfernen; Brunsbüttel Kirchenname beibehalten (D-27)
+- [Phase 03-pipeline]: pyproject.toml pythonpath=['.'] loest Import-Problem fuer pytest ohne sys.path-Hacks
+- [Phase 03-pipeline]: Goldstandard-Fixture endet mit einfachem \n — entspricht join()-Output ohne doppelten Abschluss
 
 ### Pending Todos
 
@@ -80,6 +83,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-21T23:41:34.346Z
-Stopped at: Completed 02-02-PLAN.md — Output-Assembly und Location-Extraktion auf Boyens-Standard gebracht
+Last session: 2026-03-22T07:37:16.314Z
+Stopped at: Completed 03-01-PLAN.md — pytest-Infrastruktur und Goldstandard-Tests
 Resume file: None

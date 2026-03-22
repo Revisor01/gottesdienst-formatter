@@ -51,9 +51,9 @@ Plans:
   2. Watchtower holt das neue Image automatisch und deployed ohne manuellen `ssh`- oder `docker compose`-Befehl
   3. Formatierungsfunktionen fuer Datum, Zeit, Gottesdienst-Typ und Pastor-Titel haben Unit-Tests — ein Fehler in der Pipeline schlaegt fehl, bevor er auf Produktion geht
   4. Ein Test-Fixture mit echtem Boyens-Referenz-Output existiert und wird als Goldstandard in der CI-Pipeline geprueft
-**Plans:** 2 plans
+**Plans:** 1/2 plans executed
 Plans:
-- [ ] 03-01-PLAN.md — Unit-Tests und Goldstandard-Fixture fuer Formatierungsfunktionen
+- [x] 03-01-PLAN.md — Unit-Tests und Goldstandard-Fixture fuer Formatierungsfunktionen
 - [ ] 03-02-PLAN.md — GitHub Actions CI/CD-Pipeline und Produktions-Compose mit Watchtower
 
 ## Progress
@@ -62,4 +62,4 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Stabilisierung | 3/3 | Complete   | 2026-03-21 |
 | 2. Formatierung | 2/2 | Complete | 2026-03-21 |
-| 3. Pipeline | 0/2 | In Progress | - |
+| 3. Pipeline | 1/2 | In Progress|  |

@@ -31,8 +31,8 @@
 
 ### Testing
 
-- [ ] **TEST-01**: Unit-Tests für alle Formatierungsfunktionen (Datum, Zeit, Gottesdienst-Typ, Pastor-Titel)
-- [ ] **TEST-02**: Test-Fixture mit echtem Boyens-Referenz-Output als Goldstandard
+- [x] **TEST-01**: Unit-Tests für alle Formatierungsfunktionen (Datum, Zeit, Gottesdienst-Typ, Pastor-Titel)
+- [x] **TEST-02**: Test-Fixture mit echtem Boyens-Referenz-Output als Goldstandard
 
 ### Deployment
 
@@ -81,8 +81,8 @@
 | CODE-04 | Phase 1 | Complete |
 | SEC-01 | Phase 1 | Complete |
 | SEC-02 | Phase 1 | Complete |
-| TEST-01 | Phase 3 | Pending |
-| TEST-02 | Phase 3 | Pending |
+| TEST-01 | Phase 3 | Complete |
+| TEST-02 | Phase 3 | Complete |
 | DEPLOY-01 | Phase 3 | Pending |
 | DEPLOY-02 | Phase 3 | Pending |
 | DEPLOY-03 | Phase 3 | Pending |
