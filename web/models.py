@@ -78,3 +78,16 @@ class ServiceTypeMapping(db.Model):
 
     def __repr__(self):
         return '<ServiceTypeMapping {} -> {}>'.format(self.keyword, self.output_label)
+
+
+class Pastor(db.Model):
+    __tablename__ = 'pastors'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    first_name = db.Column(db.String(256), nullable=True)   # optional, fuer Disambiguierung
+    last_name = db.Column(db.String(256), nullable=False)   # Nachname fuer Lookup
+    title = db.Column(db.String(64), nullable=False)        # Boyens-Abkuerzung: "P.", "Pn.", etc.
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+
+    def __repr__(self):
+        return '<Pastor {} {} {}>'.format(self.title, self.first_name or '', self.last_name)
