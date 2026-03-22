@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 05-03-PLAN.md
-last_updated: "2026-03-22T12:10:52.412Z"
+stopped_at: Completed 05-02-PLAN.md
+last_updated: "2026-03-22T12:12:59.393Z"
 progress:
   total_phases: 6
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 14
-  completed_plans: 13
+  completed_plans: 14
 ---
 
 # Project State
@@ -57,6 +57,7 @@ Plan: 3 of 3
 | Phase 04-fundament-auth P04 | 507 | 2 tasks | 8 files |
 | Phase 05-ui-makeover-formatierung P01 | 31536349 | 2 tasks | 8 files |
 | Phase 05-ui-makeover-formatierung P03 | 480 | 2 tasks | 4 files |
+| Phase 05-ui-makeover-formatierung P02 | 600 | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -99,6 +100,7 @@ Recent decisions affecting current work:
 - [Phase 05-ui-makeover-formatierung]: _match_service_type() als Hilfsfunktion extrahiert: FMT-10 Doppelpunkt-Split sauber getrennt, Anfuehrungszeichen-Check bleibt erste Prioritaet
 - [Phase 05-ui-makeover-formatierung]: FontAwesome durch inline SVG (Heroicons-Style) ersetzt — keine externe Icon-Abhaengigkeit
 - [Phase 05-ui-makeover-formatierung]: Tailwind-Tabellen Pattern: card overflow-hidden > overflow-x-auto > table.w-full
+- [Phase 05-ui-makeover-formatierung]: format_service_type(None) gibt 'Gd.' zurueck — konsistent mit 'unbekannter Typ = Standard-Gottesdienst' Semantik
 
 ### Critical Pitfalls for Phase 4
 
@@ -124,7 +126,7 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-22T12:10:52.410Z
-Stopped at: Completed 05-03-PLAN.md
+Last session: 2026-03-22T12:12:59.390Z
+Stopped at: Completed 05-02-PLAN.md
 Resume file: None
 Next action: `/gsd:plan-phase 4`

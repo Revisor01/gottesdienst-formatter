@@ -12,7 +12,7 @@ Milestone v2.0 baut auf dieser Basis auf und macht aus dem Formatter-Tool eine v
 - [x] **Phase 2: Formatierung** - Output exakt nach Boyens-Vorgabe bringen (Kernzweck des Projekts) (completed 2026-03-21)
 - [x] **Phase 3: Pipeline** - Automatisiertes Deployment und Testabdeckung (sicherer Dauerbetrieb) (completed 2026-03-22)
 - [x] **Phase 4: Fundament + Auth** - App Factory, Datenbank und Login (Voraussetzung für alle v2.0-Features) (completed 2026-03-22)
-- [ ] **Phase 5: UI Makeover + Formatierung** - Grünes Interface, Excel-Entfernung und erweitertes Sonderformat-Parsing
+- [x] **Phase 5: UI Makeover + Formatierung** - Grünes Interface, Excel-Entfernung und erweitertes Sonderformat-Parsing (completed 2026-03-22)
 - [ ] **Phase 6: Settings + Auto-Mail** - User-Einstellungen, SMTP-Versand und automatischer Monatsjob
 
 ## Phase Details
@@ -87,10 +87,10 @@ Plans:
   2. Der Excel-Upload-Bereich ist nicht mehr sichtbar oder erreichbar — die einzige Datenquelle ist die ChurchDesk-API
   3. Der formatierte Text wird als Vorschau im Browser angezeigt, bevor er heruntergeladen oder kopiert wird; Warnungen bei erkannten Problemen erscheinen sichtbar oberhalb des Textes
   4. Ein Gottesdienst-Titel wie "Gottesdienst mit Abendmahl: Erntedank" erzeugt "Gd. m. A. Erntedank" im Output — Sonderformat und Untertitel werden korrekt kombiniert
-**Plans:** 2/3 plans executed
+**Plans:** 3/3 plans complete
 Plans:
 - [x] 05-01-PLAN.md — Tailwind CSS CLI Setup, base.html Sidebar-Layout, FMT-10 Sonderformat-Parsing
-- [ ] 05-02-PLAN.md — Excel-Code entfernen, index.html und result.html Tailwind-Redesign
+- [x] 05-02-PLAN.md — Excel-Code entfernen, index.html und result.html Tailwind-Redesign
 - [x] 05-03-PLAN.md — churchdesk_events, login und admin Templates Tailwind-Redesign
 
 ### Phase 6: Settings + Auto-Mail
@@ -112,5 +112,5 @@ Plans:
 | 2. Formatierung | 2/2 | Complete | 2026-03-21 |
 | 3. Pipeline | 2/2 | Complete | 2026-03-22 |
 | 4. Fundament + Auth | 4/4 | Complete   | 2026-03-22 |
-| 5. UI Makeover + Formatierung | 2/3 | In Progress|  |
+| 5. UI Makeover + Formatierung | 3/3 | Complete   | 2026-03-22 |
 | 6. Settings + Auto-Mail | 0/? | Not started | - |

@@ -25,8 +25,8 @@
 
 - [x] **UI-01**: Web-Interface Makeover mit Tailwind CSS (Grün als Primärfarbe)
 - [x] **UI-02**: Responsive Layout für Desktop und Tablet
-- [ ] **UI-03**: Vorschau des formatierten Textes vor Download mit Warnungen bei Problemen
-- [ ] **UI-04**: Excel-Upload-Funktion komplett entfernen (nur noch ChurchDesk-API)
+- [x] **UI-03**: Vorschau des formatierten Textes vor Download mit Warnungen bei Problemen
+- [x] **UI-04**: Excel-Upload-Funktion komplett entfernen (nur noch ChurchDesk-API)
 
 ### Settings
 
@@ -80,8 +80,8 @@
 | AUTH-05 | Phase 4 | Complete |
 | UI-01 | Phase 5 | Complete |
 | UI-02 | Phase 5 | Complete |
-| UI-03 | Phase 5 | Pending |
-| UI-04 | Phase 5 | Pending |
+| UI-03 | Phase 5 | Complete |
+| UI-04 | Phase 5 | Complete |
 | FMT-10 | Phase 5 | Complete |
 | SET-01 | Phase 6 | Pending |
 | SET-02 | Phase 6 | Pending |
