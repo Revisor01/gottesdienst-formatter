@@ -185,8 +185,11 @@
 
 <!-- Organisationen-Tab -->
 <div id="tab-orgs" class="hidden">
-  <div class="mb-4">
-    <p class="text-sm text-gray-500">Konfigurierte ChurchDesk-Organisationen (readonly). Aenderungen erfordern Anpassung der Environment-Variablen.</p>
+  <div class="mb-4 flex items-center justify-between">
+    <p class="text-sm text-gray-500">Konfigurierte ChurchDesk-Organisationen.</p>
+    {% if current_user.is_admin %}
+    <a href="{{ url_for('admin.organizations') }}" class="btn-primary text-sm">Organisationen verwalten</a>
+    {% endif %}
   </div>
   {% if organizations %}
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -202,7 +205,10 @@
   </div>
   {% else %}
   <div class="card p-6 text-center text-gray-400 text-sm">
-    Keine Organisationen konfiguriert. ChurchDesk-Organisationen werden ueber Environment-Variablen eingerichtet.
+    Keine aktiven Organisationen konfiguriert.
+    {% if current_user.is_admin %}
+    <a href="{{ url_for('admin.organizations') }}" class="text-primary-600 underline ml-1">Organisationen verwalten</a>
+    {% endif %}
   </div>
   {% endif %}
 </div>
