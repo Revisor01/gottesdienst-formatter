@@ -81,6 +81,10 @@ def create_app(test_config=None):
         db.session.commit()
         click.echo('Admin-Benutzer "{}" erstellt.'.format(username))
 
+    # APScheduler initialisieren (MAIL-04: Single-Worker-Constraint via Gunicorn --workers 1)
+    from scheduler import init_scheduler
+    init_scheduler(app)
+
     return app
 
 
