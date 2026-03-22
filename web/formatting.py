@@ -14,16 +14,20 @@ _custom_mappings = []
 def load_custom_mappings(app):
     """Laedt Custom-Typ-Zuordnungen aus der DB und speichert sie im Modul-Cache."""
     global _custom_mappings
-    with app.app_context():
-        from models import ServiceTypeMapping
-        mappings = (ServiceTypeMapping.query
-                    .filter_by(is_active=True)
-                    .order_by(ServiceTypeMapping.priority.desc())
-                    .all())
-        _custom_mappings = [
-            {'keyword': m.keyword.lower(), 'output_label': m.output_label}
-            for m in mappings
-        ]
+    try:
+        with app.app_context():
+            from models import ServiceTypeMapping
+            mappings = (ServiceTypeMapping.query
+                        .filter_by(is_active=True)
+                        .order_by(ServiceTypeMapping.priority.desc())
+                        .all())
+            _custom_mappings = [
+                {'keyword': m.keyword.lower(), 'output_label': m.output_label}
+                for m in mappings
+            ]
+    except Exception:
+        # Tabelle existiert noch nicht (Tests, erste Migration)
+        _custom_mappings = []
 
 
 def reload_custom_mappings(app):
