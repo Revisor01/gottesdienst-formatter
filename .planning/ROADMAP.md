@@ -43,20 +43,23 @@ Plans:
 - [x] 02-02-PLAN.md — Output-Assembly: Ort-Sortierung, Multi-Termin-Zusammenfassung, Location-Extraktion
 
 ### Phase 3: Pipeline
-**Goal**: Ein Git-Push löst automatisch Image-Build und Deployment aus — kein manueller Server-Zugriff mehr nötig; Formatierungslogik ist durch Tests abgesichert
+**Goal**: Ein Git-Push loest automatisch Image-Build und Deployment aus — kein manueller Server-Zugriff mehr noetig; Formatierungslogik ist durch Tests abgesichert
 **Depends on**: Phase 2
 **Requirements**: TEST-01, TEST-02, DEPLOY-01, DEPLOY-02, DEPLOY-03
 **Success Criteria** (what must be TRUE):
-  1. Ein `git push` auf `main` triggert GitHub Actions, baut ein Docker-Image und pusht es in eine Container Registry
-  2. Portainer holt das neue Image automatisch und deployt ohne manuellen `ssh`- oder `docker compose`-Befehl
-  3. Formatierungsfunktionen für Datum, Zeit, Gottesdienst-Typ und Pastor-Titel haben Unit-Tests — ein Fehler in der Pipeline schlägt fehl, bevor er auf Produktion geht
-  4. Ein Test-Fixture mit echtem Boyens-Referenz-Output existiert und wird als Goldstandard in der CI-Pipeline geprüft
-**Plans**: TBD
+  1. Ein `git push` auf `main` triggert GitHub Actions, baut ein Docker-Image und pusht es in eine Container Registry (ghcr.io)
+  2. Watchtower holt das neue Image automatisch und deployed ohne manuellen `ssh`- oder `docker compose`-Befehl
+  3. Formatierungsfunktionen fuer Datum, Zeit, Gottesdienst-Typ und Pastor-Titel haben Unit-Tests — ein Fehler in der Pipeline schlaegt fehl, bevor er auf Produktion geht
+  4. Ein Test-Fixture mit echtem Boyens-Referenz-Output existiert und wird als Goldstandard in der CI-Pipeline geprueft
+**Plans:** 2 plans
+Plans:
+- [ ] 03-01-PLAN.md — Unit-Tests und Goldstandard-Fixture fuer Formatierungsfunktionen
+- [ ] 03-02-PLAN.md — GitHub Actions CI/CD-Pipeline und Produktions-Compose mit Watchtower
 
 ## Progress
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Stabilisierung | 3/3 | Complete   | 2026-03-21 |
-| 2. Formatierung | 0/2 | In Progress | - |
-| 3. Pipeline | 0/? | Not started | - |
+| 2. Formatierung | 2/2 | Complete | 2026-03-21 |
+| 3. Pipeline | 0/2 | In Progress | - |
