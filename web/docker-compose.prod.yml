@@ -1,0 +1,40 @@
+services:
+  gottesdienst-formatter:
+    image: ghcr.io/revisor01/gottesdienst-formatter:latest
+    container_name: gottesdienst-formatter
+    ports:
+      - "5001:5000"
+    volumes:
+      - ./uploads:/app/uploads
+    restart: unless-stopped
+    environment:
+      - FLASK_ENV=production
+      - FLASK_DEBUG=false
+      - SECRET_KEY=${SECRET_KEY}
+      - CHURCHDESK_ORG_IDS=${CHURCHDESK_ORG_IDS}
+      - CHURCHDESK_ORG_2596_NAME=${CHURCHDESK_ORG_2596_NAME}
+      - CHURCHDESK_ORG_2596_TOKEN=${CHURCHDESK_ORG_2596_TOKEN}
+      - CHURCHDESK_ORG_6572_NAME=${CHURCHDESK_ORG_6572_NAME}
+      - CHURCHDESK_ORG_6572_TOKEN=${CHURCHDESK_ORG_6572_TOKEN}
+      - CHURCHDESK_ORG_2719_NAME=${CHURCHDESK_ORG_2719_NAME}
+      - CHURCHDESK_ORG_2719_TOKEN=${CHURCHDESK_ORG_2719_TOKEN}
+      - CHURCHDESK_ORG_2725_NAME=${CHURCHDESK_ORG_2725_NAME}
+      - CHURCHDESK_ORG_2725_TOKEN=${CHURCHDESK_ORG_2725_TOKEN}
+      - CHURCHDESK_ORG_2729_NAME=${CHURCHDESK_ORG_2729_NAME}
+      - CHURCHDESK_ORG_2729_TOKEN=${CHURCHDESK_ORG_2729_TOKEN}
+      - CHURCHDESK_ORG_2596_DESCRIPTION=${CHURCHDESK_ORG_2596_DESCRIPTION:-}
+      - CHURCHDESK_ORG_6572_DESCRIPTION=${CHURCHDESK_ORG_6572_DESCRIPTION:-}
+      - CHURCHDESK_ORG_2719_DESCRIPTION=${CHURCHDESK_ORG_2719_DESCRIPTION:-}
+      - CHURCHDESK_ORG_2725_DESCRIPTION=${CHURCHDESK_ORG_2725_DESCRIPTION:-}
+      - CHURCHDESK_ORG_2729_DESCRIPTION=${CHURCHDESK_ORG_2729_DESCRIPTION:-}
+
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower-gd
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WATCHTOWER_POLL_INTERVAL=300
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_INCLUDE_STOPPED=false
+    restart: unless-stopped
