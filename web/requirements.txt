@@ -7,3 +7,5 @@ Flask-Migrate==4.0.7
 Flask-Login==0.6.3
 Flask-WTF==1.2.2
 gunicorn==21.2.0
+cryptography==42.0.5
+APScheduler==3.10.4

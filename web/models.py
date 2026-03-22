@@ -33,3 +33,22 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
+
+
+class UserSettings(db.Model):
+    __tablename__ = 'user_settings'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), unique=True, nullable=False)
+    smtp_server = db.Column(db.String(256), default='')
+    smtp_port = db.Column(db.Integer, default=587)
+    smtp_username = db.Column(db.String(256), default='')
+    smtp_password_encrypted = db.Column(db.Text, default='')
+    sender_email = db.Column(db.String(256), default='')
+    recipient_email = db.Column(db.String(256), default='')
+    send_day = db.Column(db.Integer, default=18)  # 1-28, Tag des Monats fuer Auto-Versand
+    auto_send_enabled = db.Column(db.Boolean, default=False)
+    last_send_date = db.Column(db.DateTime, nullable=True)
+    last_send_status = db.Column(db.String(512), nullable=True)
+
+    user = db.relationship('User', backref=db.backref('settings', uselist=False, lazy=True))
