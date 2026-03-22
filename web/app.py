@@ -81,16 +81,63 @@ def create_app(test_config=None):
         db.session.commit()
         click.echo('Admin-Benutzer "{}" erstellt.'.format(username))
 
+    @app.cli.command('seed-pastors')
+    def seed_pastors_command():
+        """Fuegt initiale Pastoren-Eintraege aus dem April 2026 Export ein."""
+        from models import Pastor
+        seed_data = [
+            # (first_name, last_name, title)
+            ('Malte',      'Jericke',         'P.'),
+            ('Christian',  'Verwold',         'P.'),
+            ('Ulrike',     'Verwold',         'Pn.'),
+            (None,         'Jarck-Albers',    'Pn.'),
+            ('Astrid',     'Buchin',          'Pn.'),
+            ('Frauke',     'Hjort',           'Prä.'),
+            ('Simon',      'Luthe',           'P.'),
+            (None,         'Thom',            'P.'),    # Thom (m) — kein Vorname bekannt
+            (None,         'Thom',            'Pn.'),   # Thom (w) — kein Vorname bekannt
+            ('Ulf',        'Fiebrandt',       'Diakon'),
+            ('Susanne',    'Jordan',          'Diakonin'),
+            (None,         'Kessner',         'P.'),
+            (None,         'Rattay',          'Pn.'),
+            (None,         'Gottkehaskamp',   'Prä.'),
+            ('Yvonne',     'Dercks',          'Prä.'),
+            ('Tsjaardke',  'Buursema',        'Pn.'),
+            (None,         'Bock',            'Pn.'),
+            ('Ina',        'Brinkmann',       'Pn.'),
+            (None,         'Rust',            'P.'),
+            (None,         'Stein',           'P. Dr.'),
+            (None,         'Müller-Andersson', 'Prä.'),
+            (None,         'Petersen',        'Popkantorin'),
+            (None,         'Zigler',          'Jugendreferentin'),
+            (None,         'Sievers',         'Pn.'),
+        ]
+        added = 0
+        skipped = 0
+        for first, last, title in seed_data:
+            existing = Pastor.query.filter_by(
+                first_name=first, last_name=last, title=title
+            ).first()
+            if existing:
+                skipped += 1
+                continue
+            p = Pastor(first_name=first, last_name=last, title=title, is_active=True)
+            db.session.add(p)
+            added += 1
+        db.session.commit()
+        click.echo('{} Pastoren angelegt, {} bereits vorhanden.'.format(added, skipped))
+
     # APScheduler initialisieren (MAIL-04: Single-Worker-Constraint via Gunicorn --workers 1)
     from scheduler import init_scheduler
     init_scheduler(app)
 
-    # Organisationen und Custom-Typ-Zuordnungen aus DB laden (nach DB-Init, innerhalb App-Kontext)
+    # Organisationen, Custom-Typ-Zuordnungen und Pastoren aus DB laden (nach DB-Init)
     with app.app_context():
         from config import reload_organizations
         reload_organizations()
-        from formatting import load_custom_mappings
+        from formatting import load_custom_mappings, load_pastors
         load_custom_mappings(app)
+        load_pastors(app)
 
     return app
 
