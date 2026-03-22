@@ -114,6 +114,20 @@ def test_format_service_type_case_insensitive():
     ("Pastorin Claudia Ruge-Tolksdorf", "Pn. Ruge-Tolksdorf"),
     # Mehrere mit Vornamen
     ("Pastorin Ulrike Verwold, Pastor Simon Luthe", "Pn. Verwold, P. Luthe"),
+    # Dr. bleibt als Teil des Nachnamens
+    ("P. Dr. Stein",                    "P. Dr. Stein"),
+    ("Pastor Dr. Stein",                "P. Dr. Stein"),
+    # Popkantorin → Kantorin
+    ("Popkantorin Petersen",            "Kantorin Petersen"),
+    # Jugendreferentin durchreichen
+    ("Jugendreferentin Zigler",         "Jugendreferentin Zigler"),
+    # Gruppen durchreichen
+    ("Kantorei",                        "Kantorei"),
+    ("Chor Terziano",                   "Chor Terziano"),
+    # Noise-Beiträge filtern
+    ("Prädikantin Frauke Hjort Prädikantin in Ausbildung, dem Team der Kinderkirche, vielen Kirchenmäusen", "Prä. Hjort"),
+    # Ev. Frauenhilfe als Gruppe
+    ("Ev. Frauenhilfe Hennstedt & Team", "Ev. Frauenhilfe Hennstedt & Team"),
 ])
 def test_format_pastor(contributor, expected):
     assert format_pastor(contributor) == expected

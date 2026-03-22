@@ -136,19 +136,40 @@ def format_service_type(titel):
     return _match_service_type(titel)
 
 
+def _extract_surname(name_str):
+    """Extrahiert den Nachnamen — behält Dr./Prof. als Teil des Nachnamens."""
+    parts = name_str.split()
+    if len(parts) <= 1:
+        return name_str
+    # Akademische Titel gehören zum Namen: "Dr. Stein" → "Dr. Stein"
+    academic = {'dr.', 'prof.', 'dr', 'prof'}
+    # Wenn vorletztes Wort akademisch ist: "Dr. Stein" → "Dr. Stein"
+    if len(parts) == 2 and parts[0].lower().rstrip('.') in {'dr', 'prof'}:
+        return name_str
+    # Sonst: letztes Wort (ggf. mit Dr. davor)
+    if len(parts) > 2 and parts[-2].lower().rstrip('.') in {'dr', 'prof'}:
+        return '{} {}'.format(parts[-2], parts[-1])
+    return parts[-1]
+
+
+def _is_noise_contributor(text):
+    """Erkennt Nicht-Personen-Beiträge die rausgefiltert werden sollen."""
+    text_lower = text.lower()
+    # Wenn ein bekannter Titel drin ist, ist es kein Noise
+    known_titles = ['pastor', 'diakon', 'prädikant', 'kantor', 'pn.', 'p. ', 'referent']
+    if any(t in text_lower for t in known_titles):
+        return False
+    noise_patterns = [
+        'dem team', 'vielen ', 'anschließend', 'anschl.', 'mitbringfrühstück',
+        'kirchenmäuse', 'in ausbildung'
+    ]
+    return any(p in text_lower for p in noise_patterns)
+
+
 def format_pastor(contributor: str) -> str:
     """
-    Format pastor name according to Boyens Media standards:
-    - Diakonin → Diakonin (ausgeschrieben)
-    - Diakon → Diakon (ausgeschrieben)
-    - Pastorin → Pn.
-    - Pastor → P.
-    - Prädikantin → Prädikantin (ausgeschrieben)
-    - Prädikant → Prädikant (ausgeschrieben)
-    - R. → R. (Referent, Abkuerzung beibehalten)
-    - Multiple pastors: combine with comma (D-18)
-    - & Team: beibehalten (D-19)
-    - Special cases: Kirchspiel-Pastor:innen, Konfirmand:innen etc.
+    Format pastor name according to Boyens Media standards.
+    Nur Nachname, Vorname entfernen. Noise-Beiträge filtern.
     """
     if not contributor:
         return ""
@@ -177,8 +198,16 @@ def format_pastor(contributor: str) -> str:
     formatted_contributors = []
 
     for contrib in contributors:
-        # Handle special cases for individual contributors
+        if not contrib:
+            continue
+
+        # Noise-Beiträge rausfiltern
+        if _is_noise_contributor(contrib):
+            continue
+
         contrib_lower = contrib.lower()
+
+        # Spezialfälle
         if 'kirchspiel-pastor:innen' in contrib_lower:
             formatted_contributors.append('Kirchspiel-Pastor:innen')
             continue
@@ -186,49 +215,66 @@ def format_pastor(contributor: str) -> str:
             formatted_contributors.append('Konfirmand:innen')
             continue
 
-        # Remove existing prefixes
+        # Bekannte Nicht-Pastor-Gruppen durchreichen (Kantorei, Chor, etc.)
+        group_keywords = ['kantorei', 'chor ', 'team', 'gemeinde', 'frauenhilfe']
+        if any(kw in contrib_lower for kw in group_keywords) and not any(
+            t in contrib_lower for t in ['pastor', 'diakon', 'prädikant']):
+            formatted_contributors.append(contrib)
+            continue
+
+        # Zusatzinfos abschneiden die keine Namen sind
+        for noise_suffix in [' Prädikantin in Ausbildung', ' Prädikant in Ausbildung',
+                             ' in Ausbildung', ' anschließend', ' anschl.']:
+            idx = contrib.lower().find(noise_suffix.lower())
+            if idx > 0:
+                contrib = contrib[:idx].strip()
+                contrib_lower = contrib.lower()
+
+        # Prefix entfernen
         prefixes = ['Pastores ', 'Pastor ', 'Pastorin ', 'Pfarrer ', 'P. ', 'Pn. ', 'Ps. ',
-                    'Diakon ', 'Diakonin ', 'D. ', 'Dn. ', 'Prädikantin ', 'Prädikant ',
+                    'Diakonin ', 'Diakon ', 'D. ', 'Dn. ', 'Prädikantin ', 'Prädikant ',
+                    'Popkantorin ', 'Kantorin ', 'Kantor ', 'Jugendreferentin ', 'Jugendreferent ',
                     'R. ']
         clean_name = contrib
+        matched_prefix = None
         for prefix in prefixes:
             if clean_name.startswith(prefix):
+                matched_prefix = prefix.strip()
                 clean_name = clean_name[len(prefix):].strip()
                 break
 
-        # Boyens: nur Nachname — Vorname entfernen
-        # Nachname = letztes Wort (oder Doppelname mit Bindestrich)
-        name_parts = clean_name.split()
-        if len(name_parts) > 1:
-            # Letztes Wort ist der Nachname (auch bei "Ruge-Tolksdorf")
-            clean_name = name_parts[-1]
+        # Nachname extrahieren (Vorname weg, Dr./Prof. behalten)
+        clean_name = _extract_surname(clean_name)
 
-        # Determine new prefix based on original text - be more specific in detection
+        # Prefix → Boyens-Abkürzung
         if 'diakonin' in contrib_lower:
             formatted_contributors.append("Diakonin {}".format(clean_name))
         elif 'diakon' in contrib_lower:
             formatted_contributors.append("Diakon {}".format(clean_name))
         elif 'pastores' in contrib_lower:
             formatted_contributors.append("Ps. {}".format(clean_name))
-        elif 'pastorin' in contrib_lower:
+        elif 'pastorin' in contrib_lower or 'pn.' in contrib_lower:
             formatted_contributors.append("Pn. {}".format(clean_name))
-        elif 'pastor' in contrib_lower or 'pfarrer' in contrib_lower:
+        elif 'pastor' in contrib_lower or 'pfarrer' in contrib_lower or (
+                'p.' in contrib_lower and matched_prefix in ('P.', None)):
             formatted_contributors.append("P. {}".format(clean_name))
-        elif 'pn.' in contrib_lower:
-            formatted_contributors.append("Pn. {}".format(clean_name))
-        elif 'p.' in contrib_lower:
-            formatted_contributors.append("P. {}".format(clean_name))
-        elif 'prädikantin' in contrib_lower:
+        elif 'prädikantin' in contrib_lower or 'prädikant' in contrib_lower:
             formatted_contributors.append("Prä. {}".format(clean_name))
-        elif 'prädikant' in contrib_lower:
-            formatted_contributors.append("Prä. {}".format(clean_name))
+        elif 'popkantorin' in contrib_lower or 'kantorin' in contrib_lower:
+            formatted_contributors.append("Kantorin {}".format(clean_name))
+        elif 'kantor' in contrib_lower:
+            formatted_contributors.append("Kantor {}".format(clean_name))
+        elif 'jugendreferentin' in contrib_lower:
+            formatted_contributors.append("Jugendreferentin {}".format(clean_name))
+        elif 'jugendreferent' in contrib_lower:
+            formatted_contributors.append("Jugendreferent {}".format(clean_name))
         elif contrib.startswith('R. '):
             formatted_contributors.append("R. {}".format(clean_name))
         else:
-            # Keep original if unclear - don't assume Pastor
-            formatted_contributors.append(contrib)
+            # Unbekannt — Nachname durchreichen
+            formatted_contributors.append(clean_name)
 
-    # D-18: Komma als Trenner (nicht &)
+    # D-18: Komma als Trenner
     result = ', '.join(formatted_contributors)
 
     # D-19: "& Team" wieder anhaengen
