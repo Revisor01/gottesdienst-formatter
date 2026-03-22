@@ -8,6 +8,7 @@ import pandas as pd
 from datetime import datetime
 
 from formatting import format_date, format_time, format_service_type, format_pastor
+from churchdesk_api import extract_boyens_location
 
 
 # ---------------------------------------------------------------------------
@@ -105,3 +106,65 @@ def test_format_service_type_case_insensitive():
 ])
 def test_format_pastor(contributor, expected):
     assert format_pastor(contributor) == expected
+
+
+# ---------------------------------------------------------------------------
+# extract_boyens_location (for_export=True)
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize("location_name, expected", [
+    # Multi-church city Heide: space-separated, no separator
+    ("Heide St.-Jürgen-Kirche",     "Heide, St.-Jürgen"),
+    ("Heide Erlöserkirche",          "Heide, Erlöserkirche"),
+    ("Heide Auferstehungskirche",    "Heide, Auferstehungskirche"),
+    # Heide-Süderholm: hyphenated compound, must NOT be split
+    ("Heide-Süderholm",             "Heide-Süderholm"),
+    # Single-church towns: strip trailing " Kirche"
+    ("Hennstedt Kirche",            "Hennstedt"),
+    ("Hemme Kirche",                "Hemme"),
+    ("Lunden Kirche",               "Lunden"),
+    ("Weddingstedt Kirche",         "Weddingstedt"),
+    ("Schlichting Kirche",          "Schlichting"),
+    ("St. Annen Kirche",            "St. Annen"),
+    # Büsum with dash separator
+    ("Büsum - St. Clemens-Kirche",  "Büsum"),
+    ("Büsum - Perlebucht",          "Büsum, Perlebucht"),
+    # Existing pipe/comma cases still pass
+    ("Heide | St.-Jürgen-Kirche",  "Heide, St.-Jürgen"),
+    ("Büsum | St. Clemens-Kirche", "Büsum"),
+    ("Büsum | Perlebucht",         "Büsum, Perlebucht"),
+    ("Hennstedt",                  "Hennstedt"),
+])
+def test_extract_boyens_location(location_name, expected):
+    assert extract_boyens_location(location_name, for_export=True) == expected
+
+
+# ---------------------------------------------------------------------------
+# extract_boyens_location (for_export=False) — display mode
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize("location_name, expected", [
+    # St. Clemens ist NICHT Urlauberseelsorge — bleibt Büsum
+    ("Büsum - St. Clemens-Kirche",  "Büsum"),
+    # Urlauberseelsorge → Urlauberseelsorge in display mode
+    ("Urlauberseelsorge",           "Urlauberseelsorge"),
+    ("Urlauberseelsorge Büsum",     "Urlauberseelsorge"),
+])
+def test_extract_boyens_location_display(location_name, expected):
+    assert extract_boyens_location(location_name, for_export=False) == expected
+
+
+# ---------------------------------------------------------------------------
+# format_service_type — Sonderformat (Kolon-Titel)
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize("titel, expected", [
+    # Kolon-Titel: Abendmahl vor dem Kolon erkannt
+    ("Gottesdienst mit Tisch-Abendmahl: Brot des Lebens", "Gd. m. A."),
+    # "zum Karfreitag mit Abendmahl" — Abendmahl im Titel ohne Kolon
+    ("Gottesdienst zum Karfreitag mit Abendmahl",          "Gd. m. A."),
+    # Normaler Sondertitel ohne Sondertyp
+    ("Gottesdienst zum Ostersonntag",                      "Gd."),
+])
+def test_format_service_type_sonderformat(titel, expected):
+    assert format_service_type(titel) == expected
