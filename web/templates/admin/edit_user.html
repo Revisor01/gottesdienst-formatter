@@ -3,45 +3,55 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center mt-4">
-    <div class="col-md-6">
-        <h2>{{ title }}</h2>
-        {% if not is_new %}
-        <p class="text-muted">Benutzer: {{ user.username }}</p>
-        {% endif %}
-        <form method="POST">
-            {{ form.hidden_tag() }}
-            {% if is_new %}
-            <div class="mb-3">
-                {{ form.username.label(class="form-label") }}
-                {{ form.username(class="form-control") }}
-                {% for error in form.username.errors %}
-                <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            {% endif %}
-            <div class="mb-3">
-                {{ form.password.label(class="form-label") }}
-                {{ form.password(class="form-control") }}
-                {% for error in form.password.errors %}
-                <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <div class="mb-3 form-check">
-                {{ form.is_admin(class="form-check-input") }}
-                {{ form.is_admin.label(class="form-check-label") }}
-            </div>
-            {% if not is_new %}
-            <div class="mb-3 form-check">
-                {{ form.is_active(class="form-check-input") }}
-                {{ form.is_active.label(class="form-check-label") }}
-            </div>
-            {% endif %}
-            <div class="d-flex gap-2">
-                {{ form.submit(class="btn btn-primary") }}
-                <a href="{{ url_for('admin.users') }}" class="btn btn-secondary">Abbrechen</a>
-            </div>
-        </form>
-    </div>
+<div class="max-w-lg">
+  <h1 class="text-2xl font-bold text-gray-900 mb-1">{{ title }}</h1>
+  {% if not is_new %}
+  <p class="text-gray-500 mb-6">Benutzer: {{ user.username }}</p>
+  {% else %}
+  <div class="mb-6"></div>
+  {% endif %}
+
+  <div class="card p-6">
+    <form method="POST">
+      {{ form.hidden_tag() }}
+
+      {% if is_new %}
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Benutzername</label>
+        {{ form.username(class="input-field") }}
+        {% for error in form.username.errors %}
+        <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          Passwort{% if not is_new %} <span class="font-normal text-gray-400">(leer lassen für keine Änderung)</span>{% endif %}
+        </label>
+        {{ form.password(class="input-field") }}
+        {% for error in form.password.errors %}
+        <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+        {% endfor %}
+      </div>
+
+      <div class="mb-4 flex items-center gap-2">
+        {{ form.is_admin(class="rounded text-primary-600 w-4 h-4") }}
+        <label class="text-sm text-gray-700">Administrator</label>
+      </div>
+
+      {% if not is_new %}
+      <div class="mb-6 flex items-center gap-2">
+        {{ form.is_active(class="rounded text-primary-600 w-4 h-4") }}
+        <label class="text-sm text-gray-700">Aktiv</label>
+      </div>
+      {% endif %}
+
+      <div class="flex gap-3 mt-2">
+        <button type="submit" class="btn-primary">Speichern</button>
+        <a href="{{ url_for('admin.users') }}" class="btn-secondary">Abbrechen</a>
+      </div>
+    </form>
+  </div>
 </div>
 {% endblock %}

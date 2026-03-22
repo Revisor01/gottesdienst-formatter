@@ -1,35 +1,35 @@
 {% extends "base.html" %}
 
-{% block title %}Login - Gottesdienst-Formatter{% endblock %}
+{% block title %}Anmelden — Gottesdienst-Formatter{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center mt-5">
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-header text-center">
-                <h4 class="mb-0">Anmelden</h4>
-            </div>
-            <div class="card-body">
-                <form method="POST" action="{{ url_for('auth.login') }}">
-                    {{ form.hidden_tag() }}
-                    <div class="mb-3">
-                        {{ form.username.label(class="form-label") }}
-                        {{ form.username(class="form-control", autofocus=true) }}
-                    </div>
-                    <div class="mb-3">
-                        {{ form.password.label(class="form-label") }}
-                        {{ form.password(class="form-control") }}
-                    </div>
-                    <div class="mb-3 form-check">
-                        {{ form.remember_me(class="form-check-input") }}
-                        {{ form.remember_me.label(class="form-check-label") }}
-                    </div>
-                    <div class="d-grid">
-                        {{ form.submit(class="btn btn-primary") }}
-                    </div>
-                </form>
-            </div>
+<div class="min-h-[80vh] flex items-center justify-center">
+  <div class="w-full max-w-sm">
+    <div class="card p-8">
+      <h1 class="text-2xl font-bold text-center text-gray-900 mb-6">Anmelden</h1>
+      <form method="POST" action="{{ url_for('auth.login') }}">
+        {{ form.hidden_tag() }}
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Benutzername</label>
+          {{ form.username(class="input-field", autofocus=true) }}
+          {% for error in form.username.errors %}
+          <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+          {% endfor %}
         </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Passwort</label>
+          {{ form.password(class="input-field") }}
+          {% for error in form.password.errors %}
+          <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+          {% endfor %}
+        </div>
+        <div class="mb-6 flex items-center gap-2">
+          {{ form.remember_me(class="rounded text-primary-600 w-4 h-4") }}
+          <label class="text-sm text-gray-600">Angemeldet bleiben</label>
+        </div>
+        <button type="submit" class="btn-primary w-full">Anmelden</button>
+      </form>
     </div>
+  </div>
 </div>
 {% endblock %}
