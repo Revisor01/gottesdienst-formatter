@@ -102,9 +102,9 @@ Plans:
   2. Die Settings-Seite zeigt, welche ChurchDesk-Organisationen aktiv (aus ENV konfiguriert) sind — ohne dass der Benutzer ENV-Variablen kennen muss
   3. Ein Benutzer mit konfiguriertem SMTP empfängt am eingestellten Tag des Monats automatisch eine Mail mit dem formatierten Boyens-Text als .txt-Anhang und im Mail-Body
   4. Ein Benutzer kann den Versandzeitpunkt selbst auf einen anderen Tag des Monats ändern (Default: 18.) — die Änderung greift ab dem nächsten Monat
-**Plans:** 3 plans
+**Plans:** 1/3 plans executed
 Plans:
-- [ ] 06-01-PLAN.md — UserSettings-Modell, Fernet-Verschluesselung und DB-Migration
+- [x] 06-01-PLAN.md — UserSettings-Modell, Fernet-Verschluesselung und DB-Migration
 - [ ] 06-02-PLAN.md — Settings-Blueprint mit Tab-Layout, SMTP-Formular und Test-Mail
 - [ ] 06-03-PLAN.md — APScheduler-Integration und automatischer monatlicher Mail-Versand
 
@@ -117,4 +117,4 @@ Plans:
 | 3. Pipeline | 2/2 | Complete | 2026-03-22 |
 | 4. Fundament + Auth | 4/4 | Complete   | 2026-03-22 |
 | 5. UI Makeover + Formatierung | 3/3 | Complete   | 2026-03-22 |
-| 6. Settings + Auto-Mail | 0/3 | Not started | - |
+| 6. Settings + Auto-Mail | 1/3 | In Progress|  |

@@ -31,7 +31,7 @@
 ### Settings
 
 - [ ] **SET-01**: Settings-Seite im Web-Interface für User-Konfiguration
-- [ ] **SET-02**: Mail-Einstellungen pro User (SMTP-Server, Port, Absender, Empfänger)
+- [x] **SET-02**: Mail-Einstellungen pro User (SMTP-Server, Port, Absender, Empfänger)
 - [ ] **SET-03**: Organisationen-Übersicht (welche ChurchDesk-Orgs aktiv sind, aus ENV)
 - [ ] **SET-04**: Test-Mail-Button zum Prüfen der SMTP-Konfiguration
 
@@ -84,7 +84,7 @@
 | UI-04 | Phase 5 | Complete |
 | FMT-10 | Phase 5 | Complete |
 | SET-01 | Phase 6 | Pending |
-| SET-02 | Phase 6 | Pending |
+| SET-02 | Phase 6 | Complete |
 | SET-03 | Phase 6 | Pending |
 | SET-04 | Phase 6 | Pending |
 | MAIL-01 | Phase 6 | Pending |

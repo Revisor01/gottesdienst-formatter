@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 05-02-PLAN.md
-last_updated: "2026-03-22T12:22:09.258Z"
+stopped_at: Completed 06-01-PLAN.md
+last_updated: "2026-03-22T12:49:59.320Z"
 progress:
   total_phases: 6
   completed_phases: 5
-  total_plans: 14
-  completed_plans: 14
+  total_plans: 17
+  completed_plans: 15
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-22)
 
 **Core value:** Output muss 1:1 der Boyens-Fließtext-Vorgabe entsprechen — ohne redaktionelle Nacharbeit übernehmbar
-**Current focus:** Phase 05 — ui-makeover-formatierung
+**Current focus:** Phase 06 — settings-auto-mail
 
 ## Current Position
 
-Phase: 6
-Plan: Not started
+Phase: 06 (settings-auto-mail) — EXECUTING
+Plan: 2 of 3
 
 ## Performance Metrics
 
@@ -58,6 +58,7 @@ Plan: Not started
 | Phase 05-ui-makeover-formatierung P01 | 31536349 | 2 tasks | 8 files |
 | Phase 05-ui-makeover-formatierung P03 | 480 | 2 tasks | 4 files |
 | Phase 05-ui-makeover-formatierung P02 | 600 | 2 tasks | 8 files |
+| Phase 06-settings-auto-mail P01 | 70 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -101,6 +102,8 @@ Recent decisions affecting current work:
 - [Phase 05-ui-makeover-formatierung]: FontAwesome durch inline SVG (Heroicons-Style) ersetzt — keine externe Icon-Abhaengigkeit
 - [Phase 05-ui-makeover-formatierung]: Tailwind-Tabellen Pattern: card overflow-hidden > overflow-x-auto > table.w-full
 - [Phase 05-ui-makeover-formatierung]: format_service_type(None) gibt 'Gd.' zurueck — konsistent mit 'unbekannter Typ = Standard-Gottesdienst' Semantik
+- [Phase 06-settings-auto-mail]: Fernet-Key via PBKDF2HMAC aus SECRET_KEY abgeleitet — kein separater Schluessel noetig
+- [Phase 06-settings-auto-mail]: encrypt/decrypt nehmen secret_key als Parameter — kein flask.current_app in models.py
 
 ### Critical Pitfalls for Phase 4
 
@@ -126,7 +129,7 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-22T12:12:59.390Z
-Stopped at: Completed 05-02-PLAN.md
+Last session: 2026-03-22T12:49:59.318Z
+Stopped at: Completed 06-01-PLAN.md
 Resume file: None
 Next action: `/gsd:plan-phase 4`
