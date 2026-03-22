@@ -3,13 +3,10 @@
 """
 Haupt-Routes als Flask Blueprint — alle bestehenden Routes aus app.py.
 """
-import os
-import tempfile
 import json
 from datetime import datetime
 import io
 
-import pandas as pd
 from flask import render_template, request, send_file, flash, redirect, url_for
 from flask_login import login_required
 
@@ -91,54 +88,6 @@ def _build_location_entries(day_items):
     return lines
 
 
-def process_excel_file(file_path):
-    """Verarbeitet Excel-Datei und gibt formatierten Text zurueck"""
-    try:
-        df = pd.read_excel(file_path)
-
-        # Validierung der benoetigten Spalten
-        required_columns = ['Startdatum', 'Titel', 'Standortnamen', 'Mitwirkender', 'Gemeinden']
-        missing_columns = [col for col in required_columns if col not in df.columns]
-        if missing_columns:
-            raise ValueError("Fehlende Spalten: {}".format(', '.join(missing_columns)))
-
-        # Daten nach Datum sortieren
-        df = df.sort_values('Startdatum')
-
-        # Gruppiere nach Datum
-        grouped = df.groupby(df['Startdatum'].dt.date)
-
-        output_lines = []
-
-        for date, group in grouped:
-            # Datum formatieren
-            date_str = format_date(pd.to_datetime(date))
-            output_lines.append("{}:".format(date_str))
-
-            # Sammle Termineintraege fuer diesen Tag
-            day_items = []
-            for _, row in group.iterrows():
-                raw_ort = row['Standortnamen'] if not pd.isna(row['Standortnamen']) else row['Gemeinden']
-                location = extract_boyens_location(str(raw_ort), for_export=True)
-                titel = str(row['Titel']) if not pd.isna(row['Titel']) else ''
-                day_items.append({
-                    'location': location,
-                    'time_str': format_time(row['Startdatum']),
-                    'service_type': format_service_type(titel),
-                    'pastor': format_pastor(row['Mitwirkender']),
-                    'suffix': _extract_suffix(titel),
-                })
-
-            # Alphabetisch sortieren, Multi-Termin zusammenfassen, jeweils-Logik anwenden
-            output_lines.extend(_build_location_entries(day_items))
-            output_lines.append("")  # Leerzeile nach jedem Tag
-
-        return '\n'.join(output_lines), len(df)
-
-    except Exception as e:
-        raise Exception("Fehler beim Verarbeiten der Excel-Datei: {}".format(str(e)))
-
-
 def convert_churchdesk_events_to_boyens(events):
     """Convert ChurchDesk events to Boyens format with location extraction"""
     # Group events by date
@@ -206,43 +155,9 @@ def health():
 @bp.route('/')
 @login_required
 def index():
-    return render_template('index.html', organizations=ORGANIZATIONS)
-
-
-@bp.route('/upload', methods=['POST'])
-@login_required
-def upload_file():
-    if 'file' not in request.files:
-        flash('Keine Datei ausgewaehlt')
-        return redirect(request.url)
-
-    file = request.files['file']
-    if file.filename == '':
-        flash('Keine Datei ausgewaehlt')
-        return redirect(request.url)
-
-    if file and file.filename.endswith('.xlsx'):
-        try:
-            # Temporaere Datei erstellen
-            with tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx') as tmp_file:
-                file.save(tmp_file.name)
-
-                # Verarbeitung
-                formatted_text, count = process_excel_file(tmp_file.name)
-
-                # Aufraeumen
-                os.unlink(tmp_file.name)
-
-                return render_template('result.html',
-                                       formatted_text=formatted_text,
-                                       count=count)
-
-        except Exception as e:
-            flash('Fehler beim Verarbeiten der Datei: {}'.format(str(e)))
-            return redirect(url_for('main.index'))
-    else:
-        flash('Bitte waehlen Sie eine Excel-Datei (.xlsx) aus')
-        return redirect(url_for('main.index'))
+    current_year = datetime.now().year
+    return render_template('index.html', organizations=ORGANIZATIONS,
+                           current_year=current_year)
 
 
 @bp.route('/download', methods=['POST'])

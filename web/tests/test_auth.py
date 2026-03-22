@@ -43,7 +43,6 @@ class TestProtectedRoutes:
 
     @pytest.mark.parametrize('path,method', [
         ('/', 'GET'),
-        ('/upload', 'POST'),
         ('/download', 'POST'),
         ('/fetch_churchdesk_events', 'POST'),
         ('/export_selected_events', 'POST'),

@@ -5,12 +5,11 @@ Zentrale Formatierungsfunktionen fuer Boyens-Medien-Output.
 Einzige Quelle der Wahrheit — alle Codepfade importieren von hier.
 """
 import re
-import pandas as pd
 
 
 def format_date(date_obj):
     """Formatiert Datum im gewuenschten Format"""
-    if pd.isna(date_obj):
+    if date_obj is None:
         return ""
 
     weekday_map = {
@@ -33,7 +32,7 @@ def format_date(date_obj):
 
 def format_time(date_obj):
     """Extrahiert und formatiert Uhrzeit aus datetime"""
-    if pd.isna(date_obj):
+    if date_obj is None:
         return ""
 
     hour = date_obj.hour
@@ -94,7 +93,7 @@ def _match_service_type(titel):
 
 def format_service_type(titel):
     """Formatiert den Gottesdiensttyp"""
-    if pd.isna(titel):
+    if not titel:
         return "Gd."
 
     # D-10: Sonderformate mit Anfuehrungszeichen direkt uebernehmen (vor allem anderen)

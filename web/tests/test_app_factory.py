@@ -51,7 +51,6 @@ class TestAppFactory:
         app = create_test_app()
         rules = [r.endpoint for r in app.url_map.iter_rules()]
         assert 'main.index' in rules
-        assert 'main.upload_file' in rules
         assert 'main.download_file' in rules
         assert 'main.fetch_churchdesk_events' in rules
         assert 'main.export_selected_events' in rules

@@ -4,7 +4,6 @@
 Unit-Tests fuer alle Formatierungsfunktionen in web/formatting.py.
 """
 import pytest
-import pandas as pd
 from datetime import datetime
 
 from formatting import format_date, format_time, format_service_type, format_pastor
@@ -28,8 +27,8 @@ def test_format_date(date_obj, expected):
     assert format_date(date_obj) == expected
 
 
-def test_format_date_nat():
-    assert format_date(pd.NaT) == ""
+def test_format_date_none():
+    assert format_date(None) == ""
 
 
 # ---------------------------------------------------------------------------
@@ -50,8 +49,8 @@ def test_format_time(hour, minute, expected):
     assert format_time(dt) == expected
 
 
-def test_format_time_nat():
-    assert format_time(pd.NaT) == ""
+def test_format_time_none():
+    assert format_time(None) == ""
 
 
 # ---------------------------------------------------------------------------
@@ -78,8 +77,9 @@ def test_format_service_type(titel, expected):
     assert format_service_type(titel) == expected
 
 
-def test_format_service_type_nat():
-    assert format_service_type(pd.NaT) == "Gd."
+def test_format_service_type_none():
+    assert format_service_type(None) == "Gd."
+    assert format_service_type("") == "Gd."
 
 
 def test_format_service_type_case_insensitive():
