@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 04-02-PLAN.md
-last_updated: "2026-03-22T10:11:15.871Z"
+stopped_at: Completed 04-04-PLAN.md
+last_updated: "2026-03-22T10:21:46.291Z"
 progress:
   total_phases: 6
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 11
-  completed_plans: 10
+  completed_plans: 11
 ---
 
 # Project State
@@ -54,6 +54,7 @@ Plan: 4 of 4
 | Phase 04-fundament-auth P01 | 217 | 3 tasks | 13 files |
 | Phase 04-fundament-auth P03 | 180 | 2 tasks | 3 files |
 | Phase 04-fundament-auth P02 | 168 | 3 tasks | 11 files |
+| Phase 04-fundament-auth P04 | 507 | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -88,6 +89,9 @@ Recent decisions affecting current work:
 - [Phase 04-fundament-auth]: Auth Blueprint ohne url_prefix: /login direkt unter /, nicht /auth/login
 - [Phase 04-fundament-auth]: POST-only Routes in Tests mit POST-Request (nicht GET, wuerde 405 liefern)
 - [Phase 04-fundament-auth]: db.drop_all() + db.create_all() in Test-Setup: SQLAlchemy In-Memory SQLite teilt DB-State zwischen Tests
+- [Phase 04-fundament-auth]: create_app(test_config) Parameter: Test-Konfiguration muss VOR db.init_app() gesetzt werden — SQLAlchemy cached Engine-URL beim init_app()
+- [Phase 04-fundament-auth]: Flask-WTF formdata=None Problem: Leerer POST-Body (alle Checkboxen deaktiviert) wird als 'kein Formular' interpretiert — Submit-Button muss immer mitgesendet werden
+- [Phase 04-fundament-auth]: admin_required als Decorator-Komposition aus login_required + is_admin Check — einfach und konsistent mit bestehendem Muster
 
 ### Critical Pitfalls for Phase 4
 
@@ -113,7 +117,7 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-22T10:11:15.869Z
-Stopped at: Completed 04-02-PLAN.md
+Last session: 2026-03-22T10:21:46.289Z
+Stopped at: Completed 04-04-PLAN.md
 Resume file: None
 Next action: `/gsd:plan-phase 4`

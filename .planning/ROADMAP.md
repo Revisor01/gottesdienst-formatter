@@ -11,7 +11,7 @@ Milestone v2.0 baut auf dieser Basis auf und macht aus dem Formatter-Tool eine v
 - [x] **Phase 1: Stabilisierung** - Sicherheitslücken schließen und Codebasis bereinigen (Basis für alles Folgende) (completed 2026-03-21)
 - [x] **Phase 2: Formatierung** - Output exakt nach Boyens-Vorgabe bringen (Kernzweck des Projekts) (completed 2026-03-21)
 - [x] **Phase 3: Pipeline** - Automatisiertes Deployment und Testabdeckung (sicherer Dauerbetrieb) (completed 2026-03-22)
-- [ ] **Phase 4: Fundament + Auth** - App Factory, Datenbank und Login (Voraussetzung für alle v2.0-Features)
+- [x] **Phase 4: Fundament + Auth** - App Factory, Datenbank und Login (Voraussetzung für alle v2.0-Features) (completed 2026-03-22)
 - [ ] **Phase 5: UI Makeover + Formatierung** - Grünes Interface, Excel-Entfernung und erweitertes Sonderformat-Parsing
 - [ ] **Phase 6: Settings + Auto-Mail** - User-Einstellungen, SMTP-Versand und automatischer Monatsjob
 
@@ -71,12 +71,12 @@ Plans:
   3. Ein Admin-Benutzer kann neue User anlegen und deren Passwörter setzen, ohne Zugriff auf den Server
   4. Die SQLite-Datenbank überlebt ein Watchtower-Redeployment ohne Datenverlust — das Volume ist persistent gemountet
   5. Der Endpunkt /health antwortet mit HTTP 200 und ist ohne Login erreichbar (Docker Healthcheck + Uptime Kuma)
-**Plans:** 3/4 plans executed
+**Plans:** 4/4 plans complete
 Plans:
 - [x] 04-01-PLAN.md — App Factory, Extensions, User-Modell und Flask-Migrate
 - [x] 04-02-PLAN.md — Auth Blueprint: Login/Logout, CSRF, @login_required, /health
 - [x] 04-03-PLAN.md — Docker: SQLite Volume, Entrypoint mit Migrationen, Gunicorn
-- [ ] 04-04-PLAN.md — Admin User-Verwaltung und flask create-admin CLI
+- [x] 04-04-PLAN.md — Admin User-Verwaltung und flask create-admin CLI
 
 ### Phase 5: UI Makeover + Formatierung
 **Goal**: Die App hat ein modernes, grünes Interface auf Tailwind-Basis, den Excel-Import entfernt und ein verbessertes Sonderformat-Parsing
@@ -107,6 +107,6 @@ Plans:
 | 1. Stabilisierung | 3/3 | Complete | 2026-03-21 |
 | 2. Formatierung | 2/2 | Complete | 2026-03-21 |
 | 3. Pipeline | 2/2 | Complete | 2026-03-22 |
-| 4. Fundament + Auth | 3/4 | In Progress|  |
+| 4. Fundament + Auth | 4/4 | Complete   | 2026-03-22 |
 | 5. UI Makeover + Formatierung | 0/? | Not started | - |
 | 6. Settings + Auto-Mail | 0/? | Not started | - |

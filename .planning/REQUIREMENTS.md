@@ -18,7 +18,7 @@
 - [x] **AUTH-01**: Login/Logout mit Flask-Login und Session-basierter Auth
 - [x] **AUTH-02**: User-Modell mit Passwort-Hashing (Werkzeug security)
 - [x] **AUTH-03**: Alle bestehenden Routes hinter @login_required
-- [ ] **AUTH-04**: Admin-Benutzer kann neue User anlegen und verwalten
+- [x] **AUTH-04**: Admin-Benutzer kann neue User anlegen und verwalten
 - [x] **AUTH-05**: CSRF-Schutz auf allen Formularen (Flask-WTF)
 
 ### UI
@@ -76,7 +76,7 @@
 | AUTH-01 | Phase 4 | Complete |
 | AUTH-02 | Phase 4 | Complete |
 | AUTH-03 | Phase 4 | Complete |
-| AUTH-04 | Phase 4 | Pending |
+| AUTH-04 | Phase 4 | Complete |
 | AUTH-05 | Phase 4 | Complete |
 | UI-01 | Phase 5 | Pending |
 | UI-02 | Phase 5 | Pending |
