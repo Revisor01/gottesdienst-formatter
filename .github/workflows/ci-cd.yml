@@ -35,6 +35,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build Tailwind CSS
+        run: |
+          npm ci
+          npm run tw:build
+
       - name: Set lowercase image name
         run: echo "IMAGE_LC=${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
 

@@ -1,137 +1,155 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Gottesdienst-Formatter{% endblock %}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: rgb(81, 165, 71);
-            --primary-dark: rgb(61, 135, 51);
-            --light-bg: #f8f9fa;
-        }
-        
-        .navbar {
-            background-color: var(--primary-color) !important;
-        }
-        
-        .btn-primary {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-        
-        .btn-primary:hover {
-            background-color: var(--primary-dark);
-            border-color: var(--primary-dark);
-        }
-        
-        .card-header {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        
-        .footer {
-            background-color: var(--light-bg);
-            color: #666;
-            padding: 20px 0;
-            margin-top: 50px;
-        }
-        
-        .logo {
-            max-height: 50px;
-            margin-right: 15px;
-        }
-        
-        .main-content {
-            min-height: calc(100vh - 200px);
-        }
-        
-        .file-upload-area {
-            border: 2px dashed var(--primary-color);
-            border-radius: 10px;
-            padding: 40px;
-            text-align: center;
-            background-color: #f8f9fa;
-            margin: 20px 0;
-            transition: all 0.3s ease;
-        }
-        
-        .file-upload-area:hover {
-            background-color: #e9ecef;
-            border-color: var(--primary-dark);
-        }
-        
-        .result-box {
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            padding: 20px;
-            max-height: 400px;
-            overflow-y: auto;
-            font-family: monospace;
-            white-space: pre-wrap;
-            font-size: 14px;
-        }
-        
-        .alert {
-            margin-top: 20px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Gottesdienst-Formatter{% endblock %}</title>
+  <link href="{{ url_for('static', filename='css/output.css') }}" rel="stylesheet">
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('main.index') }}">
-                <img src="https://www.kirche-dithmarschen.de/uploads/PgB1LbhF/568x0_568x0/logo_3__msi___png.webp" alt="Logo" class="logo">
-                <span>Gottesdienst-Formatter</span>
-            </a>
-            {% if current_user.is_authenticated %}
-            <div class="navbar-nav ms-auto">
-                <span class="navbar-text me-3">{{ current_user.username }}</span>
-                {% if current_user.is_admin %}
-                <a class="nav-link" href="{{ url_for('admin.users') }}">Benutzer</a>
-                {% endif %}
-                <a class="nav-link" href="{{ url_for('auth.logout') }}">Abmelden</a>
-            </div>
-            {% endif %}
-        </div>
-    </nav>
+<body class="bg-gray-50 min-h-screen">
 
-    <div class="container main-content">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ 'danger' if category == 'danger' else 'info' if category == 'info' else 'warning' }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+  <!-- Mobile Header -->
+  <header class="md:hidden bg-primary-700 text-white px-4 py-3 flex items-center justify-between fixed top-0 left-0 right-0 z-40">
+    <span class="font-semibold text-sm">Gottesdienst-Formatter</span>
+    <button id="menu-toggle" class="p-1 rounded hover:bg-primary-600 transition-colors" aria-label="Menu">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+      </svg>
+    </button>
+  </header>
 
-        {% block content %}{% endblock %}
+  <!-- Sidebar -->
+  <aside id="sidebar" class="fixed inset-y-0 left-0 w-56 bg-primary-700 text-white transform -translate-x-full md:translate-x-0 transition-transform duration-200 z-30 flex flex-col">
+
+    <!-- Logo / Titel -->
+    <div class="px-4 py-5 border-b border-primary-600">
+      <a href="{{ url_for('main.index') }}" class="flex items-center gap-3 hover:opacity-90 transition-opacity">
+        <img src="https://www.kirche-dithmarschen.de/uploads/PgB1LbhF/568x0_568x0/logo_3__msi___png.webp"
+             alt="KK Dithmarschen Logo"
+             class="w-8 h-8 object-contain rounded">
+        <span class="font-semibold text-sm leading-tight">Gottesdienst-<br>Formatter</span>
+      </a>
     </div>
 
-    <footer class="footer">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-8">
-                    <p class="mb-0">
-                        <strong>Gottesdienst-Formatter für Boyens Medien</strong><br>
-                        Konvertiert Excel-Tabellen automatisch in das geforderte Fließtext-Format
-                    </p>
-                </div>
-                <div class="col-md-4 text-md-end">
-                    <p class="mb-0">
-                        <small>&copy; 2025 Pastor Simon Luthe<br>
-                        Kirchenkreis Dithmarschen</small>
-                    </p>
-                </div>
-            </div>
-        </div>
-    </footer>
+    <!-- Navigation -->
+    <nav class="flex-1 px-3 py-4 space-y-1">
+      <a href="{{ url_for('main.index') }}"
+         class="flex items-center gap-3 px-3 py-2 rounded-lg text-primary-100 hover:bg-primary-600 hover:text-white transition-colors text-sm font-medium">
+        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        Formatter
+      </a>
+      {% if current_user.is_authenticated and current_user.is_admin %}
+      <a href="{{ url_for('admin.users') }}"
+         class="flex items-center gap-3 px-3 py-2 rounded-lg text-primary-100 hover:bg-primary-600 hover:text-white transition-colors text-sm font-medium">
+        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+        </svg>
+        Benutzer
+      </a>
+      {% endif %}
+    </nav>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- User / Logout -->
+    {% if current_user.is_authenticated %}
+    <div class="px-3 py-4 border-t border-primary-600">
+      <div class="px-3 py-2 text-primary-200 text-xs font-medium truncate mb-1">
+        {{ current_user.username }}
+      </div>
+      <a href="{{ url_for('auth.logout') }}"
+         class="flex items-center gap-3 px-3 py-2 rounded-lg text-primary-100 hover:bg-primary-600 hover:text-white transition-colors text-sm font-medium">
+        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+        </svg>
+        Abmelden
+      </a>
+    </div>
+    {% endif %}
+  </aside>
+
+  <!-- Overlay fuer Mobile -->
+  <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-20 hidden md:hidden"></div>
+
+  <!-- Main Content -->
+  <main class="md:ml-56 pt-14 md:pt-0 p-4 md:p-8 min-h-screen">
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="mb-6 space-y-2">
+          {% for category, message in messages %}
+            {% if category == 'danger' or category == 'error' %}
+            <div class="alert-danger flex items-start gap-3 relative">
+              <svg class="w-5 h-5 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+              </svg>
+              <span>{{ message }}</span>
+            </div>
+            {% elif category == 'success' %}
+            <div class="alert-success flex items-start gap-3">
+              <svg class="w-5 h-5 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+              <span>{{ message }}</span>
+            </div>
+            {% elif category == 'warning' %}
+            <div class="alert-warning flex items-start gap-3">
+              <svg class="w-5 h-5 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+              </svg>
+              <span>{{ message }}</span>
+            </div>
+            {% else %}
+            <div class="alert-info flex items-start gap-3">
+              <svg class="w-5 h-5 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+              </svg>
+              <span>{{ message }}</span>
+            </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <script>
+    (function() {
+      var toggle = document.getElementById('menu-toggle');
+      var sidebar = document.getElementById('sidebar');
+      var overlay = document.getElementById('sidebar-overlay');
+
+      function openSidebar() {
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+      }
+
+      function closeSidebar() {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+      }
+
+      if (toggle) {
+        toggle.addEventListener('click', function() {
+          if (sidebar.classList.contains('-translate-x-full')) {
+            openSidebar();
+          } else {
+            closeSidebar();
+          }
+        });
+      }
+
+      if (overlay) {
+        overlay.addEventListener('click', closeSidebar);
+      }
+    })();
+  </script>
+
 </body>
 </html>
