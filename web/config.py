@@ -2,37 +2,43 @@
 # -*- coding: utf-8 -*-
 """
 Konfiguration fuer ChurchDesk-Organisationen.
-Laedt alle Credentials aus Environment Variables — keine hardcoded Tokens.
+Laedt Organisationen aus der SQLite-Datenbank (Tabelle: organizations).
+Single source of truth — keine Environment-Variablen fuer Org-Daten mehr.
 """
-import os
+
+# Modul-level dict — wird bei App-Start gefuellt und nach Admin-Aenderungen aktualisiert.
+ORGANIZATIONS: dict = {}
 
 
 def load_organizations() -> dict:
-    """Laedt Organisationskonfiguration aus Env-Vars.
+    """Laedt alle aktiven Organisationen aus der Datenbank.
 
-    Erwartet:
-        CHURCHDESK_ORG_IDS=2596,6572,2719,2725,2729
-        CHURCHDESK_ORG_{ID}_NAME=Kirchspiel Heide
-        CHURCHDESK_ORG_{ID}_TOKEN=abc123...
-        CHURCHDESK_ORG_{ID}_DESCRIPTION=Heide (St.-Juergen...)  # optional
+    Muss innerhalb eines Flask-App-Kontexts aufgerufen werden.
+
+    Returns:
+        {org_id: {"name": str, "token": str, "description": str}, ...}
     """
-    org_ids_str = os.getenv('CHURCHDESK_ORG_IDS', '')
-    if not org_ids_str:
-        return {}
-
+    from models import Organization
     orgs = {}
-    for org_id_str in org_ids_str.split(','):
-        org_id = int(org_id_str.strip())
-        prefix = "CHURCHDESK_ORG_{}_".format(org_id)
-        name = os.getenv("{}NAME".format(prefix))
-        token = os.getenv("{}TOKEN".format(prefix))
-        if name and token:
-            orgs[org_id] = {
-                'name': name,
-                'token': token,
-                'description': os.getenv("{}DESCRIPTION".format(prefix), '')
+    try:
+        for org in Organization.query.filter_by(is_active=True).all():
+            orgs[org.id] = {
+                'name': org.name,
+                'token': org.token,
+                'description': org.description or '',
             }
+    except Exception:
+        # Falls DB noch nicht initialisiert (z.B. erster Start vor Migration)
+        pass
     return orgs
 
 
-ORGANIZATIONS = load_organizations()
+def reload_organizations() -> None:
+    """Aktualisiert das modul-level ORGANIZATIONS-Dict aus der DB.
+
+    Nach Admin-CRUD-Operationen aufrufen, damit aendernde Abfragen
+    in churchdesk_api.py den aktuellen Stand sehen.
+    """
+    global ORGANIZATIONS
+    ORGANIZATIONS.clear()
+    ORGANIZATIONS.update(load_organizations())
