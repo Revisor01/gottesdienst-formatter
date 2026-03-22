@@ -36,9 +36,9 @@
 
 ### Deployment
 
-- [ ] **DEPLOY-01**: GitHub Actions Workflow: Build Docker Image und Push zu Container Registry
-- [ ] **DEPLOY-02**: Automatisches Deployment auf Portainer (kein manueller Server-Build mehr)
-- [ ] **DEPLOY-03**: Git Push → Image Build → Portainer Update als vollautomatische Pipeline
+- [x] **DEPLOY-01**: GitHub Actions Workflow: Build Docker Image und Push zu Container Registry
+- [x] **DEPLOY-02**: Automatisches Deployment auf Portainer (kein manueller Server-Build mehr)
+- [x] **DEPLOY-03**: Git Push → Image Build → Portainer Update als vollautomatische Pipeline
 
 ## v2 Requirements
 
@@ -83,9 +83,9 @@
 | SEC-02 | Phase 1 | Complete |
 | TEST-01 | Phase 3 | Complete |
 | TEST-02 | Phase 3 | Complete |
-| DEPLOY-01 | Phase 3 | Pending |
-| DEPLOY-02 | Phase 3 | Pending |
-| DEPLOY-03 | Phase 3 | Pending |
+| DEPLOY-01 | Phase 3 | Complete |
+| DEPLOY-02 | Phase 3 | Complete |
+| DEPLOY-03 | Phase 3 | Complete |
 
 **Coverage:**
 - v1 requirements: 20 total

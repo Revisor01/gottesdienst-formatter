@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 03-01-PLAN.md — pytest-Infrastruktur und Goldstandard-Tests
-last_updated: "2026-03-22T07:37:16.316Z"
+stopped_at: "Checkpoint 03-02 Task 2: Server-Migration — wartet auf menschliche Verifikation"
+last_updated: "2026-03-22T07:40:21.602Z"
 progress:
   total_phases: 3
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 7
-  completed_plans: 6
+  completed_plans: 7
 ---
 
 # Project State
@@ -51,6 +51,7 @@ Plan: 2 of 2
 | Phase 02-formatierung P01 | 96 | 2 tasks | 1 files |
 | Phase 02-formatierung P02 | 10min | 2 tasks | 2 files |
 | Phase 03-pipeline P01 | 173s | 2 tasks | 9 files |
+| Phase 03-pipeline P02 | 3min | 1 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -71,6 +72,8 @@ Recent decisions affecting current work:
 - [Phase 02-formatierung]: Heide -Kirche Suffix entfernen; Brunsbüttel Kirchenname beibehalten (D-27)
 - [Phase 03-pipeline]: pyproject.toml pythonpath=['.'] loest Import-Problem fuer pytest ohne sys.path-Hacks
 - [Phase 03-pipeline]: Goldstandard-Fixture endet mit einfachem \n — entspricht join()-Output ohne doppelten Abschluss
+- [Phase 03-pipeline]: Image-Name lowercase via IMAGE_LC erzwingen (Pitfall 4) — ghcr.io ist case-sensitive
+- [Phase 03-pipeline]: Watchtower statt Portainer auf App-Server; ghcr.io Image auf public setzen damit kein Auth-Secret noetig
 
 ### Pending Todos
 
@@ -83,6 +86,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-22T07:37:16.314Z
-Stopped at: Completed 03-01-PLAN.md — pytest-Infrastruktur und Goldstandard-Tests
+Last session: 2026-03-22T07:40:21.600Z
+Stopped at: Checkpoint 03-02 Task 2: Server-Migration — wartet auf menschliche Verifikation
 Resume file: None
