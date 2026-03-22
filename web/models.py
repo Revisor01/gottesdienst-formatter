@@ -52,3 +52,16 @@ class UserSettings(db.Model):
     last_send_status = db.Column(db.String(512), nullable=True)
 
     user = db.relationship('User', backref=db.backref('settings', uselist=False, lazy=True))
+
+
+class Organization(db.Model):
+    __tablename__ = 'organizations'
+
+    id = db.Column(db.Integer, primary_key=True)  # ChurchDesk org ID (e.g. 2596)
+    name = db.Column(db.String(256), nullable=False)
+    token = db.Column(db.Text, nullable=False)
+    description = db.Column(db.Text, default='')
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+
+    def __repr__(self):
+        return '<Organization {} {}>'.format(self.id, self.name)
