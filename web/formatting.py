@@ -267,11 +267,12 @@ def format_pastor(contributor: str) -> str:
 
     name = str(contributor).strip()
 
-    # Weltgebetstagssteam normalisieren
+    # Weltgebetstagsteam normalisieren — ausschreiben
     wgt_patterns = ['weltgebetstagsteam', 'weltsgebetstagsteam', 'weltgebetstagssteam',
-                    'wgt-team', 'wgt team']
-    if any(p in name.lower() for p in wgt_patterns):
-        return 'WGT-Team'
+                    'wgt-team', 'wgt team', 'weltgebetstagskomitee']
+    name_lower = name.lower()
+    if any(p in name_lower for p in wgt_patterns):
+        return 'Weltgebetstagsteam'
 
     # D-19: "& Team" vor dem Splitten merken und spaeter anhaengen
     has_team = name.endswith('& Team') or name.endswith('&amp; Team')
@@ -313,7 +314,7 @@ def format_pastor(contributor: str) -> str:
 
         # WGT normalisieren (auch als Teil eines Splits)
         if any(p in contrib_lower for p in wgt_patterns):
-            formatted_contributors.append('WGT-Team')
+            formatted_contributors.append('Weltgebetstagsteam')
             continue
 
         # Noise-Teile aus dem String entfernen

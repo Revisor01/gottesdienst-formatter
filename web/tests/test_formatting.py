@@ -129,6 +129,10 @@ def test_format_service_type_case_insensitive():
     ("Prädikantin in Ausbildung Frauke Hjort, dem Team der Kinderkirche, vielen Kirchenmäusen", "Prä. Hjort"),
     # Frauenhilfe durchreichen
     ("Ev. Frauenhilfe Hennstedt & Team", "Ev. Frauenhilfe Hennstedt & Team"),
+    # WGT-Normalisierung
+    ("Weltgebetstagsteam",               "Weltgebetstagsteam"),
+    ("WGT-Team",                         "Weltgebetstagsteam"),
+    ("Das Weltsgebetstagsteam Nordhastedt", "Weltgebetstagsteam"),
 ])
 def test_format_pastor(contributor, expected):
     assert format_pastor(contributor) == expected
