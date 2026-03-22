@@ -2,9 +2,9 @@ from functools import wraps
 from flask import render_template, redirect, url_for, flash, abort, request
 from flask_login import login_required, current_user
 from admin import bp
-from models import User, Organization, ServiceTypeMapping
+from models import User, Organization, ServiceTypeMapping, Pastor
 from extensions import db
-from admin.forms import CreateUserForm, EditUserForm, OrganizationForm, ServiceTypeMappingForm
+from admin.forms import CreateUserForm, EditUserForm, OrganizationForm, ServiceTypeMappingForm, PastorForm
 
 
 def admin_required(f):
@@ -223,3 +223,79 @@ def _reload_service_types():
     from flask import current_app
     from formatting import reload_custom_mappings
     reload_custom_mappings(current_app._get_current_object())
+
+
+# --- Pastor CRUD ---
+
+@bp.route('/pastors')
+@admin_required
+def pastors():
+    all_pastors = Pastor.query.order_by(Pastor.last_name, Pastor.first_name).all()
+    return render_template('admin/pastors.html', pastors=all_pastors)
+
+
+@bp.route('/pastors/new', methods=['GET', 'POST'])
+@admin_required
+def create_pastor():
+    form = PastorForm()
+    if request.method == 'GET':
+        form.is_active.data = True
+    if form.validate_on_submit():
+        pastor = Pastor(
+            first_name=form.first_name.data.strip() or None,
+            last_name=form.last_name.data.strip(),
+            title=form.title.data.strip(),
+            is_active=form.is_active.data,
+        )
+        db.session.add(pastor)
+        db.session.commit()
+        _reload_pastors()
+        flash('Pastor "{}" angelegt.'.format(pastor.last_name), 'success')
+        return redirect(url_for('admin.pastors'))
+    return render_template('admin/edit_pastor.html', form=form, title='Neuer Pastor', is_new=True)
+
+
+@bp.route('/pastors/<int:pastor_id>/edit', methods=['GET', 'POST'])
+@admin_required
+def edit_pastor(pastor_id):
+    pastor = db.session.get(Pastor, pastor_id)
+    if pastor is None:
+        abort(404)
+    form = PastorForm(obj=pastor)
+    if request.method == 'GET':
+        form.first_name.data = pastor.first_name or ''
+        form.last_name.data = pastor.last_name
+        form.title.data = pastor.title
+        form.is_active.data = pastor.is_active
+    if form.validate_on_submit():
+        pastor.first_name = form.first_name.data.strip() or None
+        pastor.last_name = form.last_name.data.strip()
+        pastor.title = form.title.data.strip()
+        pastor.is_active = form.is_active.data
+        db.session.commit()
+        _reload_pastors()
+        flash('Pastor "{}" aktualisiert.'.format(pastor.last_name), 'success')
+        return redirect(url_for('admin.pastors'))
+    return render_template('admin/edit_pastor.html', form=form, pastor=pastor,
+                           title='Pastor bearbeiten', is_new=False)
+
+
+@bp.route('/pastors/<int:pastor_id>/delete', methods=['POST'])
+@admin_required
+def delete_pastor(pastor_id):
+    pastor = db.session.get(Pastor, pastor_id)
+    if pastor is None:
+        abort(404)
+    last_name = pastor.last_name
+    db.session.delete(pastor)
+    db.session.commit()
+    _reload_pastors()
+    flash('Pastor "{}" geloescht.'.format(last_name), 'success')
+    return redirect(url_for('admin.pastors'))
+
+
+def _reload_pastors():
+    """Aktualisiert den Pastor-Cache nach CRUD-Operationen."""
+    from flask import current_app
+    from formatting import reload_pastors
+    reload_pastors(current_app._get_current_object())

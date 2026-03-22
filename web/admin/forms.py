@@ -42,3 +42,11 @@ class ServiceTypeMappingForm(FlaskForm):
     priority = IntegerField('Prioritaet', validators=[NumberRange(min=0)], default=100)
     is_active = BooleanField('Aktiv')
     submit = SubmitField('Speichern')
+
+
+class PastorForm(FlaskForm):
+    first_name = StringField('Vorname (optional — fuer Disambiguierung)', validators=[Optional(), Length(max=256)])
+    last_name = StringField('Nachname', validators=[DataRequired(), Length(max=256)])
+    title = StringField('Boyens-Abkuerzung (z.B. P., Pn., Diakon, Prä., R.)', validators=[DataRequired(), Length(max=64)])
+    is_active = BooleanField('Aktiv')
+    submit = SubmitField('Speichern')
