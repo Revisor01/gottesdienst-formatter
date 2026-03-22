@@ -71,7 +71,12 @@ Plans:
   3. Ein Admin-Benutzer kann neue User anlegen und deren Passwörter setzen, ohne Zugriff auf den Server
   4. Die SQLite-Datenbank überlebt ein Watchtower-Redeployment ohne Datenverlust — das Volume ist persistent gemountet
   5. Der Endpunkt /health antwortet mit HTTP 200 und ist ohne Login erreichbar (Docker Healthcheck + Uptime Kuma)
-**Plans**: TBD
+**Plans:** 4 plans
+Plans:
+- [ ] 04-01-PLAN.md — App Factory, Extensions, User-Modell und Flask-Migrate
+- [ ] 04-02-PLAN.md — Auth Blueprint: Login/Logout, CSRF, @login_required, /health
+- [ ] 04-03-PLAN.md — Docker: SQLite Volume, Entrypoint mit Migrationen, Gunicorn
+- [ ] 04-04-PLAN.md — Admin User-Verwaltung und flask create-admin CLI
 
 ### Phase 5: UI Makeover + Formatierung
 **Goal**: Die App hat ein modernes, grünes Interface auf Tailwind-Basis, den Excel-Import entfernt und ein verbessertes Sonderformat-Parsing
@@ -102,6 +107,6 @@ Plans:
 | 1. Stabilisierung | 3/3 | Complete | 2026-03-21 |
 | 2. Formatierung | 2/2 | Complete | 2026-03-21 |
 | 3. Pipeline | 2/2 | Complete | 2026-03-22 |
-| 4. Fundament + Auth | 0/? | Not started | - |
+| 4. Fundament + Auth | 0/4 | In Progress | - |
 | 5. UI Makeover + Formatierung | 0/? | Not started | - |
 | 6. Settings + Auto-Mail | 0/? | Not started | - |
