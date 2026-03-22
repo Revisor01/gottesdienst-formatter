@@ -120,6 +120,16 @@ Keine weiteren — Plan wie vorgesehen umgesetzt.
 - `test_mail()`-Funktion kann als Referenz fuer den automatischen Versand dienen
 - APScheduler-Integration hat alle Voraussetzungen: UserSettings mit send_day, auto_send_enabled, smtp-Feldern
 
+## Self-Check: PASSED
+
+- web/settings/__init__.py: FOUND
+- web/settings/forms.py: FOUND
+- web/settings/routes.py: FOUND
+- web/templates/settings/settings.html: FOUND
+- Commit 07889ca: FOUND
+- Commit 6960108: FOUND
+- Commit c4c70af: FOUND
+
 ---
 *Phase: 06-settings-auto-mail*
 *Completed: 2026-03-22*
