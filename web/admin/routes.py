@@ -2,9 +2,9 @@ from functools import wraps
 from flask import render_template, redirect, url_for, flash, abort, request
 from flask_login import login_required, current_user
 from admin import bp
-from models import User, Organization
+from models import User, Organization, ServiceTypeMapping
 from extensions import db
-from admin.forms import CreateUserForm, EditUserForm, OrganizationForm
+from admin.forms import CreateUserForm, EditUserForm, OrganizationForm, ServiceTypeMappingForm
 
 
 def admin_required(f):
@@ -136,3 +136,90 @@ def _reload_orgs():
     """Aktualisiert den Org-Cache nach CRUD-Operationen."""
     from config import reload_organizations
     reload_organizations()
+
+
+# --- Service Type Mapping CRUD ---
+
+@bp.route('/service-types')
+@admin_required
+def service_types():
+    all_mappings = ServiceTypeMapping.query.order_by(
+        ServiceTypeMapping.priority.desc(), ServiceTypeMapping.keyword
+    ).all()
+    return render_template('admin/service_types.html', mappings=all_mappings)
+
+
+@bp.route('/service-types/new', methods=['GET', 'POST'])
+@admin_required
+def create_service_type():
+    form = ServiceTypeMappingForm()
+    if request.method == 'GET':
+        form.is_active.data = True
+        form.priority.data = 100
+    if form.validate_on_submit():
+        keyword = form.keyword.data.strip().lower()
+        if ServiceTypeMapping.query.filter_by(keyword=keyword).first():
+            flash('Ein Mapping mit diesem Schluesselwort existiert bereits.', 'danger')
+            return render_template('admin/edit_service_type.html', form=form, title='Neue Typ-Zuordnung', is_new=True)
+        mapping = ServiceTypeMapping(
+            keyword=keyword,
+            output_label=form.output_label.data.strip(),
+            priority=form.priority.data,
+            is_active=form.is_active.data,
+        )
+        db.session.add(mapping)
+        db.session.commit()
+        _reload_service_types()
+        flash('Typ-Zuordnung "{}" angelegt.'.format(mapping.keyword), 'success')
+        return redirect(url_for('admin.service_types'))
+    return render_template('admin/edit_service_type.html', form=form, title='Neue Typ-Zuordnung', is_new=True)
+
+
+@bp.route('/service-types/<int:mapping_id>/edit', methods=['GET', 'POST'])
+@admin_required
+def edit_service_type(mapping_id):
+    mapping = db.session.get(ServiceTypeMapping, mapping_id)
+    if mapping is None:
+        abort(404)
+    form = ServiceTypeMappingForm(obj=mapping)
+    if request.method == 'GET':
+        form.keyword.data = mapping.keyword
+        form.output_label.data = mapping.output_label
+        form.priority.data = mapping.priority
+        form.is_active.data = mapping.is_active
+    if form.validate_on_submit():
+        new_keyword = form.keyword.data.strip().lower()
+        existing = ServiceTypeMapping.query.filter_by(keyword=new_keyword).first()
+        if existing and existing.id != mapping_id:
+            flash('Ein anderes Mapping mit diesem Schluesselwort existiert bereits.', 'danger')
+            return render_template('admin/edit_service_type.html', form=form, mapping=mapping, title='Typ-Zuordnung bearbeiten', is_new=False)
+        mapping.keyword = new_keyword
+        mapping.output_label = form.output_label.data.strip()
+        mapping.priority = form.priority.data
+        mapping.is_active = form.is_active.data
+        db.session.commit()
+        _reload_service_types()
+        flash('Typ-Zuordnung "{}" aktualisiert.'.format(mapping.keyword), 'success')
+        return redirect(url_for('admin.service_types'))
+    return render_template('admin/edit_service_type.html', form=form, mapping=mapping, title='Typ-Zuordnung bearbeiten', is_new=False)
+
+
+@bp.route('/service-types/<int:mapping_id>/delete', methods=['POST'])
+@admin_required
+def delete_service_type(mapping_id):
+    mapping = db.session.get(ServiceTypeMapping, mapping_id)
+    if mapping is None:
+        abort(404)
+    keyword = mapping.keyword
+    db.session.delete(mapping)
+    db.session.commit()
+    _reload_service_types()
+    flash('Typ-Zuordnung "{}" geloescht.'.format(keyword), 'success')
+    return redirect(url_for('admin.service_types'))
+
+
+def _reload_service_types():
+    """Aktualisiert den Custom-Mappings-Cache nach CRUD-Operationen."""
+    from flask import current_app
+    from formatting import reload_custom_mappings
+    reload_custom_mappings(current_app._get_current_object())

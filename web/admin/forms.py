@@ -34,3 +34,11 @@ class OrganizationForm(FlaskForm):
     description = TextAreaField('Beschreibung', validators=[Optional(), Length(max=1024)])
     is_active = BooleanField('Aktiv')
     submit = SubmitField('Speichern')
+
+
+class ServiceTypeMappingForm(FlaskForm):
+    keyword = StringField('Schluesselwort (Kleinschreibung)', validators=[DataRequired(), Length(max=256)])
+    output_label = StringField('Ausgabe-Bezeichnung', validators=[DataRequired(), Length(max=256)])
+    priority = IntegerField('Prioritaet', validators=[NumberRange(min=0)], default=100)
+    is_active = BooleanField('Aktiv')
+    submit = SubmitField('Speichern')
