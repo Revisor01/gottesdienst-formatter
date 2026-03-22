@@ -6,6 +6,30 @@ Einzige Quelle der Wahrheit — alle Codepfade importieren von hier.
 """
 import re
 
+# Modul-globale Liste der Custom-Typ-Zuordnungen (aus DB geladen).
+# Jedes Element: {'keyword': str, 'output_label': str, 'priority': int}
+_custom_mappings = []
+
+
+def load_custom_mappings(app):
+    """Laedt Custom-Typ-Zuordnungen aus der DB und speichert sie im Modul-Cache."""
+    global _custom_mappings
+    with app.app_context():
+        from models import ServiceTypeMapping
+        mappings = (ServiceTypeMapping.query
+                    .filter_by(is_active=True)
+                    .order_by(ServiceTypeMapping.priority.desc())
+                    .all())
+        _custom_mappings = [
+            {'keyword': m.keyword.lower(), 'output_label': m.output_label}
+            for m in mappings
+        ]
+
+
+def reload_custom_mappings(app):
+    """Alias fuer load_custom_mappings — expliziter Name fuer post-CRUD-Aufrufe."""
+    load_custom_mappings(app)
+
 
 def format_date(date_obj):
     """Formatiert Datum im gewuenschten Format"""
@@ -47,6 +71,11 @@ def format_time(date_obj):
 def _match_service_type(titel):
     """Interne Hilfsfunktion: Ordnet Titel einem formatierten Typ zu (ohne Doppelpunkt-Split)."""
     titel_lower = titel.lower()
+
+    # Custom-Zuordnungen zuerst pruefen (hoehere Prioritaet als Built-ins)
+    for mapping in _custom_mappings:
+        if mapping['keyword'] in titel_lower:
+            return mapping['output_label']
 
     if 'tauffest' in titel_lower:
         return 'Tauffest'

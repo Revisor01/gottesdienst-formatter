@@ -85,10 +85,12 @@ def create_app(test_config=None):
     from scheduler import init_scheduler
     init_scheduler(app)
 
-    # Organisationen aus DB laden (nach DB-Init, innerhalb App-Kontext)
+    # Organisationen und Custom-Typ-Zuordnungen aus DB laden (nach DB-Init, innerhalb App-Kontext)
     with app.app_context():
         from config import reload_organizations
         reload_organizations()
+        from formatting import load_custom_mappings
+        load_custom_mappings(app)
 
     return app
 
