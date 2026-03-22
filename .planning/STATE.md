@@ -1,15 +1,15 @@
 ---
 gsd_state_version: 1.0
 milestone: v2.0
-milestone_name: App Relaunch
-status: roadmap_ready
-stopped_at: "Milestone v2.0 — Roadmap created, Phase 4 ready for planning"
-last_updated: "2026-03-22T00:00:00.000Z"
+milestone_name: milestone
+status: unknown
+stopped_at: Completed 04-01-PLAN.md
+last_updated: "2026-03-22T10:06:05.252Z"
 progress:
   total_phases: 6
   completed_phases: 3
-  total_plans: 7
-  completed_plans: 7
+  total_plans: 11
+  completed_plans: 8
 ---
 
 # Project State
@@ -19,15 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-22)
 
 **Core value:** Output muss 1:1 der Boyens-Fließtext-Vorgabe entsprechen — ohne redaktionelle Nacharbeit übernehmbar
-**Current focus:** Milestone v2.0 — App Relaunch (Phase 4: Fundament + Auth)
+**Current focus:** Phase 04 — fundament-auth
 
 ## Current Position
 
-Phase: 04
-Plan: Not started
-Status: Ready for `/gsd:plan-phase 4`
-
-Progress: ████████░░░░░░░░░░░░ 3/6 phases complete (v1.0 done, v2.0 starting)
+Phase: 04 (fundament-auth) — EXECUTING
+Plan: 2 of 4
 
 ## Performance Metrics
 
@@ -54,6 +51,7 @@ Progress: ████████░░░░░░░░░░░░ 3/6 phase
 - Trend: Stabil
 
 *Updated after each plan completion*
+| Phase 04-fundament-auth P01 | 217 | 3 tasks | 13 files |
 
 ## Accumulated Context
 
@@ -81,6 +79,10 @@ Recent decisions affecting current work:
 - [v2.0 Roadmap]: smtplib direkt statt Flask-Mail — Settings pro User aus DB, nicht global konfiguriert
 - [v2.0 Roadmap]: Gunicorn Single-Worker-Constraint in docker-compose.yml — APScheduler darf nur einmal laufen
 - [v2.0 Roadmap]: Tailwind CLI Build-Artefakt in static/css/ — kein Node.js im Docker-Container
+- [Phase 04-fundament-auth]: extensions.py Singleton-Pattern ohne App-Binding — init_app() in create_app() loest Circular-Import-Problem
+- [Phase 04-fundament-auth]: is_active_user als DB-Feld, is_active als Property — vermeidet Konflikt mit Flask-Login UserMixin
+- [Phase 04-fundament-auth]: SECRET_KEY RuntimeError ohne Fallback — kein secrets.token_hex() als Sicherheitsnetz (Pitfall 1)
+- [Phase 04-fundament-auth]: migrations/ im Repo committed — Container generiert keine Migrationen, nur flask db upgrade (Pitfall 2)
 
 ### Critical Pitfalls for Phase 4
 
@@ -106,7 +108,7 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-22
-Stopped at: v2.0 Roadmap erstellt — Phase 4 ready for planning
+Last session: 2026-03-22T10:06:05.250Z
+Stopped at: Completed 04-01-PLAN.md
 Resume file: None
 Next action: `/gsd:plan-phase 4`

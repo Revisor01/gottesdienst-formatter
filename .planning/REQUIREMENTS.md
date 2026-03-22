@@ -7,10 +7,10 @@
 
 ### Foundation
 
-- [ ] **FOUND-01**: App Factory Pattern (create_app()) statt globaler Flask-Instanz
-- [ ] **FOUND-02**: SQLite-Datenbank mit Flask-SQLAlchemy und Flask-Migrate
+- [x] **FOUND-01**: App Factory Pattern (create_app()) statt globaler Flask-Instanz
+- [x] **FOUND-02**: SQLite-Datenbank mit Flask-SQLAlchemy und Flask-Migrate
 - [ ] **FOUND-03**: SQLite-Volume in docker-compose.prod.yml für DB-Persistenz
-- [ ] **FOUND-04**: Persistenter SECRET_KEY (nicht mehr secrets.token_hex Fallback)
+- [x] **FOUND-04**: Persistenter SECRET_KEY (nicht mehr secrets.token_hex Fallback)
 - [ ] **FOUND-05**: Health-Check Endpoint /health
 
 ### Authentication
@@ -68,10 +68,10 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FOUND-01 | Phase 4 | Pending |
-| FOUND-02 | Phase 4 | Pending |
+| FOUND-01 | Phase 4 | Complete |
+| FOUND-02 | Phase 4 | Complete |
 | FOUND-03 | Phase 4 | Pending |
-| FOUND-04 | Phase 4 | Pending |
+| FOUND-04 | Phase 4 | Complete |
 | FOUND-05 | Phase 4 | Pending |
 | AUTH-01 | Phase 4 | Pending |
 | AUTH-02 | Phase 4 | Pending |
