@@ -103,6 +103,17 @@ def test_format_service_type_case_insensitive():
     ("",                                  ""),
     ("Pastor Soost & Team",               "P. Soost & Team"),
     ("Pastorin Braun und Pastor Klein",   "Pn. Braun, P. Klein"),
+    # Boyens: nur Nachname — Vorname wird entfernt
+    ("Pastor Simon Luthe",               "P. Luthe"),
+    ("Pastorin Ulrike Verwold",          "Pn. Verwold"),
+    ("Diakon Ulf Fiebrandt",            "Diakon Fiebrandt"),
+    ("Diakonin Susanne Jordan",         "Diakonin Jordan"),
+    ("Prädikantin Frauke Hjort",        "Prädikantin Hjort"),
+    ("Pastorin Astrid Buchin",          "Pn. Buchin"),
+    # Doppelname bleibt erhalten
+    ("Pastorin Claudia Ruge-Tolksdorf", "Pn. Ruge-Tolksdorf"),
+    # Mehrere mit Vornamen
+    ("Pastorin Ulrike Verwold, Pastor Simon Luthe", "Pn. Verwold, P. Luthe"),
 ])
 def test_format_pastor(contributor, expected):
     assert format_pastor(contributor) == expected

@@ -196,12 +196,17 @@ def format_pastor(contributor: str) -> str:
                 clean_name = clean_name[len(prefix):].strip()
                 break
 
+        # Boyens: nur Nachname — Vorname entfernen
+        # Nachname = letztes Wort (oder Doppelname mit Bindestrich)
+        name_parts = clean_name.split()
+        if len(name_parts) > 1:
+            # Letztes Wort ist der Nachname (auch bei "Ruge-Tolksdorf")
+            clean_name = name_parts[-1]
+
         # Determine new prefix based on original text - be more specific in detection
         if 'diakonin' in contrib_lower:
-            # D-15: Diakonin ausgeschrieben
             formatted_contributors.append("Diakonin {}".format(clean_name))
         elif 'diakon' in contrib_lower:
-            # D-15: Diakon ausgeschrieben (nicht D.)
             formatted_contributors.append("Diakon {}".format(clean_name))
         elif 'pastores' in contrib_lower:
             formatted_contributors.append("Ps. {}".format(clean_name))
@@ -213,12 +218,10 @@ def format_pastor(contributor: str) -> str:
             formatted_contributors.append("Pn. {}".format(clean_name))
         elif 'p.' in contrib_lower:
             formatted_contributors.append("P. {}".format(clean_name))
-        # D-16: Prädikantin vor Prädikant (weil "prädikant" in "prädikantin" enthalten)
         elif 'prädikantin' in contrib_lower:
             formatted_contributors.append("Prädikantin {}".format(clean_name))
         elif 'prädikant' in contrib_lower:
             formatted_contributors.append("Prädikant {}".format(clean_name))
-        # D-17: R. als Titel beibehalten
         elif contrib.startswith('R. '):
             formatted_contributors.append("R. {}".format(clean_name))
         else:
