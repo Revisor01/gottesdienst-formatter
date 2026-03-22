@@ -1,9 +1,9 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-status: unknown
-stopped_at: "Completed quick task 260322-dpr: Location extraction fixes"
+milestone: v2.0
+milestone_name: App Relaunch
+status: defining_requirements
+stopped_at: "Milestone v2.0 started — defining requirements"
 last_updated: "2026-03-22T09:10:59.896Z"
 progress:
   total_phases: 3
@@ -19,7 +19,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-21)
 
 **Core value:** Output muss 1:1 der Boyens-Fließtext-Vorgabe entsprechen — ohne redaktionelle Nacharbeit übernehmbar
-**Current focus:** Phase 03 — pipeline
+**Current focus:** Milestone v2.0 — App Relaunch (defining requirements)
 
 ## Current Position
 

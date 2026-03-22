@@ -2,67 +2,82 @@
 
 ## What This Is
 
-Web-Anwendung des ev.-luth. Kirchenkreises Dithmarschen, die Gottesdiensttermine aus ChurchDesk-APIs und Excel-Dateien in exakt formatierte Fließtexte für Boyens Medien umwandelt. Die Termine werden nach Datum sortiert, mit standardisierten Abkürzungen (Gd., P., Pn.) und im vorgegebenen Fließtext-Format ausgegeben.
+Web-Anwendung des ev.-luth. Kirchenkreises Dithmarschen, die Gottesdiensttermine aus ChurchDesk-APIs in exakt formatierte Fließtexte für Boyens Medien umwandelt und automatisch per E-Mail verschickt. Mit Login, Benutzerverwaltung und Settings-Seite zur Konfiguration.
 
 ## Core Value
 
 Der Output muss 1:1 der Boyens-Fließtext-Vorgabe entsprechen — ohne redaktionelle Nacharbeit übernehmbar.
 
+## Current Milestone: v2.0 — App Relaunch
+
+**Goal:** Aus dem Formatter-Tool eine vollwertige Web-App machen: modernes UI, Login, Settings, automatische Mail, Excel-Import raus.
+
+**Target features:**
+- Excel-Import entfernen (nur noch ChurchDesk-API)
+- Web-Interface Makeover (Grün als Farbe)
+- Login mit Benutzerverwaltung (mehrere User)
+- Settings-Seite (Org-Verwaltung, Mail-Einstellungen pro User)
+- Automatische E-Mail an Boyens (konfigurierbar pro User, nicht ENV)
+- Sonderformat-Titel besser parsen
+- Vorschau im Web-Interface mit Warnungen
+- Health-Check Endpoint
+
 ## Requirements
 
 ### Validated
 
-- ✓ Excel-Upload mit Verarbeitung zu Fließtext — existing
 - ✓ ChurchDesk-API-Anbindung für mehrere Organisationen — existing
 - ✓ Sortierung nach Datum — existing
-- ✓ Deutsche Datums-/Zeitformatierung (Sonnabend, 5. April / 9.30 Uhr) — existing
-- ✓ Gottesdienst-Typ-Abkürzungen (Gd., Gd. m. A., Gd. m. T.) — existing
-- ✓ Pastor-Titel-Formatierung (P., Pn.) — existing
-- ✓ Standort-Extraktion mit Kirchennamen bei Mehrdeutigkeit — existing
-- ✓ Web-Interface mit Download/Clipboard-Funktion — existing
-- ✓ Docker-Deployment auf Produktionsserver — existing
-- ✓ Code-Deduplizierung: Formatierungslogik zentralisiert in web/formatting.py — Phase 1
-- ✓ Saubere Erweiterbarkeit: neue ChurchDesk-Orgs nur per ENV-Vars — Phase 1
-- ✓ API-Tokens aus Quellcode entfernt, ENV-basierte Konfiguration — Phase 1
-- ✓ Pastor-Formatierung konsolidiert: eine Implementierung in web/formatting.py — Phase 1
-- ✓ Saubere Schichtentrennung: API-Client / Formatierung / Web-Interface — Phase 1
-
-- ✓ Formatierungs-Output exakt nach Boyens-Vorgabe — Phase 2
+- ✓ Deutsche Datums-/Zeitformatierung — existing
+- ✓ Gottesdienst-Typ-Abkürzungen — existing
+- ✓ Pastor-Titel-Formatierung — existing
+- ✓ Standort-Extraktion mit Kirchennamen — existing
+- ✓ Web-Interface mit Download/Clipboard — existing
+- ✓ Docker-Deployment mit CI/CD — v1.0
+- ✓ Formatierungslogik zentralisiert in web/formatting.py — v1.0
+- ✓ ENV-basierte Konfiguration — v1.0
+- ✓ Formatierungs-Output exakt nach Boyens-Vorgabe — v1.0
+- ✓ Unit-Tests + Goldstandard-Fixture — v1.0
+- ✓ GitHub Actions CI/CD + Watchtower — v1.0
 
 ### Active
 
-- [ ] Automatisierte Tests für Formatierungsfunktionen
-- [ ] CI/CD Pipeline (GitHub Actions → Portainer)
+(Defined in REQUIREMENTS.md for v2.0)
 
 ### Out of Scope
 
-- Andere Konfessionen (Katholisch, Freikirchlich, Neuapostolisch) — Kirchenkreis liefert nur ev.-luth. Daten
-- Mobile App — Web-Interface reicht
-- Automatischer E-Mail-Versand an Boyens — manuelle Übermittlung genügt
+- Andere Konfessionen (Kath., Freikirchlich, Neuapostolisch) — Kirchenkreis liefert nur ev.-luth. Daten
+- Mobile App — Web-Interface genügt
 - Mehrsprachigkeit — nur Deutsch relevant
+- Excel-Import — wird in v2.0 entfernt, nur noch ChurchDesk-API
 
 ## Context
 
-- **Auftraggeber-Vorgabe**: Boyens Medien (Chefredakteur Johannes Simonsen) hat ein exaktes Fließtext-Format definiert, das ohne Nacharbeit ins Redaktionssystem übernommen werden kann
-- **Formatvorgabe-Highlights**: Datum-Überschrift, dann Orte alphabetisch mit Uhrzeit, Typ, Pastor; bei mehreren Kirchen pro Ort den Kirchennamen angeben; spezielle Titel wie Diakon, Prädikantin, R. neben P./Pn.
-- **Bestehender Code**: Funktioniert grundsätzlich, aber dreifach duplizierte Formatierungslogik, hardcoded API-Tokens, keine Tests
-- **Codebase-Map**: Siehe `.planning/codebase/` für detaillierte Analyse
-- **Erweiterung geplant**: Weitere Kirchengemeinden mit eigenen ChurchDesk-Instanzen werden hinzukommen
+- **v1.0 abgeschlossen**: Stabilisierung, Formatierung, CI/CD Pipeline — alles läuft
+- **Auftraggeber**: Boyens Medien, Fließtext-Format ist Pflicht
+- **Infrastruktur**: Docker + Watchtower auf 185.248.143.234, automatisches Deployment via GitHub Actions
+- **Neue Anforderung v2.0**: Aus Tool eine echte App machen — Login, Settings, automatische Mail
+- **Design**: Grün als Farbe gesetzt
+- **Mail-Konfiguration**: Pro User in Settings, NICHT in ENV-Vars
+- **Datenbank nötig**: Für User-Accounts und Settings (SQLite oder PostgreSQL)
 
 ## Constraints
 
-- **Formatierung**: Output muss exakt der Boyens-Vorgabe entsprechen — Abweichungen führen zur Nicht-Veröffentlichung
-- **Tech Stack**: Python/Flask — bestehende Infrastruktur beibehalten
-- **Deployment**: Docker auf 185.248.143.234, URL http://gd.kkd-fahrtenbuch.de
-- **Datenquelle**: ChurchDesk API v3.0.0 — Struktur der API-Responses ist gegeben
+- **Formatierung**: Output muss exakt der Boyens-Vorgabe entsprechen
+- **Tech Stack**: Python/Flask — beibehalten, erweitern um DB
+- **Deployment**: Docker auf 185.248.143.234, automatisch via Watchtower
+- **Farbe**: Grün ist gesetzt für das UI
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Nur ev.-luth. Termine | Kirchenkreis liefert nur eigene Daten, andere Konfessionen separat | — Pending |
-| Brownfield-Stabilisierung vor Features | Code muss sauber sein bevor weitere APIs dazukommen | — Pending |
-| Boyens-Fließtext als Referenzformat | Offizielle Vorgabe vom Chefredakteur, nicht verhandelbar | — Pending |
+| Nur ev.-luth. Termine | Kirchenkreis liefert nur eigene Daten | ✓ Good |
+| Boyens-Fließtext als Referenzformat | Offizielle Vorgabe vom Chefredakteur | ✓ Good |
+| Excel-Import entfernen | Alles kommt aus ChurchDesk-API, Excel war Legacy | — v2.0 |
+| Mail-Settings pro User, nicht ENV | Flexibler, mehrere User möglich | — v2.0 |
+| Grün als UI-Farbe | User-Entscheidung | — v2.0 |
+| Login + Benutzerverwaltung | Mehrere User sollen das Tool nutzen können | — v2.0 |
 
 ## Evolution
 
@@ -82,4 +97,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-22 after Phase 2 completion*
+*Last updated: 2026-03-22 after milestone v2.0 start*
