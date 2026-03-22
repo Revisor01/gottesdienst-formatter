@@ -1,97 +1,102 @@
-# Requirements: Gottesdienst-Formatter
+# Requirements: Gottesdienst-Formatter v2.0
 
-**Defined:** 2026-03-21
-**Core Value:** Output muss 1:1 der Boyens-Fließtext-Vorgabe entsprechen
+**Defined:** 2026-03-22
+**Core Value:** Output muss 1:1 der Boyens-Fließtext-Vorgabe entsprechen — ohne redaktionelle Nacharbeit übernehmbar
 
-## v1 Requirements
+## v2.0 Requirements
+
+### Foundation
+
+- [ ] **FOUND-01**: App Factory Pattern (create_app()) statt globaler Flask-Instanz
+- [ ] **FOUND-02**: SQLite-Datenbank mit Flask-SQLAlchemy und Flask-Migrate
+- [ ] **FOUND-03**: SQLite-Volume in docker-compose.prod.yml für DB-Persistenz
+- [ ] **FOUND-04**: Persistenter SECRET_KEY (nicht mehr secrets.token_hex Fallback)
+- [ ] **FOUND-05**: Health-Check Endpoint /health
+
+### Authentication
+
+- [ ] **AUTH-01**: Login/Logout mit Flask-Login und Session-basierter Auth
+- [ ] **AUTH-02**: User-Modell mit Passwort-Hashing (Werkzeug security)
+- [ ] **AUTH-03**: Alle bestehenden Routes hinter @login_required
+- [ ] **AUTH-04**: Admin-Benutzer kann neue User anlegen und verwalten
+- [ ] **AUTH-05**: CSRF-Schutz auf allen Formularen (Flask-WTF)
+
+### UI
+
+- [ ] **UI-01**: Web-Interface Makeover mit Tailwind CSS (Grün als Primärfarbe)
+- [ ] **UI-02**: Responsive Layout für Desktop und Tablet
+- [ ] **UI-03**: Vorschau des formatierten Textes vor Download mit Warnungen bei Problemen
+- [ ] **UI-04**: Excel-Upload-Funktion komplett entfernen (nur noch ChurchDesk-API)
+
+### Settings
+
+- [ ] **SET-01**: Settings-Seite im Web-Interface für User-Konfiguration
+- [ ] **SET-02**: Mail-Einstellungen pro User (SMTP-Server, Port, Absender, Empfänger)
+- [ ] **SET-03**: Organisationen-Übersicht (welche ChurchDesk-Orgs aktiv sind, aus ENV)
+- [ ] **SET-04**: Test-Mail-Button zum Prüfen der SMTP-Konfiguration
+
+### Auto-Mail
+
+- [ ] **MAIL-01**: Automatischer monatlicher E-Mail-Versand des Boyens-Exports
+- [ ] **MAIL-02**: Versandzeitpunkt konfigurierbar pro User (Default: 18. des Monats)
+- [ ] **MAIL-03**: E-Mail enthält formatierten Text als Anhang (.txt) und im Body
+- [ ] **MAIL-04**: APScheduler für zeitgesteuerten Versand (Single-Worker-Constraint)
 
 ### Formatierung
 
-- [x] **FMT-01**: Output folgt exakt der Boyens-Fließtext-Struktur (Datum-Überschrift, dann Orte alphabetisch, keine Tabellen)
-- [x] **FMT-02**: Zeitformat korrekt: "9.30 Uhr" (mit Punkt), "17 Uhr" (ohne Minuten bei vollen Stunden)
-- [x] **FMT-03**: Datumsformat korrekt: "Sonnabend, 5. April" (Sonnabend statt Samstag, kein führendes Null)
-- [x] **FMT-04**: Gottesdienst-Typ-Abkürzungen vollständig: Gd., Gd. m. A., Gd. m. T., Familiengd., Konfirmation, Abendmahlgd. m. T., Gd. m. Popularmusik, Gd. m. Konfirmandenprüfung
-- [x] **FMT-05**: Pastor-Titel vollständig: P., Pn., Diakon, Prädikantin, R. (nicht nur P./Pn.)
-- [x] **FMT-06**: Bei Orten mit mehreren Kirchen den Kirchennamen angeben (z.B. "Heide, St.-Jürgen" vs. "Heide, Auferstehungskirche")
-- [x] **FMT-07**: Mehrere Termine am gleichen Ort in einer Zeile möglich (z.B. "11 Uhr, Gd. m. A., anschl. Kirchcafé; 15.30 Uhr, Kinderkirche")
-- [x] **FMT-08**: Zusatzinfos wie "anschl. Kirchcafé", "anschl. Kirchenkaffee" korrekt übernommen
-- [x] **FMT-09**: Mehrere Pastoren pro Gottesdienst korrekt formatiert (z.B. "Pn. Christ, Pn. Hoffmann, P. Soost")
+- [ ] **FMT-10**: Sonderformat-Titel besser parsen (Gottesdienst mit...: Untertitel → "Gd. m. A." + Untertitel)
 
-### Code-Qualität
-
-- [x] **CODE-01**: Formatierungslogik in einem zentralen Modul (nicht 3x dupliziert über app.py, churchdesk_api.py, standalone-Script)
-- [x] **CODE-02**: Pastor-Formatierung: eine konsolidierte Implementierung statt drei verschiedener
-- [x] **CODE-03**: Klare Schichtentrennung: API-Client / Formatierung / Web-Interface als separate Module
-- [x] **CODE-04**: Neue ChurchDesk-Organisation hinzufügen erfordert nur Konfiguration, keinen Code-Change
-
-### Sicherheit
-
-- [x] **SEC-01**: Alle API-Tokens aus Quellcode entfernt, nur via Environment Variables geladen
-- [x] **SEC-02**: Flask Secret Key via Environment Variable, nicht hardcoded
-
-### Testing
-
-- [x] **TEST-01**: Unit-Tests für alle Formatierungsfunktionen (Datum, Zeit, Gottesdienst-Typ, Pastor-Titel)
-- [x] **TEST-02**: Test-Fixture mit echtem Boyens-Referenz-Output als Goldstandard
-
-### Deployment
-
-- [x] **DEPLOY-01**: GitHub Actions Workflow: Build Docker Image und Push zu Container Registry
-- [x] **DEPLOY-02**: Automatisches Deployment auf Portainer (kein manueller Server-Build mehr)
-- [x] **DEPLOY-03**: Git Push → Image Build → Portainer Update als vollautomatische Pipeline
-
-## v2 Requirements
+## Future Requirements
 
 ### Erweiterung
-
-- **EXT-01**: Weitere Kirchengemeinden mit eigenen ChurchDesk-Instanzen einfach hinzufügbar
-- **EXT-02**: Automatischer monatlicher Export/Versand an Boyens
-
-### Monitoring
-
-- **MON-01**: Logging für API-Fehler und fehlgeschlagene Formatierungen
-- **MON-02**: Health-Check-Endpoint für Uptime-Monitoring
+- **EXT-01**: ChurchDesk-Org-Verwaltung in Settings statt nur ENV
+- **EXT-02**: Diff-Ansicht zwischen letztem und aktuellem Export
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| Andere Konfessionen (Kath., Freikirchlich, Neuapostolisch) | Kirchenkreis liefert nur ev.-luth. Daten |
+| Andere Konfessionen | Kirchenkreis liefert nur ev.-luth. Daten |
 | Mobile App | Web-Interface genügt |
-| Automatischer E-Mail-Versand | Manuelle Übermittlung reicht für v1 |
-| Mehrsprachigkeit | Nur Deutsch relevant |
-| Print-Layout/PDF-Export | Boyens will Fließtext, kein Layout |
+| OAuth / Social Login | Flask-Login mit Passwort reicht für internes Tool |
+| Celery / Redis | APScheduler in-process genügt für monatlichen Versand |
+| PostgreSQL | SQLite reicht für <20 User |
+| Flask-Admin | Custom-Routes sind wartbarer als generische Admin-Views |
+| Excel-Import | Wird in v2.0 entfernt, nicht verbessert |
 
 ## Traceability
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FMT-01 | Phase 2 | Complete |
-| FMT-02 | Phase 2 | Complete |
-| FMT-03 | Phase 2 | Complete |
-| FMT-04 | Phase 2 | Complete |
-| FMT-05 | Phase 2 | Complete |
-| FMT-06 | Phase 2 | Complete |
-| FMT-07 | Phase 2 | Complete |
-| FMT-08 | Phase 2 | Complete |
-| FMT-09 | Phase 2 | Complete |
-| CODE-01 | Phase 1 | Complete |
-| CODE-02 | Phase 1 | Complete |
-| CODE-03 | Phase 1 | Complete |
-| CODE-04 | Phase 1 | Complete |
-| SEC-01 | Phase 1 | Complete |
-| SEC-02 | Phase 1 | Complete |
-| TEST-01 | Phase 3 | Complete |
-| TEST-02 | Phase 3 | Complete |
-| DEPLOY-01 | Phase 3 | Complete |
-| DEPLOY-02 | Phase 3 | Complete |
-| DEPLOY-03 | Phase 3 | Complete |
+| FOUND-01 | — | Pending |
+| FOUND-02 | — | Pending |
+| FOUND-03 | — | Pending |
+| FOUND-04 | — | Pending |
+| FOUND-05 | — | Pending |
+| AUTH-01 | — | Pending |
+| AUTH-02 | — | Pending |
+| AUTH-03 | — | Pending |
+| AUTH-04 | — | Pending |
+| AUTH-05 | — | Pending |
+| UI-01 | — | Pending |
+| UI-02 | — | Pending |
+| UI-03 | — | Pending |
+| UI-04 | — | Pending |
+| SET-01 | — | Pending |
+| SET-02 | — | Pending |
+| SET-03 | — | Pending |
+| SET-04 | — | Pending |
+| MAIL-01 | — | Pending |
+| MAIL-02 | — | Pending |
+| MAIL-03 | — | Pending |
+| MAIL-04 | — | Pending |
+| FMT-10 | — | Pending |
 
 **Coverage:**
-- v1 requirements: 20 total
-- Mapped to phases: 20
-- Unmapped: 0
+- v2.0 requirements: 23 total
+- Mapped to phases: 0
+- Unmapped: 23 ⚠️
 
 ---
-*Requirements defined: 2026-03-21*
-*Last updated: 2026-03-21 after roadmap creation*
+*Requirements defined: 2026-03-22*
+*Last updated: 2026-03-22 after milestone v2.0 definition*
