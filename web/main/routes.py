@@ -31,12 +31,7 @@ def format_parish_name(parish_title):
 
 
 def _extract_suffix(titel):
-    """Extrahiert Zusatzinfos wie 'anschl. Kirchcafé' aus dem Titel (D-12)"""
-    titel_lower = titel.lower() if titel else ''
-    for marker in [', anschl', ',anschl']:
-        idx = titel_lower.find(marker)
-        if idx != -1:
-            return titel[idx:]  # includes leading comma
+    """Keine Zusatzinfos im Boyens-Output — strikt nur Typ + Pastor."""
     return ''
 
 

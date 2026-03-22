@@ -222,18 +222,56 @@ def _lookup_pastor(text):
     return '{} {}'.format(p['title'], p['last_name'])
 
 
+def _regex_fallback_pastor(contrib):
+    """
+    Fallback fuer Pastoren die NICHT in der DB stehen.
+    Regex-basiertes Prefix-Parsing: Pastor → P., Pastorin → Pn., etc.
+    Nur Nachname ausgeben (Vorname entfernen).
+    """
+    # Bekannte Prefixe und ihre Boyens-Abkuerzungen
+    prefix_map = [
+        ('Diakonin ',      'Diakonin'),
+        ('Diakon ',        'Diakon'),
+        ('Pastores ',      'Ps.'),
+        ('Pastorin ',      'Pn.'),
+        ('Pastor ',        'P.'),
+        ('Pfarrer ',       'P.'),
+        ('Pn. ',           'Pn.'),
+        ('P. ',            'P.'),
+        ('Prädikantin ',   'Prä.'),
+        ('Prädikant ',     'Prä.'),
+        ('R. ',            'R.'),
+    ]
+
+    for prefix, title in prefix_map:
+        if contrib.startswith(prefix):
+            rest = contrib[len(prefix):].strip()
+            surname = _extract_surname(rest)
+            return '{} {}'.format(title, surname)
+
+    # Kein bekannter Prefix — durchreichen
+    return contrib
+
+
 def format_pastor(contributor: str) -> str:
     """
-    Formatiert Mitwirkende nach Boyens-Standard per DB-Lookup.
+    Formatiert Mitwirkende nach Boyens-Standard.
 
-    Fuer jeden Teil des Contributor-Strings: Suche ob ein bekannter Nachname
-    aus dem Pastor-Cache enthalten ist. Wenn ja → 'Titel Nachname'.
-    Wenn nein → unveraendert durchreichen (Kantorei, Frauenhilfe, Team, etc.).
+    Strategie:
+    1. DB-Lookup: Nachname im Pastor-Cache? → exakter Match mit Titel
+    2. Regex-Fallback: Prefix-Parsing fuer unbekannte Pastoren
+    3. Durchreichen: Gruppen (Kantorei, WGT-Team, Frauenhilfe, etc.)
     """
     if not contributor:
         return ""
 
     name = str(contributor).strip()
+
+    # Weltgebetstagssteam normalisieren
+    wgt_patterns = ['weltgebetstagsteam', 'weltsgebetstagsteam', 'weltgebetstagssteam',
+                    'wgt-team', 'wgt team']
+    if any(p in name.lower() for p in wgt_patterns):
+        return 'WGT-Team'
 
     # D-19: "& Team" vor dem Splitten merken und spaeter anhaengen
     has_team = name.endswith('& Team') or name.endswith('&amp; Team')
@@ -250,7 +288,6 @@ def format_pastor(contributor: str) -> str:
             split_done = True
             break
 
-    # Komma als Fallback-Delimiter (wenn kein & oder und gefunden)
     if not split_done and ', ' in name:
         contributors = [c.strip() for c in name.split(', ')]
 
@@ -274,26 +311,30 @@ def format_pastor(contributor: str) -> str:
             formatted_contributors.append('Konfirmand:innen')
             continue
 
-        # Noise-Teile aus dem String entfernen (Mitte oder Suffix)
+        # WGT normalisieren (auch als Teil eines Splits)
+        if any(p in contrib_lower for p in wgt_patterns):
+            formatted_contributors.append('WGT-Team')
+            continue
+
+        # Noise-Teile aus dem String entfernen
         for noise_part in ['Prädikantin in Ausbildung ', 'Prädikant in Ausbildung ',
                            ' Prädikantin in Ausbildung', ' Prädikant in Ausbildung',
                            ' in Ausbildung']:
             contrib = contrib.replace(noise_part, ' ').strip()
-        # "anschließend..." am Ende abschneiden
         for suffix in [' anschließend', ' anschl.']:
             idx = contrib.lower().find(suffix.lower())
             if idx > 0:
                 contrib = contrib[:idx].strip()
 
-        # DB-Lookup: Nachname im Text?
+        # 1. DB-Lookup: Nachname im Pastor-Cache?
         result = _lookup_pastor(contrib)
         if result is not None:
             formatted_contributors.append(result)
         else:
-            # Kein bekannter Pastor — unveraendert durchreichen
-            formatted_contributors.append(contrib)
+            # 2. Regex-Fallback: Prefix-Parsing
+            formatted_contributors.append(_regex_fallback_pastor(contrib))
 
-    # Deduplizierung: gleiche Einträge entfernen (z.B. "Popkantorin Petersen" doppelt)
+    # Deduplizierung
     seen = []
     for fc in formatted_contributors:
         if fc not in seen:
