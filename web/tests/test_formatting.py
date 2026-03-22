@@ -168,3 +168,29 @@ def test_extract_boyens_location_display(location_name, expected):
 ])
 def test_format_service_type_sonderformat(titel, expected):
     assert format_service_type(titel) == expected
+
+
+# ---------------------------------------------------------------------------
+# FMT-10: Doppelpunkt-Titel — Typ + Untertitel
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize("titel, expected", [
+    # Abendmahl-Typ + Untertitel
+    ("Gottesdienst mit Abendmahl: Erntedank",               "Gd. m. A. Erntedank"),
+    # Taufe-Typ + Untertitel
+    ("Gottesdienst mit Taufe: Familiengottesdienst",         "Gd. m. T. Familiengottesdienst"),
+    # Abendmahl+Taufe kombiniert + Untertitel
+    ("Gottesdienst mit Abendmahl und Taufe: Pfingsten",      "Abendmahlgd. m. T. Pfingsten"),
+    # Nur "Gottesdienst" vor Doppelpunkt -> "Gd." + Untertitel
+    ("Gottesdienst: Lichterfest",                            "Gd. Lichterfest"),
+    # Doppelpunkt ohne Untertitel -> Typ allein
+    ("Gottesdienst:",                                        "Gd."),
+])
+def test_fmt10_doppelpunkt_split(titel, expected):
+    assert format_service_type(titel) == expected
+
+
+def test_fmt10_anfuehrungszeichen_unveraendert():
+    """Titel mit typografischen Anfuehrungszeichen werden 1:1 uebernommen."""
+    titel = '\u201eUnterwegs\u201c Brotzeit: Die Wohnzimmerkirche in Heide (Sued)'
+    assert format_service_type(titel) == titel
