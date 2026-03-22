@@ -37,10 +37,10 @@
 
 ### Auto-Mail
 
-- [ ] **MAIL-01**: Automatischer monatlicher E-Mail-Versand des Boyens-Exports
-- [ ] **MAIL-02**: Versandzeitpunkt konfigurierbar pro User (Default: 18. des Monats)
-- [ ] **MAIL-03**: E-Mail enthält formatierten Text als Anhang (.txt) und im Body
-- [ ] **MAIL-04**: APScheduler für zeitgesteuerten Versand (Single-Worker-Constraint)
+- [x] **MAIL-01**: Automatischer monatlicher E-Mail-Versand des Boyens-Exports
+- [x] **MAIL-02**: Versandzeitpunkt konfigurierbar pro User (Default: 18. des Monats)
+- [x] **MAIL-03**: E-Mail enthält formatierten Text als Anhang (.txt) und im Body
+- [x] **MAIL-04**: APScheduler für zeitgesteuerten Versand (Single-Worker-Constraint)
 
 ### Formatierung
 
@@ -87,10 +87,10 @@
 | SET-02 | Phase 6 | Complete |
 | SET-03 | Phase 6 | Complete |
 | SET-04 | Phase 6 | Complete |
-| MAIL-01 | Phase 6 | Pending |
-| MAIL-02 | Phase 6 | Pending |
-| MAIL-03 | Phase 6 | Pending |
-| MAIL-04 | Phase 6 | Pending |
+| MAIL-01 | Phase 6 | Complete |
+| MAIL-02 | Phase 6 | Complete |
+| MAIL-03 | Phase 6 | Complete |
+| MAIL-04 | Phase 6 | Complete |
 
 **Coverage:**
 - v2.0 requirements: 23 total
