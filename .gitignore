@@ -52,3 +52,5 @@ Thumbs.db
 # Claude Code Configuration
 .claude/
 CLAUDE.md
+node_modules/
+web/data/
