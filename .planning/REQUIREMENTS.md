@@ -23,8 +23,8 @@
 
 ### UI
 
-- [ ] **UI-01**: Web-Interface Makeover mit Tailwind CSS (Grün als Primärfarbe)
-- [ ] **UI-02**: Responsive Layout für Desktop und Tablet
+- [x] **UI-01**: Web-Interface Makeover mit Tailwind CSS (Grün als Primärfarbe)
+- [x] **UI-02**: Responsive Layout für Desktop und Tablet
 - [ ] **UI-03**: Vorschau des formatierten Textes vor Download mit Warnungen bei Problemen
 - [ ] **UI-04**: Excel-Upload-Funktion komplett entfernen (nur noch ChurchDesk-API)
 
@@ -44,7 +44,7 @@
 
 ### Formatierung
 
-- [ ] **FMT-10**: Sonderformat-Titel besser parsen (Gottesdienst mit...: Untertitel → "Gd. m. A." + Untertitel)
+- [x] **FMT-10**: Sonderformat-Titel besser parsen (Gottesdienst mit...: Untertitel → "Gd. m. A." + Untertitel)
 
 ## Future Requirements
 
@@ -78,11 +78,11 @@
 | AUTH-03 | Phase 4 | Complete |
 | AUTH-04 | Phase 4 | Complete |
 | AUTH-05 | Phase 4 | Complete |
-| UI-01 | Phase 5 | Pending |
-| UI-02 | Phase 5 | Pending |
+| UI-01 | Phase 5 | Complete |
+| UI-02 | Phase 5 | Complete |
 | UI-03 | Phase 5 | Pending |
 | UI-04 | Phase 5 | Pending |
-| FMT-10 | Phase 5 | Pending |
+| FMT-10 | Phase 5 | Complete |
 | SET-01 | Phase 6 | Pending |
 | SET-02 | Phase 6 | Pending |
 | SET-03 | Phase 6 | Pending |

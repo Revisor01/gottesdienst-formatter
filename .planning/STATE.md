@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 04-04-PLAN.md
-last_updated: "2026-03-22T10:25:25.061Z"
+stopped_at: Completed 05-01-PLAN.md
+last_updated: "2026-03-22T10:54:01.950Z"
 progress:
   total_phases: 6
   completed_phases: 4
-  total_plans: 11
-  completed_plans: 11
+  total_plans: 14
+  completed_plans: 12
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-22)
 
 **Core value:** Output muss 1:1 der Boyens-Fließtext-Vorgabe entsprechen — ohne redaktionelle Nacharbeit übernehmbar
-**Current focus:** Phase 04 — fundament-auth
+**Current focus:** Phase 05 — ui-makeover-formatierung
 
 ## Current Position
 
-Phase: 5
-Plan: Not started
+Phase: 05 (ui-makeover-formatierung) — EXECUTING
+Plan: 2 of 3
 
 ## Performance Metrics
 
@@ -55,6 +55,7 @@ Plan: Not started
 | Phase 04-fundament-auth P03 | 180 | 2 tasks | 3 files |
 | Phase 04-fundament-auth P02 | 168 | 3 tasks | 11 files |
 | Phase 04-fundament-auth P04 | 507 | 2 tasks | 8 files |
+| Phase 05-ui-makeover-formatierung P01 | 31536349 | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -92,6 +93,9 @@ Recent decisions affecting current work:
 - [Phase 04-fundament-auth]: create_app(test_config) Parameter: Test-Konfiguration muss VOR db.init_app() gesetzt werden — SQLAlchemy cached Engine-URL beim init_app()
 - [Phase 04-fundament-auth]: Flask-WTF formdata=None Problem: Leerer POST-Body (alle Checkboxen deaktiviert) wird als 'kein Formular' interpretiert — Submit-Button muss immer mitgesendet werden
 - [Phase 04-fundament-auth]: admin_required als Decorator-Komposition aus login_required + is_admin Check — einfach und konsistent mit bestehendem Muster
+- [Phase 05-ui-makeover-formatierung]: Tailwind v3 statt v4: v4 hat kein tailwind.config.js mehr, v3 stabil und kompatibel mit bestehendem Workflow
+- [Phase 05-ui-makeover-formatierung]: output.css committed (nicht .gitignored): einfacher fuer lokale Entwicklung, CI baut trotzdem frisch
+- [Phase 05-ui-makeover-formatierung]: _match_service_type() als Hilfsfunktion extrahiert: FMT-10 Doppelpunkt-Split sauber getrennt, Anfuehrungszeichen-Check bleibt erste Prioritaet
 
 ### Critical Pitfalls for Phase 4
 
@@ -117,7 +121,7 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-22T10:21:46.289Z
-Stopped at: Completed 04-04-PLAN.md
+Last session: 2026-03-22T10:54:01.948Z
+Stopped at: Completed 05-01-PLAN.md
 Resume file: None
 Next action: `/gsd:plan-phase 4`
