@@ -293,9 +293,59 @@ def extract_boyens_location(location_name: str, location_obj: Dict = None, for_e
         else:
             return city  # Single church cities: just city name
     
+    # Handle dash separator: "Büsum - St. Clemens-Kirche", "Büsum - Perlebucht"
+    if ' - ' in location:
+        parts = location.split(' - ', 1)
+        city = parts[0].strip()
+        church = parts[1].strip()
+        # Strip -Kirche / -kirche suffix from church
+        if church.endswith('-Kirche') or church.endswith('-kirche'):
+            church = church[:-len('-Kirche')]
+        city_lower = city.lower()
+        if city_lower == 'büsum':
+            if 'st. clemens' in church.lower():
+                return "Büsum"  # St. Clemens ist Hauptkirche = nur Büsum
+            elif 'perlebucht' in church.lower():
+                return "Büsum, Perlebucht"
+            else:
+                return "Büsum, {}".format(church)
+        elif any(mc in city_lower for mc in MULTI_CHURCH_CITIES):
+            return "{}, {}".format(city, church)
+        else:
+            return city
+
     # No separator found - likely just city name or direct church name
     location_lower = location.lower()
-    
+
+    # Handle "Ort Kirche" without separator — detect multi-church cities first
+    # Heide-Süderholm (hyphen): must NOT be split — eigener Ort
+    # Heide + church: "Heide St.-Jürgen-Kirche", "Heide Erlöserkirche"
+    for multi_city in MULTI_CHURCH_CITIES:
+        # Match "City Church..." where City is a multi-church city
+        # But NOT "City-Something" (hyphenated compounds like Heide-Süderholm)
+        if location_lower.startswith(multi_city + ' ') and not location_lower.startswith(multi_city + '-'):
+            city_cap = location[:len(multi_city)]  # preserve original casing
+            church = location[len(multi_city) + 1:].strip()
+            # Strip -Kirche / -kirche suffix
+            if church.endswith('-Kirche') or church.endswith('-kirche'):
+                church = church[:-len('-Kirche')]
+            if church.endswith(' Kirche') or church.endswith(' kirche'):
+                church = church[:-len(' Kirche')]
+            city_lower_val = city_cap.lower()
+            if city_lower_val == 'büsum':
+                if 'st. clemens' in church.lower():
+                    return "Büsum"
+                elif 'perlebucht' in church.lower():
+                    return "Büsum, Perlebucht"
+                else:
+                    return "Büsum, {}".format(church)
+            else:
+                return "{}, {}".format(city_cap, church)
+
+    # Single-church towns: strip trailing " Kirche" / " kirche"
+    if location.endswith(' Kirche') or location.endswith(' kirche'):
+        return location[:-len(' Kirche')].strip()
+
     # Special mappings - different for display vs export
     if for_export:
         LOCATION_MAPPINGS = {
