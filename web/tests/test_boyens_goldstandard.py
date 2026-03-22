@@ -11,7 +11,7 @@ from datetime import datetime
 import pytest
 
 from formatting import format_date, format_time, format_service_type, format_pastor
-from app import _build_location_entries, _extract_suffix
+from main.routes import _build_location_entries, _extract_suffix
 
 
 FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixtures')
