@@ -11,6 +11,7 @@ import io
 
 import pandas as pd
 from flask import render_template, request, send_file, flash, redirect, url_for
+from flask_login import login_required
 
 from churchdesk_api import ChurchDeskAPI, EventAnalyzer, create_multi_org_client, extract_boyens_location
 from formatting import format_date, format_time, format_service_type, format_pastor
@@ -197,12 +198,19 @@ def convert_churchdesk_events_to_boyens(events):
     return '\n'.join(output_lines)
 
 
+@bp.route('/health')
+def health():
+    return {'status': 'ok'}, 200
+
+
 @bp.route('/')
+@login_required
 def index():
     return render_template('index.html', organizations=ORGANIZATIONS)
 
 
 @bp.route('/upload', methods=['POST'])
+@login_required
 def upload_file():
     if 'file' not in request.files:
         flash('Keine Datei ausgewaehlt')
@@ -238,6 +246,7 @@ def upload_file():
 
 
 @bp.route('/download', methods=['POST'])
+@login_required
 def download_file():
     formatted_text = request.form.get('formatted_text')
     if not formatted_text:
@@ -263,6 +272,7 @@ def download_file():
 
 
 @bp.route('/fetch_churchdesk_events', methods=['POST'])
+@login_required
 def fetch_churchdesk_events():
     """Fetch events from ChurchDesk API for multiple organizations"""
     try:
@@ -336,6 +346,7 @@ def fetch_churchdesk_events():
 
 
 @bp.route('/export_selected_events', methods=['POST'])
+@login_required
 def export_selected_events():
     """Export selected events to Boyens format"""
     try:

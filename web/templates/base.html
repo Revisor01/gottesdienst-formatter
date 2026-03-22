@@ -86,14 +86,20 @@
                 <img src="https://www.kirche-dithmarschen.de/uploads/PgB1LbhF/568x0_568x0/logo_3__msi___png.webp" alt="Logo" class="logo">
                 <span>Gottesdienst-Formatter</span>
             </a>
+            {% if current_user.is_authenticated %}
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text me-3">{{ current_user.username }}</span>
+                <a class="nav-link" href="{{ url_for('auth.logout') }}">Abmelden</a>
+            </div>
+            {% endif %}
         </div>
     </nav>
 
     <div class="container main-content">
-        {% with messages = get_flashed_messages() %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'danger' else 'info' if category == 'info' else 'warning' }} alert-dismissible fade show" role="alert">
                         {{ message }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>

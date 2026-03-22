@@ -39,11 +39,13 @@ class TestAppFactory:
             if old:
                 os.environ['SECRET_KEY'] = old
 
-    def test_index_route_exists(self):
+    def test_index_route_redirects_without_login(self):
         app = create_test_app()
         with app.test_client() as client:
             resp = client.get('/')
-            assert resp.status_code == 200
+            # Alle Routes ausser /login und /health erfordern Login
+            assert resp.status_code == 302
+            assert '/login' in resp.headers['Location']
 
     def test_routes_use_main_blueprint(self):
         app = create_test_app()

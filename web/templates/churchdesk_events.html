@@ -27,6 +27,7 @@
                     </div>
                     <div class="col-md-6 text-end">
                         <form method="POST" action="{{ url_for('main.export_selected_events') }}" id="export-form" style="display:inline;">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                             <input type="hidden" name="events_data" value="{{ events_json }}">
                             <div id="selected-events-container"></div>
                             <button type="submit" class="btn btn-success" id="export-btn" disabled>
