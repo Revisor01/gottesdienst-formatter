@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Typ-Zuordnungen verwalten{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-2xl font-bold text-gray-900">Typ-Zuordnungen</h1>
+  <a href="{{ url_for('admin.create_service_type') }}" class="btn-primary">Neue Zuordnung</a>
+</div>
+
+<p class="text-sm text-gray-500 mb-4">
+  Custom-Zuordnungen werden <strong>vor</strong> den eingebauten Typ-Regeln geprueft (hoehere Prioritaet = frueher geprueft).
+</p>
+
+<div class="card overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+        <tr>
+          <th class="px-4 py-3">Schluesselwort</th>
+          <th class="px-4 py-3">Ausgabe</th>
+          <th class="px-4 py-3">Prioritaet</th>
+          <th class="px-4 py-3">Aktiv</th>
+          <th class="px-4 py-3"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for mapping in mappings %}
+        <tr class="border-b border-gray-100 hover:bg-gray-50">
+          <td class="px-4 py-3 font-mono text-xs">{{ mapping.keyword }}</td>
+          <td class="px-4 py-3 font-medium">{{ mapping.output_label }}</td>
+          <td class="px-4 py-3 text-gray-500">{{ mapping.priority }}</td>
+          <td class="px-4 py-3">
+            {% if mapping.is_active %}
+            <span class="text-green-600 text-xs font-medium">Aktiv</span>
+            {% else %}
+            <span class="text-red-500 text-xs font-medium">Inaktiv</span>
+            {% endif %}
+          </td>
+          <td class="px-4 py-3 flex items-center gap-3">
+            <a href="{{ url_for('admin.edit_service_type', mapping_id=mapping.id) }}" class="text-primary-600 hover:text-primary-800 underline text-sm">Bearbeiten</a>
+            <form method="POST" action="{{ url_for('admin.delete_service_type', mapping_id=mapping.id) }}"
+                  onsubmit="return confirm('Zuordnung \"{{ mapping.keyword }}\" wirklich loeschen?');">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="text-red-500 hover:text-red-700 underline text-sm">Loeschen</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+        {% if not mappings %}
+        <tr>
+          <td colspan="5" class="px-4 py-6 text-center text-gray-400 text-sm">Keine Typ-Zuordnungen vorhanden.</td>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
