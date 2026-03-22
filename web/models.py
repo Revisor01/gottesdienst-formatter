@@ -65,3 +65,16 @@ class Organization(db.Model):
 
     def __repr__(self):
         return '<Organization {} {}>'.format(self.id, self.name)
+
+
+class ServiceTypeMapping(db.Model):
+    __tablename__ = 'service_type_mappings'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    keyword = db.Column(db.String(256), unique=True, nullable=False)
+    output_label = db.Column(db.String(256), nullable=False)
+    priority = db.Column(db.Integer, default=100, nullable=False)
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+
+    def __repr__(self):
+        return '<ServiceTypeMapping {} -> {}>'.format(self.keyword, self.output_label)
