@@ -219,9 +219,9 @@ def format_pastor(contributor: str) -> str:
         elif 'p.' in contrib_lower:
             formatted_contributors.append("P. {}".format(clean_name))
         elif 'prädikantin' in contrib_lower:
-            formatted_contributors.append("Prädikantin {}".format(clean_name))
+            formatted_contributors.append("Prä. {}".format(clean_name))
         elif 'prädikant' in contrib_lower:
-            formatted_contributors.append("Prädikant {}".format(clean_name))
+            formatted_contributors.append("Prä. {}".format(clean_name))
         elif contrib.startswith('R. '):
             formatted_contributors.append("R. {}".format(clean_name))
         else:

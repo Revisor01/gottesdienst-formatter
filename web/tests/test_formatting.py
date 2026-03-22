@@ -98,7 +98,7 @@ def test_format_service_type_case_insensitive():
     ("Diakon Weber",                      "Diakon Weber"),
     ("Diakonin Meier",                    "Diakonin Meier"),
     ("Pastor Mueller & Pastorin Schmidt", "P. Mueller, Pn. Schmidt"),
-    ("Prädikantin Schulz",               "Prädikantin Schulz"),
+    ("Prädikantin Schulz",               "Prä. Schulz"),
     ("R. Bauer",                          "R. Bauer"),
     ("",                                  ""),
     ("Pastor Soost & Team",               "P. Soost & Team"),
@@ -108,7 +108,7 @@ def test_format_service_type_case_insensitive():
     ("Pastorin Ulrike Verwold",          "Pn. Verwold"),
     ("Diakon Ulf Fiebrandt",            "Diakon Fiebrandt"),
     ("Diakonin Susanne Jordan",         "Diakonin Jordan"),
-    ("Prädikantin Frauke Hjort",        "Prädikantin Hjort"),
+    ("Prädikantin Frauke Hjort",        "Prä. Hjort"),
     ("Pastorin Astrid Buchin",          "Pn. Buchin"),
     # Doppelname bleibt erhalten
     ("Pastorin Claudia Ruge-Tolksdorf", "Pn. Ruge-Tolksdorf"),
