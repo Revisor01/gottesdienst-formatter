@@ -94,8 +94,8 @@ def create_app(test_config=None):
             ('Astrid',     'Buchin',          'Pn.'),
             ('Frauke',     'Hjort',           'Prä.'),
             ('Simon',      'Luthe',           'P.'),
-            (None,         'Thom',            'P.'),    # Thom (m) — kein Vorname bekannt
-            (None,         'Thom',            'Pn.'),   # Thom (w) — kein Vorname bekannt
+            ('Matthias',   'Thom',            'P.'),
+            ('Kerstin',    'Thom',            'Pn.'),
             ('Ulf',        'Fiebrandt',       'Diakon'),
             ('Susanne',    'Jordan',          'Diakonin'),
             (None,         'Kessner',         'P.'),

@@ -181,10 +181,11 @@ def _extract_surname(name_str):
 
 def _is_noise_contributor(text):
     """Erkennt Nicht-Personen-Beiträge die rausgefiltert werden sollen."""
-    text_lower = text.lower()
+    text_lower = text.lower().strip()
+    # Komplette Noise-Einträge (kein Personenname)
     noise_patterns = [
         'dem team', 'vielen ', 'anschließend', 'anschl.', 'mitbringfrühstück',
-        'kirchenmäuse', 'in ausbildung'
+        'kirchenmäuse'
     ]
     return any(p in text_lower for p in noise_patterns)
 
@@ -273,10 +274,14 @@ def format_pastor(contributor: str) -> str:
             formatted_contributors.append('Konfirmand:innen')
             continue
 
-        # Noise-Suffixe abschneiden
-        for noise_suffix in [' Prädikantin in Ausbildung', ' Prädikant in Ausbildung',
-                              ' in Ausbildung', ' anschließend', ' anschl.']:
-            idx = contrib.lower().find(noise_suffix.lower())
+        # Noise-Teile aus dem String entfernen (Mitte oder Suffix)
+        for noise_part in ['Prädikantin in Ausbildung ', 'Prädikant in Ausbildung ',
+                           ' Prädikantin in Ausbildung', ' Prädikant in Ausbildung',
+                           ' in Ausbildung']:
+            contrib = contrib.replace(noise_part, ' ').strip()
+        # "anschließend..." am Ende abschneiden
+        for suffix in [' anschließend', ' anschl.']:
+            idx = contrib.lower().find(suffix.lower())
             if idx > 0:
                 contrib = contrib[:idx].strip()
 
@@ -287,6 +292,13 @@ def format_pastor(contributor: str) -> str:
         else:
             # Kein bekannter Pastor — unveraendert durchreichen
             formatted_contributors.append(contrib)
+
+    # Deduplizierung: gleiche Einträge entfernen (z.B. "Popkantorin Petersen" doppelt)
+    seen = []
+    for fc in formatted_contributors:
+        if fc not in seen:
+            seen.append(fc)
+    formatted_contributors = seen
 
     # D-18: Komma als Trenner
     result = ', '.join(formatted_contributors)

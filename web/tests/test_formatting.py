@@ -89,44 +89,45 @@ def test_format_service_type_case_insensitive():
 
 
 # ---------------------------------------------------------------------------
-# format_pastor
+# format_pastor (DB-Lookup basiert)
 # ---------------------------------------------------------------------------
 
 @pytest.mark.parametrize("contributor, expected", [
+    # Einfache Matches — Nachname in DB
     ("Pastor Mueller",                    "P. Mueller"),
     ("Pastorin Schmidt",                  "Pn. Schmidt"),
     ("Diakon Weber",                      "Diakon Weber"),
     ("Diakonin Meier",                    "Diakonin Meier"),
-    ("Pastor Mueller & Pastorin Schmidt", "P. Mueller, Pn. Schmidt"),
     ("Prädikantin Schulz",               "Prä. Schulz"),
     ("R. Bauer",                          "R. Bauer"),
     ("",                                  ""),
+    # Mehrere Pastoren
+    ("Pastor Mueller & Pastorin Schmidt", "P. Mueller, Pn. Schmidt"),
     ("Pastor Soost & Team",               "P. Soost & Team"),
     ("Pastorin Braun und Pastor Klein",   "Pn. Braun, P. Klein"),
-    # Boyens: nur Nachname — Vorname wird entfernt
+    # Vorname wird entfernt — Nachname matcht aus DB
     ("Pastor Simon Luthe",               "P. Luthe"),
     ("Pastorin Ulrike Verwold",          "Pn. Verwold"),
     ("Diakon Ulf Fiebrandt",            "Diakon Fiebrandt"),
     ("Diakonin Susanne Jordan",         "Diakonin Jordan"),
     ("Prädikantin Frauke Hjort",        "Prä. Hjort"),
     ("Pastorin Astrid Buchin",          "Pn. Buchin"),
-    # Doppelname bleibt erhalten
-    ("Pastorin Claudia Ruge-Tolksdorf", "Pn. Ruge-Tolksdorf"),
-    # Mehrere mit Vornamen
+    # Disambiguierung — gleicher Nachname, verschiedene Titel
     ("Pastorin Ulrike Verwold, Pastor Simon Luthe", "Pn. Verwold, P. Luthe"),
-    # Dr. bleibt als Teil des Nachnamens
+    # Doppelname
+    ("Pastorin Claudia Ruge-Tolksdorf", "Pn. Ruge-Tolksdorf"),
+    # Dr. im Titel
     ("P. Dr. Stein",                    "P. Dr. Stein"),
     ("Pastor Dr. Stein",                "P. Dr. Stein"),
-    # Popkantorin → Kantorin
-    ("Popkantorin Petersen",            "Kantorin Petersen"),
-    # Jugendreferentin durchreichen
+    # Durchreichen — Popkantorin, Jugendreferentin
+    ("Popkantorin Petersen",            "Popkantorin Petersen"),
     ("Jugendreferentin Zigler",         "Jugendreferentin Zigler"),
-    # Gruppen durchreichen
+    # Gruppen durchreichen (kein DB-Match)
     ("Kantorei",                        "Kantorei"),
     ("Chor Terziano",                   "Chor Terziano"),
-    # Noise-Beiträge filtern
-    ("Prädikantin Frauke Hjort Prädikantin in Ausbildung, dem Team der Kinderkirche, vielen Kirchenmäusen", "Prä. Hjort"),
-    # Ev. Frauenhilfe als Gruppe
+    # Noise filtern
+    ("Prädikantin in Ausbildung Frauke Hjort, dem Team der Kinderkirche, vielen Kirchenmäusen", "Prä. Hjort"),
+    # Frauenhilfe durchreichen
     ("Ev. Frauenhilfe Hennstedt & Team", "Ev. Frauenhilfe Hennstedt & Team"),
 ])
 def test_format_pastor(contributor, expected):
