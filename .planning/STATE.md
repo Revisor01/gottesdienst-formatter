@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 04-03-PLAN.md
-last_updated: "2026-03-22T10:07:49.937Z"
+stopped_at: Completed 04-02-PLAN.md
+last_updated: "2026-03-22T10:11:15.871Z"
 progress:
   total_phases: 6
   completed_phases: 3
   total_plans: 11
-  completed_plans: 9
+  completed_plans: 10
 ---
 
 # Project State
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-03-22)
 ## Current Position
 
 Phase: 04 (fundament-auth) — EXECUTING
-Plan: 3 of 4
+Plan: 4 of 4
 
 ## Performance Metrics
 
@@ -53,6 +53,7 @@ Plan: 3 of 4
 *Updated after each plan completion*
 | Phase 04-fundament-auth P01 | 217 | 3 tasks | 13 files |
 | Phase 04-fundament-auth P03 | 180 | 2 tasks | 3 files |
+| Phase 04-fundament-auth P02 | 168 | 3 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -84,6 +85,9 @@ Recent decisions affecting current work:
 - [Phase 04-fundament-auth]: is_active_user als DB-Feld, is_active als Property — vermeidet Konflikt mit Flask-Login UserMixin
 - [Phase 04-fundament-auth]: SECRET_KEY RuntimeError ohne Fallback — kein secrets.token_hex() als Sicherheitsnetz (Pitfall 1)
 - [Phase 04-fundament-auth]: migrations/ im Repo committed — Container generiert keine Migrationen, nur flask db upgrade (Pitfall 2)
+- [Phase 04-fundament-auth]: Auth Blueprint ohne url_prefix: /login direkt unter /, nicht /auth/login
+- [Phase 04-fundament-auth]: POST-only Routes in Tests mit POST-Request (nicht GET, wuerde 405 liefern)
+- [Phase 04-fundament-auth]: db.drop_all() + db.create_all() in Test-Setup: SQLAlchemy In-Memory SQLite teilt DB-State zwischen Tests
 
 ### Critical Pitfalls for Phase 4
 
@@ -109,7 +113,7 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-22T10:07:49.935Z
-Stopped at: Completed 04-03-PLAN.md
+Last session: 2026-03-22T10:11:15.869Z
+Stopped at: Completed 04-02-PLAN.md
 Resume file: None
 Next action: `/gsd:plan-phase 4`

@@ -11,15 +11,15 @@
 - [x] **FOUND-02**: SQLite-Datenbank mit Flask-SQLAlchemy und Flask-Migrate
 - [x] **FOUND-03**: SQLite-Volume in docker-compose.prod.yml für DB-Persistenz
 - [x] **FOUND-04**: Persistenter SECRET_KEY (nicht mehr secrets.token_hex Fallback)
-- [ ] **FOUND-05**: Health-Check Endpoint /health
+- [x] **FOUND-05**: Health-Check Endpoint /health
 
 ### Authentication
 
-- [ ] **AUTH-01**: Login/Logout mit Flask-Login und Session-basierter Auth
-- [ ] **AUTH-02**: User-Modell mit Passwort-Hashing (Werkzeug security)
-- [ ] **AUTH-03**: Alle bestehenden Routes hinter @login_required
+- [x] **AUTH-01**: Login/Logout mit Flask-Login und Session-basierter Auth
+- [x] **AUTH-02**: User-Modell mit Passwort-Hashing (Werkzeug security)
+- [x] **AUTH-03**: Alle bestehenden Routes hinter @login_required
 - [ ] **AUTH-04**: Admin-Benutzer kann neue User anlegen und verwalten
-- [ ] **AUTH-05**: CSRF-Schutz auf allen Formularen (Flask-WTF)
+- [x] **AUTH-05**: CSRF-Schutz auf allen Formularen (Flask-WTF)
 
 ### UI
 
@@ -72,12 +72,12 @@
 | FOUND-02 | Phase 4 | Complete |
 | FOUND-03 | Phase 4 | Complete |
 | FOUND-04 | Phase 4 | Complete |
-| FOUND-05 | Phase 4 | Pending |
-| AUTH-01 | Phase 4 | Pending |
-| AUTH-02 | Phase 4 | Pending |
-| AUTH-03 | Phase 4 | Pending |
+| FOUND-05 | Phase 4 | Complete |
+| AUTH-01 | Phase 4 | Complete |
+| AUTH-02 | Phase 4 | Complete |
+| AUTH-03 | Phase 4 | Complete |
 | AUTH-04 | Phase 4 | Pending |
-| AUTH-05 | Phase 4 | Pending |
+| AUTH-05 | Phase 4 | Complete |
 | UI-01 | Phase 5 | Pending |
 | UI-02 | Phase 5 | Pending |
 | UI-03 | Phase 5 | Pending |
