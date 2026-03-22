@@ -4,11 +4,16 @@
 
 Brownfield-Stabilisierung eines funktionierenden, aber technisch verschuldeten Formatierungstools. Der Code läuft — aber dreifach duplizierte Logik, hardcoded API-Tokens und fehlende Tests machen ihn zu fragil für Erweiterungen. Die drei Phasen liefern: saubere Codebasis (Stabilisierung), korrekter Output (Formatierung), automatisierter Betrieb (CI/CD).
 
+Milestone v2.0 baut auf dieser Basis auf und macht aus dem Formatter-Tool eine vollwertige Web-App: Login, Benutzerverwaltung, Settings, automatische Mail, modernes UI.
+
 ## Phases
 
 - [x] **Phase 1: Stabilisierung** - Sicherheitslücken schließen und Codebasis bereinigen (Basis für alles Folgende) (completed 2026-03-21)
-- [ ] **Phase 2: Formatierung** - Output exakt nach Boyens-Vorgabe bringen (Kernzweck des Projekts)
+- [x] **Phase 2: Formatierung** - Output exakt nach Boyens-Vorgabe bringen (Kernzweck des Projekts) (completed 2026-03-21)
 - [x] **Phase 3: Pipeline** - Automatisiertes Deployment und Testabdeckung (sicherer Dauerbetrieb) (completed 2026-03-22)
+- [ ] **Phase 4: Fundament + Auth** - App Factory, Datenbank und Login (Voraussetzung für alle v2.0-Features)
+- [ ] **Phase 5: UI Makeover + Formatierung** - Grünes Interface, Excel-Entfernung und erweitertes Sonderformat-Parsing
+- [ ] **Phase 6: Settings + Auto-Mail** - User-Einstellungen, SMTP-Versand und automatischer Monatsjob
 
 ## Phase Details
 
@@ -56,10 +61,47 @@ Plans:
 - [x] 03-01-PLAN.md — Unit-Tests und Goldstandard-Fixture fuer Formatierungsfunktionen
 - [x] 03-02-PLAN.md — GitHub Actions CI/CD-Pipeline und Produktions-Compose mit Watchtower
 
+### Phase 4: Fundament + Auth
+**Goal**: Die App hat eine persistente Datenbank, ein sicheres Login-System und eine saubere Architektur — alle v2.0-Features können auf diesem Fundament aufgebaut werden
+**Depends on**: Phase 3
+**Requirements**: FOUND-01, FOUND-02, FOUND-03, FOUND-04, FOUND-05, AUTH-01, AUTH-02, AUTH-03, AUTH-04, AUTH-05
+**Success Criteria** (what must be TRUE):
+  1. Benutzer kann sich mit Benutzername und Passwort einloggen und wird nach Logout oder Session-Ablauf auf die Login-Seite umgeleitet
+  2. Alle bestehenden Formatter-Seiten sind ohne Login nicht erreichbar — ein direkter URL-Aufruf ohne Cookie leitet auf /login um
+  3. Ein Admin-Benutzer kann neue User anlegen und deren Passwörter setzen, ohne Zugriff auf den Server
+  4. Die SQLite-Datenbank überlebt ein Watchtower-Redeployment ohne Datenverlust — das Volume ist persistent gemountet
+  5. Der Endpunkt /health antwortet mit HTTP 200 und ist ohne Login erreichbar (Docker Healthcheck + Uptime Kuma)
+**Plans**: TBD
+
+### Phase 5: UI Makeover + Formatierung
+**Goal**: Die App hat ein modernes, grünes Interface auf Tailwind-Basis, den Excel-Import entfernt und ein verbessertes Sonderformat-Parsing
+**Depends on**: Phase 4
+**Requirements**: UI-01, UI-02, UI-03, UI-04, FMT-10
+**Success Criteria** (what must be TRUE):
+  1. Die Benutzeroberfläche zeigt Grün als Primärfarbe und ist auf Desktop und Tablet nutzbar — kein horizontales Scrollen auf einem 768px-Viewport
+  2. Der Excel-Upload-Bereich ist nicht mehr sichtbar oder erreichbar — die einzige Datenquelle ist die ChurchDesk-API
+  3. Der formatierte Text wird als Vorschau im Browser angezeigt, bevor er heruntergeladen oder kopiert wird; Warnungen bei erkannten Problemen erscheinen sichtbar oberhalb des Textes
+  4. Ein Gottesdienst-Titel wie "Gottesdienst mit Abendmahl: Erntedank" erzeugt "Gd. m. A. Erntedank" im Output — Sonderformat und Untertitel werden korrekt kombiniert
+**Plans**: TBD
+
+### Phase 6: Settings + Auto-Mail
+**Goal**: Jeder Benutzer kann seinen eigenen SMTP-Versand konfigurieren und Boyens-Exporte werden automatisch monatlich per Mail verschickt
+**Depends on**: Phase 5
+**Requirements**: SET-01, SET-02, SET-03, SET-04, MAIL-01, MAIL-02, MAIL-03, MAIL-04
+**Success Criteria** (what must be TRUE):
+  1. Ein eingeloggter Benutzer kann auf einer Settings-Seite SMTP-Server, Port, Absender und Empfänger-Adresse eintragen und mit einem Test-Mail-Button verifizieren, dass die Konfiguration funktioniert
+  2. Die Settings-Seite zeigt, welche ChurchDesk-Organisationen aktiv (aus ENV konfiguriert) sind — ohne dass der Benutzer ENV-Variablen kennen muss
+  3. Ein Benutzer mit konfiguriertem SMTP empfängt am eingestellten Tag des Monats automatisch eine Mail mit dem formatierten Boyens-Text als .txt-Anhang und im Mail-Body
+  4. Ein Benutzer kann den Versandzeitpunkt selbst auf einen anderen Tag des Monats ändern (Default: 18.) — die Änderung greift ab dem nächsten Monat
+**Plans**: TBD
+
 ## Progress
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Stabilisierung | 3/3 | Complete   | 2026-03-21 |
+| 1. Stabilisierung | 3/3 | Complete | 2026-03-21 |
 | 2. Formatierung | 2/2 | Complete | 2026-03-21 |
-| 3. Pipeline | 2/2 | Complete   | 2026-03-22 |
+| 3. Pipeline | 2/2 | Complete | 2026-03-22 |
+| 4. Fundament + Auth | 0/? | Not started | - |
+| 5. UI Makeover + Formatierung | 0/? | Not started | - |
+| 6. Settings + Auto-Mail | 0/? | Not started | - |

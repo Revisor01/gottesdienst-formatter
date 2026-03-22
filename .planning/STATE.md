@@ -2,11 +2,11 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: App Relaunch
-status: defining_requirements
-stopped_at: "Milestone v2.0 started — defining requirements"
-last_updated: "2026-03-22T09:10:59.896Z"
+status: roadmap_ready
+stopped_at: "Milestone v2.0 — Roadmap created, Phase 4 ready for planning"
+last_updated: "2026-03-22T00:00:00.000Z"
 progress:
-  total_phases: 3
+  total_phases: 6
   completed_phases: 3
   total_plans: 7
   completed_plans: 7
@@ -16,42 +16,44 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-21)
+See: .planning/PROJECT.md (updated 2026-03-22)
 
 **Core value:** Output muss 1:1 der Boyens-Fließtext-Vorgabe entsprechen — ohne redaktionelle Nacharbeit übernehmbar
-**Current focus:** Milestone v2.0 — App Relaunch (defining requirements)
+**Current focus:** Milestone v2.0 — App Relaunch (Phase 4: Fundament + Auth)
 
 ## Current Position
 
-Phase: 03
+Phase: 04
 Plan: Not started
+Status: Ready for `/gsd:plan-phase 4`
+
+Progress: ████████░░░░░░░░░░░░ 3/6 phases complete (v1.0 done, v2.0 starting)
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 0
-- Average duration: —
-- Total execution time: —
+- Total plans completed: 7
+- Average duration: ~3 min
+- Total execution time: ~21 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
-
-**Recent Trend:**
-
-- Last 5 plans: —
-- Trend: —
-
-*Updated after each plan completion*
 | Phase 01-stabilisierung P01 | 132s | 3 tasks | 3 files |
-| Phase 01-stabilisierung P02 | 196 | 2 tasks | 5 files |
-| Phase 02-formatierung P01 | 96 | 2 tasks | 1 files |
+| Phase 01-stabilisierung P02 | 196s | 2 tasks | 5 files |
+| Phase 02-formatierung P01 | 96s | 2 tasks | 1 files |
 | Phase 02-formatierung P02 | 10min | 2 tasks | 2 files |
 | Phase 03-pipeline P01 | 173s | 2 tasks | 9 files |
 | Phase 03-pipeline P02 | 3min | 1 tasks | 2 files |
+
+**Recent Trend:**
+
+- Last 5 plans: ~3-10 min each
+- Trend: Stabil
+
+*Updated after each plan completion*
 
 ## Accumulated Context
 
@@ -74,14 +76,26 @@ Recent decisions affecting current work:
 - [Phase 03-pipeline]: Goldstandard-Fixture endet mit einfachem \n — entspricht join()-Output ohne doppelten Abschluss
 - [Phase 03-pipeline]: Image-Name lowercase via IMAGE_LC erzwingen (Pitfall 4) — ghcr.io ist case-sensitive
 - [Phase 03-pipeline]: Watchtower statt Portainer auf App-Server; ghcr.io Image auf public setzen damit kein Auth-Secret noetig
+- [v2.0 Roadmap]: SQLite statt PostgreSQL — bewusste Entscheidung, reicht fuer <20 User
+- [v2.0 Roadmap]: Flask-APScheduler in-process statt Celery/Redis — monatlicher Job, kein Overengineering
+- [v2.0 Roadmap]: smtplib direkt statt Flask-Mail — Settings pro User aus DB, nicht global konfiguriert
+- [v2.0 Roadmap]: Gunicorn Single-Worker-Constraint in docker-compose.yml — APScheduler darf nur einmal laufen
+- [v2.0 Roadmap]: Tailwind CLI Build-Artefakt in static/css/ — kein Node.js im Docker-Container
+
+### Critical Pitfalls for Phase 4
+
+- SECRET_KEY muss persistent sein (nicht `secrets.token_hex` als Fallback) — Startup-Check mit RuntimeError
+- Flask-Migrate von Anfang an, nie db.create_all() — `flask db upgrade` im Container-Entrypoint
+- SQLite-Volume persistent in docker-compose.prod.yml mounten (`./data:/app/data`)
+- Auth als atomare Änderung: alle Routes auf @login_required in einem Schritt, explizite Whitelist (/login, /health)
 
 ### Pending Todos
 
-None yet.
+None.
 
 ### Blockers/Concerns
 
-- API-Tokens sind im Git-History kompromittiert — müssen nach SEC-01 rotiert werden
+- API-Tokens sind im Git-History kompromittiert — müssen nach SEC-01 rotiert werden (aus v1.0 übertragen)
 - Büsum/Urlauberseelsorge-Mapping ist fragil (zuletzt zweimal gebrochen) — Tests in Phase 3 sind kritisch
 
 ### Quick Tasks Completed
@@ -93,5 +107,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-22
-Stopped at: Completed quick task 260322-dpr: Location extraction fixes
+Stopped at: v2.0 Roadmap erstellt — Phase 4 ready for planning
 Resume file: None
+Next action: `/gsd:plan-phase 4`
