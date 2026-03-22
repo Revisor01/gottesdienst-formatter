@@ -8,7 +8,7 @@ import os
 from flask import Flask
 
 
-def create_app():
+def create_app(test_config=None):
     app = Flask(__name__)
 
     # SECRET_KEY — MUSS gesetzt sein, kein Fallback (Pitfall 1)
@@ -26,6 +26,10 @@ def create_app():
     os.makedirs(os.path.dirname(db_path), exist_ok=True)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + db_path
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+    # Test-Konfiguration ueberschreibt Defaults (muss vor db.init_app gesetzt werden)
+    if test_config is not None:
+        app.config.update(test_config)
 
     # Session-Konfiguration (30-Tage Remember Me)
     app.config['REMEMBER_COOKIE_DURATION'] = 30 * 24 * 3600  # 30 Tage in Sekunden
@@ -50,6 +54,29 @@ def create_app():
 
     from auth import bp as auth_bp
     app.register_blueprint(auth_bp)
+
+    from admin import bp as admin_bp
+    app.register_blueprint(admin_bp)
+
+    import click
+
+    @app.cli.command('create-admin')
+    @click.argument('username')
+    @click.password_option()
+    def create_admin_command(username, password):
+        """Erstellt einen Admin-Benutzer."""
+        from models import User
+        if User.query.filter_by(username=username).first():
+            click.echo('Fehler: Benutzer "{}" existiert bereits.'.format(username))
+            raise SystemExit(1)
+        if len(password) < 8:
+            click.echo('Fehler: Passwort muss mindestens 8 Zeichen haben.')
+            raise SystemExit(1)
+        user = User(username=username, is_admin=True)
+        user.set_password(password)
+        db.session.add(user)
+        db.session.commit()
+        click.echo('Admin-Benutzer "{}" erstellt.'.format(username))
 
     return app
 
