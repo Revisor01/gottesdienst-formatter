@@ -74,11 +74,12 @@ def format_service_type(titel):
     elif 'konfirmation' in titel_lower:
         return 'Konfirmation'
     # D-04: Abendmahl + Taufe kombiniert — VOR den einzelnen Checks
-    elif 'abendmahl' in titel_lower and 'taufe' in titel_lower:
+    # Pruefe auf 'tauf' (deckt "Taufe", "Taufgottesdienst", "Taufgottesdienst" ab)
+    elif 'abendmahl' in titel_lower and 'tauf' in titel_lower:
         return 'Abendmahlgd. m. T.'
     elif 'abendmahl' in titel_lower:
         return 'Gd. m. A.'
-    elif 'taufe' in titel_lower:
+    elif 'tauf' in titel_lower:
         return 'Gd. m. T.'
     # D-07: Popularmusik
     elif 'popularmusik' in titel_lower:
