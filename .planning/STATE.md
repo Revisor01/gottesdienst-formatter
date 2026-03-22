@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 06-01-PLAN.md
-last_updated: "2026-03-22T12:49:59.320Z"
+stopped_at: Completed 06-02-PLAN.md
+last_updated: "2026-03-22T12:55:10.817Z"
 progress:
   total_phases: 6
   completed_phases: 5
   total_plans: 17
-  completed_plans: 15
+  completed_plans: 16
 ---
 
 # Project State
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-03-22)
 ## Current Position
 
 Phase: 06 (settings-auto-mail) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 
 ## Performance Metrics
 
@@ -59,6 +59,7 @@ Plan: 2 of 3
 | Phase 05-ui-makeover-formatierung P03 | 480 | 2 tasks | 4 files |
 | Phase 05-ui-makeover-formatierung P02 | 600 | 2 tasks | 8 files |
 | Phase 06-settings-auto-mail P01 | 70 | 2 tasks | 4 files |
+| Phase 06-settings-auto-mail P02 | 900 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -104,6 +105,8 @@ Recent decisions affecting current work:
 - [Phase 05-ui-makeover-formatierung]: format_service_type(None) gibt 'Gd.' zurueck — konsistent mit 'unbekannter Typ = Standard-Gottesdienst' Semantik
 - [Phase 06-settings-auto-mail]: Fernet-Key via PBKDF2HMAC aus SECRET_KEY abgeleitet — kein separater Schluessel noetig
 - [Phase 06-settings-auto-mail]: encrypt/decrypt nehmen secret_key als Parameter — kein flask.current_app in models.py
+- [Phase 06-settings-auto-mail]: strict_slashes=False in Route-Dekorator statt Blueprint vermeidet 308-Redirect auf /settings/
+- [Phase 06-settings-auto-mail]: SMTP-Passwort-Handling: Leeres Formularfeld = nicht aendern (EditUserForm-Pattern)
 
 ### Critical Pitfalls for Phase 4
 
@@ -129,7 +132,7 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-22T12:49:59.318Z
-Stopped at: Completed 06-01-PLAN.md
+Last session: 2026-03-22T12:55:10.814Z
+Stopped at: Completed 06-02-PLAN.md
 Resume file: None
 Next action: `/gsd:plan-phase 4`
