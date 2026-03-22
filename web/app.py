@@ -58,6 +58,9 @@ def create_app(test_config=None):
     from admin import bp as admin_bp
     app.register_blueprint(admin_bp)
 
+    from settings import bp as settings_bp
+    app.register_blueprint(settings_bp)
+
     import click
 
     @app.cli.command('create-admin')
