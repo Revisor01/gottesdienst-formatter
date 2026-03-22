@@ -1,350 +1,293 @@
 {% extends "base.html" %}
 
+{% block title %}ChurchDesk Gottesdienste — {{ month_name }} {{ year }}{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-12">
-        <div class="card mt-4">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <div>
-                    <h4 class="mb-0">ChurchDesk Gottesdienste - {{ month_name }} {{ year }}</h4>
-                    {% if selected_organizations %}
-                    <small class="text-white">
-                        Organisationen: {{ selected_organizations|join(', ') }}
-                    </small>
-                    {% endif %}
-                </div>
-                <a href="{{ url_for('main.index') }}" class="btn btn-outline-light">
-                    <i class="fas fa-arrow-left"></i> Zurück
-                </a>
-            </div>
-            <div class="card-body">
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle"></i> 
-                            <strong>{{ events|length }}</strong> Gottesdienste gefunden
-                        </div>
-                    </div>
-                    <div class="col-md-6 text-end">
-                        <form method="POST" action="{{ url_for('main.export_selected_events') }}" id="export-form" style="display:inline;">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                            <input type="hidden" name="events_data" value="{{ events_json }}">
-                            <div id="selected-events-container"></div>
-                            <button type="submit" class="btn btn-success" id="export-btn" disabled>
-                                <i class="fas fa-download"></i> Ausgewählte exportieren (<span id="selected-count">0</span>)
-                            </button>
-                        </form>
-                    </div>
-                </div>
-                
-                <div class="mb-3">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="select-all">
-                        <label class="form-check-label" for="select-all">
-                            <strong>Alle auswählen</strong>
-                        </label>
-                    </div>
-                </div>
-                
-                <div class="table-responsive" style="max-height: 70vh; overflow-y: auto; font-size: 0.85em;">
-                    <table class="table table-striped table-hover table-sm" id="events-table" style="font-size: 0.85em;">
-                        <thead class="table-dark sticky-top">
-                            <tr>
-                                <th width="50" class="sortable" data-sort="select">
-                                    <input type="checkbox" id="header-select-all">
-                                </th>
-                                <th class="sortable" data-sort="date" style="cursor: pointer; width: 120px;">
-                                    Datum & Zeit <i class="fas fa-sort"></i>
-                                </th>
-                                <th class="sortable" data-sort="title" style="cursor: pointer; width: 100px;">
-                                    Titel <i class="fas fa-sort"></i>
-                                </th>
-                                <th class="sortable" data-sort="location" style="cursor: pointer; width: 100px;">
-                                    Ort <i class="fas fa-sort"></i>
-                                </th>
-                                <th class="sortable" data-sort="contributor" style="cursor: pointer; width: 120px;">
-                                    Mitwirkender <i class="fas fa-sort"></i>
-                                </th>
-                                <th class="sortable" data-sort="parish" style="cursor: pointer; width: 80px;">
-                                    Gemeinde <i class="fas fa-sort"></i>
-                                </th>
-                                <th class="sortable" data-sort="organization" style="cursor: pointer; width: 80px;">
-                                    Org. <i class="fas fa-sort"></i>
-                                </th>
-                                <th class="sortable" data-sort="status" style="cursor: pointer; width: 80px;">
-                                    Status <i class="fas fa-sort"></i>
-                                </th>
-                                <th width="60">Aktion</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for event in events %}
-                            <tr class="event-row" data-event-id="{{ event.id }}">
-                                <td>
-                                    <input type="checkbox" class="event-select" value="{{ event.id }}" 
-                                           name="selected_events" 
-                                           {% if event.analysis.is_complete %}checked{% endif %}>
-                                </td>
-                                <td>
-                                    <div class="fw-bold">{{ event.formatted_date }}</div>
-                                    <small class="text-muted">{{ event.formatted_time }}</small>
-                                </td>
-                                <td>{{ event.title }}</td>
-                                <td>
-                                    {% if event.location %}
-                                        {{ event.location }}
-                                    {% else %}
-                                        <span class="text-danger">
-                                            <i class="fas fa-exclamation-triangle"></i> Fehlt
-                                        </span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if event.contributor %}
-                                        {{ event.contributor }}
-                                    {% else %}
-                                        <span class="text-danger">
-                                            <i class="fas fa-exclamation-triangle"></i> Fehlt
-                                        </span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if event.parishes %}
-                                        {% for parish in event.parishes %}
-                                            <span class="badge bg-secondary">
-                                                {{ parish.title | format_parish }}
-                                            </span>
-                                        {% endfor %}
-                                    {% else %}
-                                        <span class="text-danger">
-                                            <i class="fas fa-exclamation-triangle"></i> Fehlt
-                                        </span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    <small class="text-muted">{{ event.organization_name }}</small>
-                                </td>
-                                <td>
-                                    {% if event.analysis.is_complete %}
-                                        <span class="badge bg-success">
-                                            <i class="fas fa-check"></i> Vollständig
-                                        </span>
-                                    {% else %}
-                                        <span class="badge bg-warning">
-                                            <i class="fas fa-exclamation-triangle"></i> 
-                                            {% set missing_count = event.analysis.missing_fields|length %}
-                                            {% if missing_count == 1 %}
-                                                1 Feld fehlt
-                                            {% else %}
-                                                {{ missing_count }} Felder fehlen
-                                            {% endif %}
-                                        </span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-info" 
-                                            onclick="toggleDetails('{{ event.id }}')">
-                                        <i class="fas fa-eye"></i> Details
-                                    </button>
-                                </td>
-                            </tr>
-                            
-                            <!-- Hidden details row -->
-                            <tr id="details-{{ event.id }}" class="details-row" style="display:none;">
-                                <td colspan="9">
-                                    <div class="card border-0 bg-light">
-                                        <div class="card-body">
-                                            <h6>Vollständige Informationen:</h6>
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <strong>Beschreibung:</strong><br>
-                                                    {{ event.original_event.description|safe if event.original_event.description else 'Keine Beschreibung' }}
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <strong>Fehlende Felder:</strong><br>
-                                                    {% if event.analysis.missing_fields %}
-                                                        {% for field in event.analysis.missing_fields %}
-                                                            <span class="badge bg-danger">{{ field }}</span>
-                                                        {% endfor %}
-                                                    {% else %}
-                                                        <span class="text-success">Alle Felder vorhanden</span>
-                                                    {% endif %}
-                                                </div>
-                                            </div>
-                                            <div class="row mt-2">
-                                                <div class="col-md-6">
-                                                    <strong>Vollständigkeit:</strong> 
-                                                    {{ (event.analysis.completeness_score * 100)|round }}%
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <strong>ChurchDesk ID:</strong> {{ event.id }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                
-                {% if not events %}
-                <div class="alert alert-warning text-center">
-                    <i class="fas fa-calendar-times"></i>
-                    <h5>Keine Gottesdienste gefunden</h5>
-                    <p>Für den gewählten Zeitraum wurden keine Gottesdienste in ChurchDesk gefunden.</p>
-                </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
+<!-- Header -->
+<div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
+  <div>
+    <h1 class="text-2xl font-bold text-gray-900">ChurchDesk Gottesdienste</h1>
+    <p class="text-gray-500 mt-1">{{ month_name }} {{ year }}{% if selected_organizations %} — {{ selected_organizations|join(', ') }}{% endif %}</p>
+  </div>
+  <div class="flex items-center gap-3 mt-3 md:mt-0">
+    <span class="bg-primary-100 text-primary-800 px-3 py-1 rounded-full text-sm font-medium">{{ events|length }} Gottesdienste</span>
+    <a href="{{ url_for('main.index') }}" class="btn-secondary">Zurück</a>
+  </div>
 </div>
 
+{% if not events %}
+<div class="alert-warning text-center py-8">
+  <p class="font-semibold">Keine Gottesdienste gefunden</p>
+  <p class="text-sm mt-1">Für den gewählten Zeitraum wurden keine Gottesdienste gefunden.</p>
+</div>
+{% else %}
+
+<!-- Select-All + Export -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+  <label class="flex items-center gap-2 cursor-pointer">
+    <input type="checkbox" id="header-select-all" class="rounded text-primary-600 w-4 h-4">
+    <span class="font-medium text-sm">Alle auswählen</span>
+  </label>
+  <form method="POST" action="{{ url_for('main.export_selected_events') }}" id="export-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <input type="hidden" name="events_data" value="{{ events_json }}">
+    <div id="selected-events-container"></div>
+    <button type="submit" class="btn-primary" id="export-btn" disabled>
+      Ausgewählte exportieren (<span id="selected-count">0</span>)
+    </button>
+  </form>
+</div>
+
+<!-- Events Table -->
+<div class="card overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm" id="events-table">
+      <thead class="bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+        <tr>
+          <th class="px-3 py-3 w-10">
+            <!-- checkbox col -->
+          </th>
+          <th class="px-3 py-3 sortable cursor-pointer" data-sort="date">
+            Datum &amp; Zeit
+            <svg class="w-3 h-3 inline ml-1 sort-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
+          </th>
+          <th class="px-3 py-3 sortable cursor-pointer" data-sort="title">
+            Titel
+            <svg class="w-3 h-3 inline ml-1 sort-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
+          </th>
+          <th class="px-3 py-3 sortable cursor-pointer" data-sort="location">
+            Ort
+            <svg class="w-3 h-3 inline ml-1 sort-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
+          </th>
+          <th class="px-3 py-3 sortable cursor-pointer" data-sort="contributor">
+            Mitwirkender
+            <svg class="w-3 h-3 inline ml-1 sort-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
+          </th>
+          <th class="px-3 py-3 sortable cursor-pointer" data-sort="parish">
+            Gemeinde
+            <svg class="w-3 h-3 inline ml-1 sort-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
+          </th>
+          <th class="px-3 py-3 sortable cursor-pointer" data-sort="organization">
+            Org.
+            <svg class="w-3 h-3 inline ml-1 sort-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
+          </th>
+          <th class="px-3 py-3 sortable cursor-pointer" data-sort="status">
+            Status
+            <svg class="w-3 h-3 inline ml-1 sort-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
+          </th>
+          <th class="px-3 py-3 w-16">Aktion</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for event in events %}
+        <tr class="event-row border-b border-gray-100 hover:bg-gray-50" data-event-id="{{ event.id }}">
+          <td class="px-3 py-2">
+            <input type="checkbox" class="event-select rounded text-primary-600 w-4 h-4" value="{{ event.id }}"
+                   name="selected_events"
+                   {% if event.analysis.is_complete %}checked{% endif %}>
+          </td>
+          <td class="px-3 py-2">
+            <div class="font-medium">{{ event.formatted_date }}</div>
+            <div class="text-gray-500 text-xs">{{ event.formatted_time }}</div>
+          </td>
+          <td class="px-3 py-2">{{ event.title }}</td>
+          <td class="px-3 py-2">
+            {% if event.location %}
+              {{ event.location }}
+            {% else %}
+              <span class="text-red-500 text-xs flex items-center gap-1">
+                <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+                Fehlt
+              </span>
+            {% endif %}
+          </td>
+          <td class="px-3 py-2">
+            {% if event.contributor %}
+              {{ event.contributor }}
+            {% else %}
+              <span class="text-red-500 text-xs flex items-center gap-1">
+                <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+                Fehlt
+              </span>
+            {% endif %}
+          </td>
+          <td class="px-3 py-2">
+            {% if event.parishes %}
+              <div class="flex flex-wrap gap-1">
+                {% for parish in event.parishes %}
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                  {{ parish.title | format_parish }}
+                </span>
+                {% endfor %}
+              </div>
+            {% else %}
+              <span class="text-red-500 text-xs flex items-center gap-1">
+                <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+                Fehlt
+              </span>
+            {% endif %}
+          </td>
+          <td class="px-3 py-2">
+            <span class="text-gray-400 text-xs">{{ event.organization_name }}</span>
+          </td>
+          <td class="px-3 py-2">
+            {% if event.analysis.is_complete %}
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                Vollständig
+              </span>
+            {% else %}
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+                {% set missing_count = event.analysis.missing_fields|length %}
+                {% if missing_count == 1 %}1 Feld fehlt{% else %}{{ missing_count }} Felder fehlen{% endif %}
+              </span>
+            {% endif %}
+          </td>
+          <td class="px-3 py-2">
+            <button class="text-primary-600 hover:text-primary-800 text-xs underline"
+                    onclick="toggleDetails('{{ event.id }}')">
+              Details
+            </button>
+          </td>
+        </tr>
+
+        <!-- Details Row -->
+        <tr id="details-{{ event.id }}" class="hidden">
+          <td colspan="9" class="bg-gray-50 px-4 py-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div>
+                <p class="font-medium text-gray-700 mb-1">Beschreibung</p>
+                <p class="text-gray-600">{{ event.original_event.description|safe if event.original_event.description else 'Keine Beschreibung' }}</p>
+              </div>
+              <div>
+                <p class="font-medium text-gray-700 mb-1">Fehlende Felder</p>
+                {% if event.analysis.missing_fields %}
+                  <div class="flex flex-wrap gap-1">
+                    {% for field in event.analysis.missing_fields %}
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">{{ field }}</span>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  <span class="text-green-600 text-xs">Alle Felder vorhanden</span>
+                {% endif %}
+              </div>
+              <div>
+                <p class="font-medium text-gray-700 mb-1">Vollständigkeit</p>
+                <p class="text-gray-600">{{ (event.analysis.completeness_score * 100)|round }}%</p>
+              </div>
+              <div>
+                <p class="font-medium text-gray-700 mb-1">ChurchDesk ID</p>
+                <p class="text-gray-600 font-mono text-xs">{{ event.id }}</p>
+              </div>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endif %}
+
 <script>
-// Toggle details for individual events
 function toggleDetails(eventId) {
-    const detailsRow = document.getElementById('details-' + eventId);
-    if (detailsRow.style.display === 'none') {
-        detailsRow.style.display = 'table-row';
-    } else {
-        detailsRow.style.display = 'none';
-    }
+  const row = document.getElementById('details-' + eventId);
+  if (row) row.classList.toggle('hidden');
 }
 
-// Handle select all functionality
 document.addEventListener('DOMContentLoaded', function() {
-    const selectAllCheckbox = document.getElementById('header-select-all');
-    const eventCheckboxes = document.querySelectorAll('.event-select');
-    const selectedCountSpan = document.getElementById('selected-count');
-    const exportBtn = document.getElementById('export-btn');
-    const selectedEventsContainer = document.getElementById('selected-events-container');
-    
-    function updateSelectedCount() {
-        const selectedCheckboxes = document.querySelectorAll('.event-select:checked');
-        const selectedCount = selectedCheckboxes.length;
-        selectedCountSpan.textContent = selectedCount;
-        exportBtn.disabled = selectedCount === 0;
-        
-        // Update hidden form fields for selected events
-        selectedEventsContainer.innerHTML = '';
-        selectedCheckboxes.forEach(checkbox => {
-            const hiddenInput = document.createElement('input');
-            hiddenInput.type = 'hidden';
-            hiddenInput.name = 'selected_events';
-            hiddenInput.value = checkbox.value;
-            selectedEventsContainer.appendChild(hiddenInput);
-        });
+  const selectAllCheckbox = document.getElementById('header-select-all');
+  const eventCheckboxes = document.querySelectorAll('.event-select');
+  const selectedCountSpan = document.getElementById('selected-count');
+  const exportBtn = document.getElementById('export-btn');
+  const selectedEventsContainer = document.getElementById('selected-events-container');
+
+  function updateSelectedCount() {
+    const selected = document.querySelectorAll('.event-select:checked');
+    const count = selected.length;
+    if (selectedCountSpan) selectedCountSpan.textContent = count;
+    if (exportBtn) exportBtn.disabled = count === 0;
+    if (selectedEventsContainer) {
+      selectedEventsContainer.innerHTML = '';
+      selected.forEach(function(cb) {
+        const inp = document.createElement('input');
+        inp.type = 'hidden';
+        inp.name = 'selected_events';
+        inp.value = cb.value;
+        selectedEventsContainer.appendChild(inp);
+      });
     }
-    
-    function updateSelectAllState() {
-        const checkedCount = document.querySelectorAll('.event-select:checked').length;
-        const totalCount = eventCheckboxes.length;
-        
-        selectAllCheckbox.checked = checkedCount === totalCount;
-        selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < totalCount;
+  }
+
+  function updateSelectAllState() {
+    const checked = document.querySelectorAll('.event-select:checked').length;
+    const total = eventCheckboxes.length;
+    if (selectAllCheckbox) {
+      selectAllCheckbox.checked = total > 0 && checked === total;
+      selectAllCheckbox.indeterminate = checked > 0 && checked < total;
     }
-    
-    // Select all checkbox handler
+  }
+
+  if (selectAllCheckbox) {
     selectAllCheckbox.addEventListener('change', function() {
-        eventCheckboxes.forEach(checkbox => {
-            checkbox.checked = this.checked;
-        });
-        updateSelectedCount();
+      eventCheckboxes.forEach(function(cb) { cb.checked = selectAllCheckbox.checked; });
+      updateSelectedCount();
     });
-    
-    // Individual checkbox handlers
-    eventCheckboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            updateSelectAllState();
-            updateSelectedCount();
-        });
+  }
+
+  eventCheckboxes.forEach(function(cb) {
+    cb.addEventListener('change', function() {
+      updateSelectAllState();
+      updateSelectedCount();
     });
-    
-    // Initialize counts
-    updateSelectedCount();
-    updateSelectAllState();
-    
-    // Table sorting functionality
-    const table = document.getElementById('events-table');
-    const sortableHeaders = document.querySelectorAll('.sortable');
-    let currentSort = { column: null, direction: 'asc' };
-    
-    sortableHeaders.forEach(header => {
-        if (header.dataset.sort !== 'select') {
-            header.addEventListener('click', function() {
-                const sortBy = this.dataset.sort;
-                const tbody = table.querySelector('tbody');
-                const rows = Array.from(tbody.querySelectorAll('tr.event-row'));
-                
-                // Toggle direction if same column
-                if (currentSort.column === sortBy) {
-                    currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
-                } else {
-                    currentSort.direction = 'asc';
-                }
-                currentSort.column = sortBy;
-                
-                // Update sort icons
-                sortableHeaders.forEach(h => {
-                    const icon = h.querySelector('i');
-                    if (icon) icon.className = 'fas fa-sort';
-                });
-                const icon = this.querySelector('i');
-                if (icon) icon.className = currentSort.direction === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down';
-                
-                // Sort rows
-                rows.sort((a, b) => {
-                    let aVal, bVal;
-                    
-                    switch(sortBy) {
-                        case 'date':
-                            aVal = a.querySelector('td:nth-child(2) div').textContent.trim();
-                            bVal = b.querySelector('td:nth-child(2) div').textContent.trim();
-                            break;
-                        case 'title':
-                            aVal = a.querySelector('td:nth-child(3)').textContent.trim();
-                            bVal = b.querySelector('td:nth-child(3)').textContent.trim();
-                            break;
-                        case 'location':
-                            aVal = a.querySelector('td:nth-child(4)').textContent.trim();
-                            bVal = b.querySelector('td:nth-child(4)').textContent.trim();
-                            break;
-                        case 'contributor':
-                            aVal = a.querySelector('td:nth-child(5)').textContent.trim();
-                            bVal = b.querySelector('td:nth-child(5)').textContent.trim();
-                            break;
-                        case 'parish':
-                            aVal = a.querySelector('td:nth-child(6)').textContent.trim();
-                            bVal = b.querySelector('td:nth-child(6)').textContent.trim();
-                            break;
-                        case 'organization':
-                            aVal = a.querySelector('td:nth-child(7)').textContent.trim();
-                            bVal = b.querySelector('td:nth-child(7)').textContent.trim();
-                            break;
-                        case 'status':
-                            aVal = a.querySelector('td:nth-child(8)').textContent.trim();
-                            bVal = b.querySelector('td:nth-child(8)').textContent.trim();
-                            break;
-                        default:
-                            aVal = '';
-                            bVal = '';
-                    }
-                    
-                    const result = aVal.localeCompare(bVal, 'de');
-                    return currentSort.direction === 'asc' ? result : -result;
-                });
-                
-                // Reorder rows in DOM
-                rows.forEach(row => {
-                    tbody.appendChild(row);
-                    // Also move the corresponding details row
-                    const detailsRow = document.getElementById('details-' + row.dataset.eventId);
-                    if (detailsRow) tbody.appendChild(detailsRow);
-                });
-            });
+  });
+
+  updateSelectedCount();
+  updateSelectAllState();
+
+  // Table sorting
+  const table = document.getElementById('events-table');
+  if (!table) return;
+  const sortableHeaders = table.querySelectorAll('.sortable');
+  let currentSort = { column: null, direction: 'asc' };
+
+  sortableHeaders.forEach(function(header) {
+    header.addEventListener('click', function() {
+      const sortBy = this.dataset.sort;
+      const tbody = table.querySelector('tbody');
+      const rows = Array.from(tbody.querySelectorAll('tr.event-row'));
+
+      if (currentSort.column === sortBy) {
+        currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+      } else {
+        currentSort.direction = 'asc';
+      }
+      currentSort.column = sortBy;
+
+      rows.sort(function(a, b) {
+        let aVal = '', bVal = '';
+        switch(sortBy) {
+          case 'date':        aVal = a.querySelector('td:nth-child(2) div').textContent.trim(); bVal = b.querySelector('td:nth-child(2) div').textContent.trim(); break;
+          case 'title':       aVal = a.querySelector('td:nth-child(3)').textContent.trim();     bVal = b.querySelector('td:nth-child(3)').textContent.trim();     break;
+          case 'location':    aVal = a.querySelector('td:nth-child(4)').textContent.trim();     bVal = b.querySelector('td:nth-child(4)').textContent.trim();     break;
+          case 'contributor': aVal = a.querySelector('td:nth-child(5)').textContent.trim();     bVal = b.querySelector('td:nth-child(5)').textContent.trim();     break;
+          case 'parish':      aVal = a.querySelector('td:nth-child(6)').textContent.trim();     bVal = b.querySelector('td:nth-child(6)').textContent.trim();     break;
+          case 'organization':aVal = a.querySelector('td:nth-child(7)').textContent.trim();     bVal = b.querySelector('td:nth-child(7)').textContent.trim();     break;
+          case 'status':      aVal = a.querySelector('td:nth-child(8)').textContent.trim();     bVal = b.querySelector('td:nth-child(8)').textContent.trim();     break;
         }
+        const result = aVal.localeCompare(bVal, 'de');
+        return currentSort.direction === 'asc' ? result : -result;
+      });
+
+      rows.forEach(function(row) {
+        tbody.appendChild(row);
+        const detailsRow = document.getElementById('details-' + row.dataset.eventId);
+        if (detailsRow) tbody.appendChild(detailsRow);
+      });
     });
+  });
 });
 </script>
 {% endblock %}
