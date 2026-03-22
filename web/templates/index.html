@@ -14,7 +14,7 @@
                     Rufen Sie Gottesdienste direkt aus ChurchDesk ab und wählen Sie aus, welche in das Boyens Format exportiert werden sollen.
                 </p>
                 
-                <form method="POST" action="{{ url_for('fetch_churchdesk_events') }}">
+                <form method="POST" action="{{ url_for('main.fetch_churchdesk_events') }}">
                     <div class="row">
                         <div class="col-md-4">
                             <div class="mb-3">
@@ -104,7 +104,7 @@
                     Das System konvertiert die Daten automatisch in das von Boyens Medien geforderte Format.
                 </p>
                 
-                <form method="POST" action="{{ url_for('upload_file') }}" enctype="multipart/form-data">
+                <form method="POST" action="{{ url_for('main.upload_file') }}" enctype="multipart/form-data">
                     <div class="file-upload-area">
                         <div class="mb-3">
                             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-success">
