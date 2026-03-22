@@ -231,7 +231,7 @@ def _reload_service_types():
 @admin_required
 def pastors():
     all_pastors = Pastor.query.order_by(Pastor.last_name, Pastor.first_name).all()
-    return render_template('admin/pastors.html', pastors=all_pastors)
+    return render_template('admin/personen.html', pastors=all_pastors)
 
 
 @bp.route('/pastors/new', methods=['GET', 'POST'])
@@ -250,9 +250,9 @@ def create_pastor():
         db.session.add(pastor)
         db.session.commit()
         _reload_pastors()
-        flash('Pastor "{}" angelegt.'.format(pastor.last_name), 'success')
+        flash('Person "{}" angelegt.'.format(pastor.last_name), 'success')
         return redirect(url_for('admin.pastors'))
-    return render_template('admin/edit_pastor.html', form=form, title='Neuer Pastor', is_new=True)
+    return render_template('admin/edit_person.html', form=form, title='Neue Person', is_new=True)
 
 
 @bp.route('/pastors/<int:pastor_id>/edit', methods=['GET', 'POST'])
@@ -274,10 +274,10 @@ def edit_pastor(pastor_id):
         pastor.is_active = form.is_active.data
         db.session.commit()
         _reload_pastors()
-        flash('Pastor "{}" aktualisiert.'.format(pastor.last_name), 'success')
+        flash('Person "{}" aktualisiert.'.format(pastor.last_name), 'success')
         return redirect(url_for('admin.pastors'))
-    return render_template('admin/edit_pastor.html', form=form, pastor=pastor,
-                           title='Pastor bearbeiten', is_new=False)
+    return render_template('admin/edit_person.html', form=form, pastor=pastor,
+                           title='Person bearbeiten', is_new=False)
 
 
 @bp.route('/pastors/<int:pastor_id>/delete', methods=['POST'])
@@ -290,7 +290,7 @@ def delete_pastor(pastor_id):
     db.session.delete(pastor)
     db.session.commit()
     _reload_pastors()
-    flash('Pastor "{}" geloescht.'.format(last_name), 'success')
+    flash('Person "{}" geloescht.'.format(last_name), 'success')
     return redirect(url_for('admin.pastors'))
 
 
