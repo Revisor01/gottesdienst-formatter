@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 05-01-PLAN.md
-last_updated: "2026-03-22T10:54:01.950Z"
+stopped_at: Completed 05-03-PLAN.md
+last_updated: "2026-03-22T12:10:52.412Z"
 progress:
   total_phases: 6
   completed_phases: 4
   total_plans: 14
-  completed_plans: 12
+  completed_plans: 13
 ---
 
 # Project State
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-03-22)
 ## Current Position
 
 Phase: 05 (ui-makeover-formatierung) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 
 ## Performance Metrics
 
@@ -56,6 +56,7 @@ Plan: 2 of 3
 | Phase 04-fundament-auth P02 | 168 | 3 tasks | 11 files |
 | Phase 04-fundament-auth P04 | 507 | 2 tasks | 8 files |
 | Phase 05-ui-makeover-formatierung P01 | 31536349 | 2 tasks | 8 files |
+| Phase 05-ui-makeover-formatierung P03 | 480 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -96,6 +97,8 @@ Recent decisions affecting current work:
 - [Phase 05-ui-makeover-formatierung]: Tailwind v3 statt v4: v4 hat kein tailwind.config.js mehr, v3 stabil und kompatibel mit bestehendem Workflow
 - [Phase 05-ui-makeover-formatierung]: output.css committed (nicht .gitignored): einfacher fuer lokale Entwicklung, CI baut trotzdem frisch
 - [Phase 05-ui-makeover-formatierung]: _match_service_type() als Hilfsfunktion extrahiert: FMT-10 Doppelpunkt-Split sauber getrennt, Anfuehrungszeichen-Check bleibt erste Prioritaet
+- [Phase 05-ui-makeover-formatierung]: FontAwesome durch inline SVG (Heroicons-Style) ersetzt — keine externe Icon-Abhaengigkeit
+- [Phase 05-ui-makeover-formatierung]: Tailwind-Tabellen Pattern: card overflow-hidden > overflow-x-auto > table.w-full
 
 ### Critical Pitfalls for Phase 4
 
@@ -121,7 +124,7 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-22T10:54:01.948Z
-Stopped at: Completed 05-01-PLAN.md
+Last session: 2026-03-22T12:10:52.410Z
+Stopped at: Completed 05-03-PLAN.md
 Resume file: None
 Next action: `/gsd:plan-phase 4`

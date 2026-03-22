@@ -87,11 +87,11 @@ Plans:
   2. Der Excel-Upload-Bereich ist nicht mehr sichtbar oder erreichbar — die einzige Datenquelle ist die ChurchDesk-API
   3. Der formatierte Text wird als Vorschau im Browser angezeigt, bevor er heruntergeladen oder kopiert wird; Warnungen bei erkannten Problemen erscheinen sichtbar oberhalb des Textes
   4. Ein Gottesdienst-Titel wie "Gottesdienst mit Abendmahl: Erntedank" erzeugt "Gd. m. A. Erntedank" im Output — Sonderformat und Untertitel werden korrekt kombiniert
-**Plans:** 1/3 plans executed
+**Plans:** 2/3 plans executed
 Plans:
 - [x] 05-01-PLAN.md — Tailwind CSS CLI Setup, base.html Sidebar-Layout, FMT-10 Sonderformat-Parsing
 - [ ] 05-02-PLAN.md — Excel-Code entfernen, index.html und result.html Tailwind-Redesign
-- [ ] 05-03-PLAN.md — churchdesk_events, login und admin Templates Tailwind-Redesign
+- [x] 05-03-PLAN.md — churchdesk_events, login und admin Templates Tailwind-Redesign
 
 ### Phase 6: Settings + Auto-Mail
 **Goal**: Jeder Benutzer kann seinen eigenen SMTP-Versand konfigurieren und Boyens-Exporte werden automatisch monatlich per Mail verschickt
@@ -112,5 +112,5 @@ Plans:
 | 2. Formatierung | 2/2 | Complete | 2026-03-21 |
 | 3. Pipeline | 2/2 | Complete | 2026-03-22 |
 | 4. Fundament + Auth | 4/4 | Complete   | 2026-03-22 |
-| 5. UI Makeover + Formatierung | 1/3 | In Progress|  |
+| 5. UI Makeover + Formatierung | 2/3 | In Progress|  |
 | 6. Settings + Auto-Mail | 0/? | Not started | - |
