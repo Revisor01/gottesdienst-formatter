@@ -12,7 +12,7 @@ from crypto import encrypt_value, decrypt_value
 from settings.forms import SettingsForm
 
 
-@bp.route('/', methods=['GET', 'POST'])
+@bp.route('/', methods=['GET', 'POST'], strict_slashes=False)
 @login_required
 def settings_page():
     """GET/POST /settings — SMTP-Einstellungen laden und speichern."""
