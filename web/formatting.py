@@ -45,16 +45,9 @@ def format_time(date_obj):
         return "{}.{:02d} Uhr".format(hour, minute)
 
 
-def format_service_type(titel):
-    """Formatiert den Gottesdiensttyp"""
-    if pd.isna(titel):
-        return "Gd."
-
+def _match_service_type(titel):
+    """Interne Hilfsfunktion: Ordnet Titel einem formatierten Typ zu (ohne Doppelpunkt-Split)."""
     titel_lower = titel.lower()
-
-    # D-10: Sonderformate mit Anfuehrungszeichen direkt uebernehmen
-    if '„' in titel or '"' in titel or '»' in titel:
-        return titel
 
     if 'tauffest' in titel_lower:
         return 'Tauffest'
@@ -74,7 +67,7 @@ def format_service_type(titel):
     elif 'konfirmation' in titel_lower:
         return 'Konfirmation'
     # D-04: Abendmahl + Taufe kombiniert — VOR den einzelnen Checks
-    # Pruefe auf 'tauf' (deckt "Taufe", "Taufgottesdienst", "Taufgottesdienst" ab)
+    # Pruefe auf 'tauf' (deckt "Taufe", "Taufgottesdienst" ab)
     elif 'abendmahl' in titel_lower and 'tauf' in titel_lower:
         return 'Abendmahlgd. m. T.'
     elif 'abendmahl' in titel_lower:
@@ -97,6 +90,32 @@ def format_service_type(titel):
         return 'Andacht'
     else:
         return 'Gd.'
+
+
+def format_service_type(titel):
+    """Formatiert den Gottesdiensttyp"""
+    if pd.isna(titel):
+        return "Gd."
+
+    # D-10: Sonderformate mit Anfuehrungszeichen direkt uebernehmen (vor allem anderen)
+    if '„' in titel or '"' in titel or '»' in titel:
+        return titel
+
+    # FMT-10: Doppelpunkt-Split fuer Typ + Untertitel
+    if ':' in titel:
+        parts = titel.split(':', 1)
+        typ_teil = parts[0].strip()
+        untertitel = parts[1].strip() if len(parts) > 1 else ''
+
+        # Typ-Teil durch normales Matching schicken
+        typ_formatiert = _match_service_type(typ_teil)
+
+        if untertitel:
+            return '{} {}'.format(typ_formatiert, untertitel)
+        else:
+            return typ_formatiert
+
+    return _match_service_type(titel)
 
 
 def format_pastor(contributor: str) -> str:

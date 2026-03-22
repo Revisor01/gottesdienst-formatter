@@ -159,8 +159,8 @@ def test_extract_boyens_location_display(location_name, expected):
 # ---------------------------------------------------------------------------
 
 @pytest.mark.parametrize("titel, expected", [
-    # Kolon-Titel: Abendmahl vor dem Kolon erkannt
-    ("Gottesdienst mit Tisch-Abendmahl: Brot des Lebens", "Gd. m. A."),
+    # FMT-10: Kolon-Titel — Typ + Untertitel (Untertitel wird beibehalten)
+    ("Gottesdienst mit Tisch-Abendmahl: Brot des Lebens", "Gd. m. A. Brot des Lebens"),
     # "zum Karfreitag mit Abendmahl" — Abendmahl im Titel ohne Kolon
     ("Gottesdienst zum Karfreitag mit Abendmahl",          "Gd. m. A."),
     # Normaler Sondertitel ohne Sondertyp
