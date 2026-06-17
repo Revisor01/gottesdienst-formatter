@@ -366,19 +366,19 @@ def fetch_churchdesk_events():
 def export_selected_events():
     """Export selected events to Boyens format"""
     try:
-        # Get selected events data
-        events_data = request.form.get('events_data')
-        selected_event_ids = request.form.getlist('selected_events')
-
-        if not events_data or not selected_event_ids:
-            flash('Keine Events ausgewaehlt')
-            return redirect(url_for('main.index'))
-
-        # Parse events data
-        events = json.loads(events_data)
-
-        # Filter selected events
-        selected_events = [e for e in events if str(e['id']) in selected_event_ids]
+        # Bevorzugt: editierte Auswahl-Events als JSON (enthaelt evtl. korrigierte
+        # Felder aus der Oberflaeche). Fallback: altes Schema (events_data + IDs).
+        selected_data = request.form.get('selected_events_data')
+        if selected_data:
+            selected_events = json.loads(selected_data)
+        else:
+            events_data = request.form.get('events_data')
+            selected_event_ids = request.form.getlist('selected_events')
+            if not events_data or not selected_event_ids:
+                flash('Keine Events ausgewaehlt')
+                return redirect(url_for('main.index'))
+            events = json.loads(events_data)
+            selected_events = [e for e in events if str(e['id']) in selected_event_ids]
 
         if not selected_events:
             flash('Keine gueltigen Events ausgewaehlt')

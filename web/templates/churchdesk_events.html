@@ -3,6 +3,20 @@
 {% block title %}ChurchDesk Gottesdienste — {{ month_name }} {{ year }}{% endblock %}
 
 {% block content %}
+<style>
+  .input-cell {
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8125rem;
+    max-width: 100%;
+  }
+  .input-cell:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 1px #2563eb;
+  }
+</style>
 <!-- Header -->
 <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
   <div>
@@ -30,8 +44,7 @@
   </label>
   <form method="POST" action="{{ url_for('main.export_selected_events') }}" id="export-form">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-    <input type="hidden" name="events_data" value="{{ events_json }}">
-    <div id="selected-events-container"></div>
+    <input type="hidden" name="selected_events_data" id="selected-events-data">
     <button type="submit" class="btn-primary" id="export-btn" disabled>
       Ausgewählte exportieren (<span id="selected-count">0</span>)
     </button>
@@ -80,36 +93,30 @@
       </thead>
       <tbody>
         {% for event in events %}
-        <tr class="event-row border-b border-gray-100 hover:bg-gray-50" data-event-id="{{ event.id }}">
-          <td class="px-3 py-2">
+        <tr class="event-row border-b border-gray-100 hover:bg-gray-50"
+            data-event-id="{{ event.id }}"
+            data-start-iso="{{ event.startDate.isoformat() }}"
+            data-parishes="{{ event.parishes | tojson | forceescape }}"
+            data-organization="{{ event.organization_name }}">
+          <td class="px-3 py-2 align-top">
             <input type="checkbox" class="event-select rounded text-primary-600 w-4 h-4" value="{{ event.id }}"
                    name="selected_events"
                    {% if event.analysis.is_complete %}checked{% endif %}>
           </td>
           <td class="px-3 py-2">
-            <div class="font-medium">{{ event.formatted_date }}</div>
-            <div class="text-gray-500 text-xs">{{ event.formatted_time }}</div>
-          </td>
-          <td class="px-3 py-2">{{ event.title }}</td>
-          <td class="px-3 py-2">
-            {% if event.location %}
-              {{ event.location }}
-            {% else %}
-              <span class="text-red-500 text-xs flex items-center gap-1">
-                <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
-                Fehlt
-              </span>
-            {% endif %}
+            <input type="datetime-local" class="edit-datetime input-cell w-44"
+                   value="{{ event.startDate.strftime('%Y-%m-%dT%H:%M') }}">
           </td>
           <td class="px-3 py-2">
-            {% if event.contributor %}
-              {{ event.contributor }}
-            {% else %}
-              <span class="text-red-500 text-xs flex items-center gap-1">
-                <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
-                Fehlt
-              </span>
-            {% endif %}
+            <input type="text" class="edit-title input-cell w-40" value="{{ event.title }}">
+          </td>
+          <td class="px-3 py-2">
+            <input type="text" class="edit-location input-cell w-44 {% if not event.location %}border-red-400{% endif %}"
+                   value="{{ event.location }}" placeholder="Ort, Kirche …">
+          </td>
+          <td class="px-3 py-2">
+            <input type="text" class="edit-contributor input-cell w-40 {% if not event.contributor %}border-red-400{% endif %}"
+                   value="{{ event.contributor }}" placeholder="Mitwirkende:r …">
           </td>
           <td class="px-3 py-2">
             {% if event.parishes %}
@@ -202,23 +209,42 @@ document.addEventListener('DOMContentLoaded', function() {
   const eventCheckboxes = document.querySelectorAll('.event-select');
   const selectedCountSpan = document.getElementById('selected-count');
   const exportBtn = document.getElementById('export-btn');
-  const selectedEventsContainer = document.getElementById('selected-events-container');
+  const exportForm = document.getElementById('export-form');
+  const selectedDataInput = document.getElementById('selected-events-data');
 
   function updateSelectedCount() {
-    const selected = document.querySelectorAll('.event-select:checked');
-    const count = selected.length;
+    const count = document.querySelectorAll('.event-select:checked').length;
     if (selectedCountSpan) selectedCountSpan.textContent = count;
     if (exportBtn) exportBtn.disabled = count === 0;
-    if (selectedEventsContainer) {
-      selectedEventsContainer.innerHTML = '';
-      selected.forEach(function(cb) {
-        const inp = document.createElement('input');
-        inp.type = 'hidden';
-        inp.name = 'selected_events';
-        inp.value = cb.value;
-        selectedEventsContainer.appendChild(inp);
-      });
-    }
+  }
+
+  // Liest die (evtl. editierten) Werte einer Zeile und baut das Event-Dict,
+  // wie es convert_churchdesk_events_to_boyens erwartet.
+  function collectRow(checkbox) {
+    const row = checkbox.closest('tr.event-row');
+    const dtLocal = row.querySelector('.edit-datetime').value;  // "YYYY-MM-DDTHH:MM"
+    // datetime-local ist lokale Zeit ohne Offset → als naive ISO uebergeben.
+    const startIso = dtLocal ? dtLocal + ':00' : row.dataset.startIso;
+    let parishes = [];
+    try { parishes = JSON.parse(row.dataset.parishes || '[]'); } catch (e) { parishes = []; }
+    return {
+      id: row.dataset.eventId,
+      startDate: startIso,
+      title: row.querySelector('.edit-title').value,
+      location: row.querySelector('.edit-location').value,
+      contributor: row.querySelector('.edit-contributor').value,
+      parishes: parishes,
+      organization_name: row.dataset.organization || ''
+    };
+  }
+
+  if (exportForm) {
+    exportForm.addEventListener('submit', function(e) {
+      const selected = Array.from(document.querySelectorAll('.event-select:checked'));
+      if (selected.length === 0) { e.preventDefault(); return; }
+      const payload = selected.map(collectRow);
+      selectedDataInput.value = JSON.stringify(payload);
+    });
   }
 
   function updateSelectAllState() {
@@ -269,10 +295,10 @@ document.addEventListener('DOMContentLoaded', function() {
       rows.sort(function(a, b) {
         let aVal = '', bVal = '';
         switch(sortBy) {
-          case 'date':        aVal = a.querySelector('td:nth-child(2) div').textContent.trim(); bVal = b.querySelector('td:nth-child(2) div').textContent.trim(); break;
-          case 'title':       aVal = a.querySelector('td:nth-child(3)').textContent.trim();     bVal = b.querySelector('td:nth-child(3)').textContent.trim();     break;
-          case 'location':    aVal = a.querySelector('td:nth-child(4)').textContent.trim();     bVal = b.querySelector('td:nth-child(4)').textContent.trim();     break;
-          case 'contributor': aVal = a.querySelector('td:nth-child(5)').textContent.trim();     bVal = b.querySelector('td:nth-child(5)').textContent.trim();     break;
+          case 'date':        aVal = a.dataset.startIso || '';                                  bVal = b.dataset.startIso || '';                                  break;
+          case 'title':       aVal = a.querySelector('.edit-title').value;                      bVal = b.querySelector('.edit-title').value;                      break;
+          case 'location':    aVal = a.querySelector('.edit-location').value;                   bVal = b.querySelector('.edit-location').value;                   break;
+          case 'contributor': aVal = a.querySelector('.edit-contributor').value;                bVal = b.querySelector('.edit-contributor').value;                break;
           case 'parish':      aVal = a.querySelector('td:nth-child(6)').textContent.trim();     bVal = b.querySelector('td:nth-child(6)').textContent.trim();     break;
           case 'organization':aVal = a.querySelector('td:nth-child(7)').textContent.trim();     bVal = b.querySelector('td:nth-child(7)').textContent.trim();     break;
           case 'status':      aVal = a.querySelector('td:nth-child(8)').textContent.trim();     bVal = b.querySelector('td:nth-child(8)').textContent.trim();     break;
