@@ -49,7 +49,10 @@ def _build_location_entries(day_items):
     location_entries = {}  # {location: [{'sort_key', 'time_str', 'service_type', 'pastor', 'suffix'}]}
 
     for item in day_items:
-        loc = item['location']
+        # Fehlender Ort (None/leer) → sichtbarer Platzhalter statt fuehrendem
+        # ": " in der Export-Zeile. Faellt der Redaktion sofort auf und ist
+        # leicht per Suche/Ersetzen zu finden.
+        loc = (item['location'] or '').strip() or 'Ort?'
         if loc not in location_entries:
             location_entries[loc] = []
         location_entries[loc].append(item)

@@ -117,6 +117,17 @@ def test_convert_none_location_uses_parish_fallback():
     assert 'None' not in result
 
 
+def test_convert_empty_location_uses_placeholder():
+    """location komplett leer (kein Parish-Fallback) → 'Ort?'-Platzhalter,
+    keine Export-Zeile mit fuehrendem ': '."""
+    event = _make_event(location=None, parishes=[])
+    result = convert_churchdesk_events_to_boyens([event])
+    assert 'Ort?:' in result
+    # Keine Zeile darf mit ': ' (leerer Ort) beginnen.
+    for line in result.splitlines():
+        assert not line.startswith(': ')
+
+
 def test_convert_none_parishes_no_crash():
     """parishes=None — kein Crash."""
     event = _make_event(parishes=None)
