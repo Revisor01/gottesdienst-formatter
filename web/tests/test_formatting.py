@@ -237,6 +237,21 @@ def test_format_pastor_vikar_propst(contributor, expected):
     assert format_pastor(contributor) == expected
 
 
+@pytest.mark.parametrize("contributor, expected", [
+    # Punktlose Kurzformen aus ChurchDesk → mit Punkt normalisieren
+    ("Pn Brandt",       "Pn. Brandt"),
+    ("Pn Sievers",      "Pn. Sievers"),
+    ("P Müller",        "P. Müller"),
+    ("Ps Meyer",        "Ps. Meyer"),
+    # Regression: bereits korrekte Formen bleiben unveraendert
+    ("Pn. Brandt",      "Pn. Brandt"),
+    ("P. Petersohn",    "P. Petersohn"),
+])
+def test_format_pastor_punctless_prefix(contributor, expected):
+    """Punktlose Eingaben 'Pn Brandt'/'P Müller' → 'Pn. Brandt'/'P. Müller'."""
+    assert format_pastor(contributor) == expected
+
+
 # ---------------------------------------------------------------------------
 # extract_boyens_location — Burg/Marne Single-Church + Pahlen (Task 3, 260617-u0x)
 # ---------------------------------------------------------------------------

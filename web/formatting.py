@@ -244,6 +244,11 @@ def _regex_fallback_pastor(contrib):
         ('Pfarrer ',       'P.'),
         ('Pn. ',           'Pn.'),
         ('P. ',            'P.'),
+        # Punktlose Eingaben aus ChurchDesk normalisieren ("Pn Brandt" → "Pn. Brandt").
+        # 'Pn ' MUSS vor 'P ' stehen, sonst kapert 'P ' das 'Pn '.
+        ('Pn ',            'Pn.'),
+        ('Ps ',            'Ps.'),
+        ('P ',             'P.'),
         ('Prädikantin ',   'Prä.'),
         ('Prädikant ',     'Prä.'),
         ('R. ',            'R.'),

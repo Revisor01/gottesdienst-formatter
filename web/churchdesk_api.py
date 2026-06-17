@@ -223,7 +223,7 @@ class EventAnalyzer:
 _CHURCH_WORDS = ('kirche', 'dom', 'kapelle', 'münster', 'muenster')
 
 # --- Default-Werte (Fallback, falls DB-Tabelle location_rules fehlt) ---
-_DEFAULT_MULTI_CHURCH_CITIES = ['heide', 'brunsbüttel', 'büsum']
+_DEFAULT_MULTI_CHURCH_CITIES = ['heide', 'brunsbüttel']
 _DEFAULT_NON_CHURCH_WORDS = [
     'badestelle', 'bootshafen', 'fähranleger', 'faehranleger', 'schwimmbad',
     'sportplatz', 'reitplatz', 'grundschule', 'schule', 'schulhof', 'mühle',
@@ -421,22 +421,11 @@ def _resolve_location(location_name: str, location_obj: Dict = None, for_export:
     if location.lower() in ('urlauberseelsorge', 'urlauberseelsorge büsum'):
         return 'Büsum' if for_export else 'Urlauberseelsorge'
 
-    # 3) Multi-Kirchen-Orte: konkreten Kirchennamen nennen
+    # 3) Multi-Kirchen-Orte: konkreten Kirchennamen nennen.
+    # NUR Heide und Brunsbüttel haben mehrere Kirchen. Büsum ist KEIN
+    # Multi-Kirchen-Ort (nur St. Clemens) → laeuft durch die normale
+    # Einzelkirchen-Logik (Schritt 4): "Büsum, Kirche" bzw. "Büsum, Perlebucht".
     if city_lower in MULTI_CHURCH_CITIES:
-        # Büsum-Sonderfaelle. Büsum hat real nur eine Kirche (St. Clemens) →
-        # wie alle Einzelkirchen-Orte "Büsum, Kirche". Nur die weltlichen
-        # Sonderorte (Perlebucht/Familienlagune etc.) werden ausgeschrieben.
-        if city_lower == 'büsum':
-            if rest and 'st. clemens' in rest.lower():
-                return 'Büsum, Kirche'               # Hauptkirche → Büsum, Kirche
-            if rest and 'perlebucht' in rest.lower():
-                return 'Büsum, Perlebucht'
-            if rest and _has_church_word(rest):
-                return 'Büsum, Kirche'               # generische Kirche
-            if rest:
-                return 'Büsum, {}'.format(rest)      # weltlicher Ort ausschreiben
-            return 'Büsum, Kirche'                    # ohne Zusatz → Kirche
-        # Heide/Brunsbüttel u.a. Multi-Kirchen-Orte
         if rest:
             # "-Kirche"- oder " Kirche"-Suffix aus dem Kirchennamen entfernen:
             # "St.-Juergen-Kirche" → "St.-Juergen", "Erloeserkirche" bleibt.

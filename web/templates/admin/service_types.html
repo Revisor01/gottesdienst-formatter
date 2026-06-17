@@ -40,9 +40,9 @@
           <td class="px-4 py-3 flex items-center gap-3">
             <a href="{{ url_for('admin.edit_service_type', mapping_id=mapping.id) }}" class="text-primary-600 hover:text-primary-800 underline text-sm">Bearbeiten</a>
             <form method="POST" action="{{ url_for('admin.delete_service_type', mapping_id=mapping.id) }}"
-                  onsubmit="return confirm('Zuordnung \"{{ mapping.keyword }}\" wirklich loeschen?');">
+                  onsubmit="return confirm('Zuordnung \"{{ mapping.keyword }}\" wirklich löschen?');">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <button type="submit" class="text-red-500 hover:text-red-700 underline text-sm">Loeschen</button>
+              <button type="submit" class="text-red-500 hover:text-red-700 underline text-sm">Löschen</button>
             </form>
           </td>
         </tr>

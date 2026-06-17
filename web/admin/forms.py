@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField, TextAreaField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField, TextAreaField, SelectField
 from wtforms.validators import DataRequired, Length, ValidationError, NumberRange, Optional
 from models import User
 
@@ -53,7 +53,6 @@ class PastorForm(FlaskForm):
 
 
 class LocationRuleForm(FlaskForm):
-    from wtforms import SelectField
     kind = SelectField('Art', choices=[
         ('mapping', 'Orts-Mapping (Kirchenname → Ort)'),
         ('multi_church', 'Multi-Kirchen-Ort (Kirchenname nennen)'),
