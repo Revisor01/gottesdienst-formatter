@@ -252,6 +252,18 @@ _LOCATION_MAPPINGS = {
     'st. bartholomäus': 'Wesselburen',
     'kreuzkirche wesseln': 'Wesseln',
     'kirche wesseln': 'Wesseln',
+    # Tellingstedt — St. Martins-Kirche (diverse Schreibweisen aus ChurchDesk)
+    'st. martins-kirche': 'Tellingstedt',
+    'st. martinskirche': 'Tellingstedt',
+    'st. martins-kirche tellingstedt': 'Tellingstedt',
+    'st. martinskirche tellingstedt': 'Tellingstedt',
+    'tellingstedt st. martinskirche': 'Tellingstedt',
+    'tellingstedt st. marinskirche': 'Tellingstedt',
+    # Albersdorf — St. Remigius-Kirche
+    'st. remigius-kirche': 'Albersdorf',
+    'st. remigius kirche': 'Albersdorf',
+    'st. remigius-kirche albersdorf': 'Albersdorf',
+    'st. remigius kirche albersdorf': 'Albersdorf',
 }
 
 
