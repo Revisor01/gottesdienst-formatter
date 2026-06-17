@@ -144,18 +144,20 @@ def test_format_pastor(contributor, expected):
 
 @pytest.mark.parametrize("location_name, expected", [
     # Multi-church city Heide: space-separated, no separator
+    # Kirchennamen bekommen "-Kirche"-Suffix entfernt (ist Typ-Wort, nicht Name)
     ("Heide St.-Jürgen-Kirche",     "Heide, St.-Jürgen"),
     ("Heide Erlöserkirche",          "Heide, Erlöserkirche"),
     ("Heide Auferstehungskirche",    "Heide, Auferstehungskirche"),
-    # Heide-Süderholm: hyphenated compound, must NOT be split
+    # Heide-Süderholm: Bindestrich-Kompositum, darf NICHT gesplittet werden
     ("Heide-Süderholm",             "Heide-Süderholm"),
-    # Single-church towns: strip trailing " Kirche"
-    ("Hennstedt Kirche",            "Hennstedt"),
-    ("Hemme Kirche",                "Hemme"),
-    ("Lunden Kirche",               "Lunden"),
-    ("Weddingstedt Kirche",         "Weddingstedt"),
-    ("Schlichting Kirche",          "Schlichting"),
-    ("St. Annen Kirche",            "St. Annen"),
+    # Single-church towns: " Kirche"-Suffix wird gestrippt, Wrapper ergaenzt ", Kirche"
+    # Resultat: "Ort, Kirche" (nicht nur "Ort" ohne Kirchen-Info)
+    ("Hennstedt Kirche",            "Hennstedt, Kirche"),
+    ("Hemme Kirche",                "Hemme, Kirche"),
+    ("Lunden Kirche",               "Lunden, Kirche"),
+    ("Weddingstedt Kirche",         "Weddingstedt, Kirche"),
+    ("Schlichting Kirche",          "Schlichting, Kirche"),
+    ("St. Annen Kirche",            "St. Annen, Kirche"),
     # Büsum with dash separator
     ("Büsum - St. Clemens-Kirche",  "Büsum"),
     ("Büsum - Perlebucht",          "Büsum, Perlebucht"),
@@ -163,7 +165,8 @@ def test_format_pastor(contributor, expected):
     ("Heide | St.-Jürgen-Kirche",  "Heide, St.-Jürgen"),
     ("Büsum | St. Clemens-Kirche", "Büsum"),
     ("Büsum | Perlebucht",         "Büsum, Perlebucht"),
-    ("Hennstedt",                  "Hennstedt"),
+    # Reiner Ortsname (kein " Kirche"-Suffix): Dorfkirche-Annahme → "Ort, Kirche"
+    ("Hennstedt",                  "Hennstedt, Kirche"),
 ])
 def test_extract_boyens_location(location_name, expected):
     assert extract_boyens_location(location_name, for_export=True) == expected
@@ -207,3 +210,54 @@ def test_extract_boyens_location_display(location_name, expected):
 ])
 def test_format_service_type_strikt_boyens(titel, expected):
     assert format_service_type(titel) == expected
+
+
+# ---------------------------------------------------------------------------
+# format_pastor — Vikar:in + Pröpst:in (Task 2, 260617-u0x)
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize("contributor, expected", [
+    # Vikarin — weiblich, Vorname entfernt
+    ("Vikarin Laura Karlsen",      "Vik. Karlsen"),
+    # Vikar — maennlich, Vorname entfernt
+    ("Vikar Max Mustermann",       "Vik. Mustermann"),
+    # Propst — _extract_surname bei 3+ Teilen nimmt nur das letzte Wort.
+    # "Dr. Andreas Crystall": parts[-2]="Andreas" ist kein Dr./Prof. → "Crystall".
+    # Falls Redaktion "Pr. Dr. Crystall" will, muss ein DB-Eintrag angelegt werden.
+    ("Propst Dr. Andreas Crystall", "Pr. Crystall"),
+    # Proepstin — weiblich, Vorname entfernt
+    ("Pröpstin Anna Beispiel",     "Pr. Beispiel"),
+    # Regression: Pastorin darf nicht von einem kuerzeren Prefix gekapert werden
+    ("Pastorin Schmidt",           "Pn. Schmidt"),
+    ("Pastor Mueller",             "P. Mueller"),
+])
+def test_format_pastor_vikar_propst(contributor, expected):
+    """Vikar:in → 'Vik. Nachname', Pröpst:in → 'Pr. Nachname', Regression Pastor:in bleibt."""
+    assert format_pastor(contributor) == expected
+
+
+# ---------------------------------------------------------------------------
+# extract_boyens_location — Burg/Marne Single-Church + Pahlen (Task 3, 260617-u0x)
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize("location_name, expected", [
+    # Burg — Single-Church nach Entfernung aus MULTI_CHURCH_CITIES
+    ("Burg Kirche",     "Burg, Kirche"),
+    ("Burg",            "Burg, Kirche"),
+    # Marne — Single-Church nach Entfernung aus MULTI_CHURCH_CITIES
+    ("Marne Kirche",    "Marne, Kirche"),
+    ("Marne",           "Marne, Kirche"),
+    # Pahlen — war nie in Multi-Church-Liste, bereits Single-Church
+    ("Pahlen Kirche",   "Pahlen, Kirche"),
+    ("Pahlen",          "Pahlen, Kirche"),
+    # Regression Buesum: Multi-Church bleibt
+    ("Büsum - St. Clemens-Kirche",  "Büsum"),
+    ("Büsum - Perlebucht",          "Büsum, Perlebucht"),
+    # Regression Heide: Multi-Church bleibt, Kirchenname ohne "-Kirche"-Suffix
+    ("Heide St.-Jürgen-Kirche",     "Heide, St.-Jürgen"),
+    # Regression Heide-Sonderfall: Bindestrich-Kompositum bleibt ganz
+    ("Heide-Süderholm",             "Heide-Süderholm"),
+])
+def test_extract_boyens_location_burg_marne_single_church(location_name, expected):
+    """Burg/Marne Single-Church: 'Ort, Kirche'; Büsum/Heide-Regression gruen."""
+    assert extract_boyens_location(location_name, for_export=True) == expected

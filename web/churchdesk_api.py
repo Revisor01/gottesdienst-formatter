@@ -223,7 +223,7 @@ class EventAnalyzer:
 _CHURCH_WORDS = ('kirche', 'dom', 'kapelle', 'münster', 'muenster')
 
 # --- Default-Werte (Fallback, falls DB-Tabelle location_rules fehlt) ---
-_DEFAULT_MULTI_CHURCH_CITIES = ['heide', 'brunsbüttel', 'büsum', 'burg', 'marne']
+_DEFAULT_MULTI_CHURCH_CITIES = ['heide', 'brunsbüttel', 'büsum']
 _DEFAULT_NON_CHURCH_WORDS = [
     'badestelle', 'bootshafen', 'fähranleger', 'faehranleger', 'schwimmbad',
     'sportplatz', 'reitplatz', 'grundschule', 'schule', 'schulhof', 'mühle',
@@ -361,6 +361,12 @@ def extract_boyens_location(location_name: str, location_obj: Dict = None, for_e
     # kein generisches ", Kirche". Exakter Vergleich (Substring-Bug-Schutz).
     if resolved.lower() in MULTI_CHURCH_CITIES:
         return resolved
+    # Bindestrich-Kompositum mit Multi-Church-Prefix ("Heide-Suerholm"):
+    # kein generisches ", Kirche" — der Rest nach dem Bindestrich ist der Ortsteil.
+    if '-' in resolved:
+        prefix = resolved.split('-', 1)[0].lower()
+        if prefix in MULTI_CHURCH_CITIES:
+            return resolved
     # Eigenstaendiger Kirchenname (z.B. "Meldorfer Dom", "St. Martins-Kirche")
     # oder weltlicher Ort (Badestelle, Sportplatz, ...) → unveraendert lassen,
     # KEIN doppeltes / falsches ", Kirche".
@@ -428,9 +434,16 @@ def _resolve_location(location_name: str, location_obj: Dict = None, for_export:
             if rest:
                 return 'Büsum, {}'.format(rest)      # Nicht-Kirche ausschreiben
             return 'Büsum'
-        # Heide/Brunsbüttel/Burg/Marne
+        # Heide/Brunsbüttel u.a. Multi-Kirchen-Orte
         if rest:
-            return '{}, {}'.format(city, rest)       # Kirchenname/Location nennen
+            # "-Kirche"- oder " Kirche"-Suffix aus dem Kirchennamen entfernen:
+            # "St.-Juergen-Kirche" → "St.-Juergen", "Erloeserkirche" bleibt.
+            for ksuf in ('-Kirche', ' Kirche', '-kirche', ' kirche'):
+                if rest.endswith(ksuf):
+                    rest = rest[:-len(ksuf)].strip()
+                    break
+            if rest:
+                return '{}, {}'.format(city, rest)   # Kirchenname/Location nennen
         return city
 
     # 4) Einzelkirchen-Ort

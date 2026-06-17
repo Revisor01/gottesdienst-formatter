@@ -108,15 +108,15 @@
                    value="{{ event.startDate.strftime('%Y-%m-%dT%H:%M') }}">
           </td>
           <td class="px-3 py-2">
-            <input type="text" class="edit-title input-cell w-40" value="{{ event.title }}">
+            <input type="text" class="edit-title input-cell w-40" value="{{ event.title or '' }}">
           </td>
           <td class="px-3 py-2">
             <input type="text" class="edit-location input-cell w-44 {% if not event.location %}border-red-400{% endif %}"
-                   value="{{ event.location }}" placeholder="Ort, Kirche …">
+                   value="{{ event.location or '' }}" placeholder="Ort, Kirche …">
           </td>
           <td class="px-3 py-2">
             <input type="text" class="edit-contributor input-cell w-40 {% if not event.contributor %}border-red-400{% endif %}"
-                   value="{{ event.contributor }}" placeholder="Mitwirkende:r …">
+                   value="{{ event.contributor or '' }}" placeholder="Mitwirkende:r …">
           </td>
           <td class="px-3 py-2">
             {% if event.parishes %}

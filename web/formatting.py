@@ -228,10 +228,16 @@ def _regex_fallback_pastor(contrib):
     Regex-basiertes Prefix-Parsing: Pastor → P., Pastorin → Pn., etc.
     Nur Nachname ausgeben (Vorname entfernen).
     """
-    # Bekannte Prefixe und ihre Boyens-Abkuerzungen
+    # Bekannte Prefixe und ihre Boyens-Abkuerzungen.
+    # Reihenfolge: laengere/spezifischere Prefixe zuerst (weiblich vor maennlich),
+    # damit kein kuerzerer Prefix einen laengeren unbeabsichtigt kapert.
     prefix_map = [
         ('Diakonin ',      'Diakonin'),
         ('Diakon ',        'Diakon'),
+        ('Pröpstin ',      'Pr.'),
+        ('Propst ',        'Pr.'),
+        ('Vikarin ',       'Vik.'),
+        ('Vikar ',         'Vik.'),
         ('Pastores ',      'Ps.'),
         ('Pastorin ',      'Pn.'),
         ('Pastor ',        'P.'),
@@ -266,6 +272,10 @@ def format_pastor(contributor: str) -> str:
         return ""
 
     name = str(contributor).strip()
+
+    # "None"-String abfangen (API liefert manchmal den String "None")
+    if name.lower() == "none":
+        return ""
 
     # Weltgebetstagsteam normalisieren — ausschreiben
     wgt_patterns = ['weltgebetstagsteam', 'weltsgebetstagsteam', 'weltgebetstagssteam',
