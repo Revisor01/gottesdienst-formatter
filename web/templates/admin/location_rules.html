@@ -32,11 +32,17 @@
   <p class="text-xs text-gray-500 mb-3">{{ hint }}</p>
   <div class="card overflow-hidden">
     <div class="overflow-x-auto">
-      <table class="w-full text-sm">
+      <table class="w-full text-sm table-fixed">
+        <colgroup>
+          <col class="w-[40%]">
+          <col class="w-[30%]">
+          <col class="w-[15%]">
+          <col class="w-[15%]">
+        </colgroup>
         <thead class="bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
           <tr>
             <th class="px-4 py-3">Schluessel</th>
-            {% if kind == 'mapping' %}<th class="px-4 py-3">→ Ort</th>{% endif %}
+            <th class="px-4 py-3">→ Ort</th>
             <th class="px-4 py-3">Aktiv</th>
             <th class="px-4 py-3"></th>
           </tr>
@@ -44,8 +50,8 @@
         <tbody>
           {% for r in grouped[kind] %}
           <tr class="border-b border-gray-100 hover:bg-gray-50">
-            <td class="px-4 py-3 font-mono text-xs">{{ r.key }}</td>
-            {% if kind == 'mapping' %}<td class="px-4 py-3 font-medium">{{ r.value }}</td>{% endif %}
+            <td class="px-4 py-3 font-mono text-xs truncate">{{ r.key }}</td>
+            <td class="px-4 py-3 font-medium truncate">{% if kind == 'mapping' %}{{ r.value }}{% else %}<span class="text-gray-300">—</span>{% endif %}</td>
             <td class="px-4 py-3">
               {% if r.is_active %}
               <span class="text-green-600 text-xs font-medium">Aktiv</span>
