@@ -122,8 +122,12 @@ def process_excel_file(file_path):
             # Sammle Termineintraege fuer diesen Tag
             day_items = []
             for _, row in group.iterrows():
-                raw_ort = row['Standortnamen'] if not pd.isna(row['Standortnamen']) else row['Gemeinden']
-                location = extract_boyens_location(str(raw_ort), for_export=True)
+                _standort = row['Standortnamen']
+                _gemeinde = row['Gemeinden']
+                _standort_ok = _standort is not None and not pd.isna(_standort)
+                _gemeinde_ok = _gemeinde is not None and not pd.isna(_gemeinde)
+                raw_ort = _standort if _standort_ok else (_gemeinde if _gemeinde_ok else '')
+                location = extract_boyens_location(str(raw_ort) if raw_ort else '', for_export=True)
                 titel = str(row['Titel']) if not pd.isna(row['Titel']) else ''
                 mitwirkender = str(row['Mitwirkender']) if not pd.isna(row['Mitwirkender']) else ''
                 day_items.append({
@@ -151,7 +155,14 @@ def convert_churchdesk_events_to_boyens(events):
     events_by_date = {}
 
     for event in events:
-        start_date = datetime.fromisoformat(event['startDate'])
+        # startDate defensiv: fehlender/leerer/unparsebahrer Wert → Event ueberspringen
+        raw_start = event.get('startDate')
+        if not raw_start:
+            continue
+        try:
+            start_date = datetime.fromisoformat(raw_start)
+        except (ValueError, TypeError):
+            continue
         # tzinfo entfernen → naive lokale Zeit, konsistent mit dem Excel-Pfad.
         # Verhindert "can't compare offset-naive and offset-aware" falls beide
         # Quellen je zusammengefuehrt werden; Anzeige/Sortierung bleibt identisch.
@@ -164,10 +175,10 @@ def convert_churchdesk_events_to_boyens(events):
 
         events_by_date[date_key].append({
             'startDate': start_date,
-            'title': event['title'],
-            'location': event['location'],
-            'contributor': event['contributor'],
-            'parishes': event['parishes'],
+            'title': event.get('title') or '',
+            'location': event.get('location') or '',
+            'contributor': event.get('contributor') or '',
+            'parishes': event.get('parishes') or [],
             'organization_name': event.get('organization_name', '')
         })
 

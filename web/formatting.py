@@ -267,6 +267,10 @@ def format_pastor(contributor: str) -> str:
 
     name = str(contributor).strip()
 
+    # "None"-String abfangen (API liefert manchmal den String "None")
+    if name.lower() == "none":
+        return ""
+
     # Weltgebetstagsteam normalisieren — ausschreiben
     wgt_patterns = ['weltgebetstagsteam', 'weltsgebetstagsteam', 'weltgebetstagssteam',
                     'wgt-team', 'wgt team', 'weltgebetstagskomitee']
