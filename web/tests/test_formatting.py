@@ -207,3 +207,27 @@ def test_extract_boyens_location_display(location_name, expected):
 ])
 def test_format_service_type_strikt_boyens(titel, expected):
     assert format_service_type(titel) == expected
+
+
+# ---------------------------------------------------------------------------
+# format_pastor — Vikar:in + Pröpst:in (Task 2, 260617-u0x)
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize("contributor, expected", [
+    # Vikarin — weiblich, Vorname entfernt
+    ("Vikarin Laura Karlsen",      "Vik. Karlsen"),
+    # Vikar — maennlich, Vorname entfernt
+    ("Vikar Max Mustermann",       "Vik. Mustermann"),
+    # Propst — _extract_surname bei 3+ Teilen nimmt nur das letzte Wort.
+    # "Dr. Andreas Crystall": parts[-2]="Andreas" ist kein Dr./Prof. → "Crystall".
+    # Falls Redaktion "Pr. Dr. Crystall" will, muss ein DB-Eintrag angelegt werden.
+    ("Propst Dr. Andreas Crystall", "Pr. Crystall"),
+    # Proepstin — weiblich, Vorname entfernt
+    ("Pröpstin Anna Beispiel",     "Pr. Beispiel"),
+    # Regression: Pastorin darf nicht von einem kuerzeren Prefix gekapert werden
+    ("Pastorin Schmidt",           "Pn. Schmidt"),
+    ("Pastor Mueller",             "P. Mueller"),
+])
+def test_format_pastor_vikar_propst(contributor, expected):
+    """Vikar:in → 'Vik. Nachname', Pröpst:in → 'Pr. Nachname', Regression Pastor:in bleibt."""
+    assert format_pastor(contributor) == expected
