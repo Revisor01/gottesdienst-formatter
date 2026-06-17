@@ -226,6 +226,18 @@ MULTI_CHURCH_CITIES = ['heide', 'brunsbüttel', 'büsum', 'burg', 'marne']
 # Wortbestandteile, die eine Location als Kirche kennzeichnen.
 _CHURCH_WORDS = ('kirche', 'dom', 'kapelle', 'münster', 'muenster')
 
+# Stichwoerter, die eine separatorlose Location als NICHT-Kirche kennzeichnen
+# (weltliche Orte). Solche Eintraege bleiben unveraendert (kein ", Kirche").
+_NON_CHURCH_WORDS = (
+    'badestelle', 'bootshafen', 'fähranleger', 'faehranleger', 'schwimmbad',
+    'sportplatz', 'reitplatz', 'grundschule', 'schule', 'schulhof', 'mühle',
+    'muehle', 'hof ', 'schutzhütte', 'schutzhuette', 'forst', 'wald', 'halle',
+    'gemeindehaus', 'gemeindesaal', 'saal', 'dörpshus', 'doerpshus', 'haus ',
+    'gänsemarkt', 'gaensemarkt', 'markt', 'steinzeitpark', 'park', 'papenbusch',
+    'familie ', 'altenhilfezentrum', 'gemeindezentrum', 'pastorat', 'küche',
+    'kueche', 'blockhütte', 'blockhuette', 'feuerwehr', 'mühlenteich', 'ankerplatz',
+)
+
 # Exakte Kirchen-/Ortsmappings (nach Normalisierung exakt, NICHT als Substring,
 # sonst matcht z.B. "st. andreas-kirche" auch in "St. Andreas-Kirche Büsum").
 # Nur fuer Einzelkirchen-Orte: liefern den Boyens-Ortsnamen.
@@ -267,6 +279,23 @@ def _strip_church_suffix(name: str) -> str:
     return name
 
 
+def _is_standalone_name(text: str) -> bool:
+    """True, wenn der Text als Eigenname stehen bleibt und KEIN ", Kirche" bekommt.
+
+    Trifft auf eigenstaendige Kirchennamen (Dom/Kirche/Patrozinium) und auf
+    weltliche Orte (Badestelle, Sportplatz, Hof, ...) zu.
+    """
+    t = text.lower()
+    # Nur ECHTE Kirchen-Woerter (NICHT das "St."-Patrozinium-Praefix) — sonst
+    # wuerde der Ortsname "St. Annen" faelschlich als Kirche gelten und kein
+    # ", Kirche" bekommen.
+    if any(w in t for w in _CHURCH_WORDS):
+        return True
+    if any(w in t for w in _NON_CHURCH_WORDS):
+        return True
+    return False
+
+
 def extract_boyens_location(location_name: str, location_obj: Dict = None, for_export: bool = True) -> str:
     """
     Boyens-Ortsausgabe.
@@ -288,6 +317,11 @@ def extract_boyens_location(location_name: str, location_obj: Dict = None, for_e
     # Multi-Kirchen-Ort OHNE konkrete Kirche (z.B. "Büsum" via St. Clemens):
     # kein generisches ", Kirche". Exakter Vergleich (Substring-Bug-Schutz).
     if resolved.lower() in MULTI_CHURCH_CITIES:
+        return resolved
+    # Eigenstaendiger Kirchenname (z.B. "Meldorfer Dom", "St. Martins-Kirche")
+    # oder weltlicher Ort (Badestelle, Sportplatz, ...) → unveraendert lassen,
+    # KEIN doppeltes / falsches ", Kirche".
+    if _is_standalone_name(resolved):
         return resolved
     # Reiner Ortsname → Dorfkirche-Annahme: "Ort, Kirche"
     return "{}, Kirche".format(resolved)
@@ -363,16 +397,15 @@ def _resolve_location(location_name: str, location_obj: Dict = None, for_export:
             return '{}, Kirche'.format(city)
         return '{}, {}'.format(city, rest)
 
-    # 5) Kein Separator. "Ort Kirche" (Space-Suffix) → Ort; danach reiner Ort.
-    if _has_church_word(location):
-        stripped = _strip_church_suffix(location)
-        if stripped != location:
-            return stripped              # "Hennstedt Kirche" → "Hennstedt"
-        # Location IST ein Kirchenname ohne Ort davor (z.B. "Meldorfer Dom") →
-        # unveraendert lassen, damit der Wrapper kein ", Kirche" anhaengt waere falsch;
-        # solche Faelle bleiben als Eigenname stehen.
-        return location
+    # 5) Kein Separator.
+    # 5a) "Ort Kirche" (Space-Suffix) → reiner Ort, Wrapper macht "Ort, Kirche".
+    stripped = _strip_church_suffix(location)
+    if stripped != location:
+        return stripped                  # "Hennstedt Kirche" → "Hennstedt"
 
+    # 5b/5c) Eigenstaendiger Kirchenname (z.B. "Meldorfer Dom") oder weltlicher
+    # Ort (Badestelle, Sportplatz, ...) → unveraendert. Der Wrapper erkennt das
+    # ebenfalls ueber _is_standalone_name() und haengt KEIN ", Kirche" an.
     return location
 
 
