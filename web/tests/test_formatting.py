@@ -158,12 +158,13 @@ def test_format_pastor(contributor, expected):
     ("Weddingstedt Kirche",         "Weddingstedt, Kirche"),
     ("Schlichting Kirche",          "Schlichting, Kirche"),
     ("St. Annen Kirche",            "St. Annen, Kirche"),
-    # Büsum with dash separator
-    ("Büsum - St. Clemens-Kirche",  "Büsum"),
+    # Büsum hat nur eine Kirche (St. Clemens) → "Büsum, Kirche";
+    # nur der weltliche Sonderort Perlebucht wird ausgeschrieben.
+    ("Büsum - St. Clemens-Kirche",  "Büsum, Kirche"),
     ("Büsum - Perlebucht",          "Büsum, Perlebucht"),
     # Existing pipe/comma cases still pass
     ("Heide | St.-Jürgen-Kirche",  "Heide, St.-Jürgen"),
-    ("Büsum | St. Clemens-Kirche", "Büsum"),
+    ("Büsum | St. Clemens-Kirche", "Büsum, Kirche"),
     ("Büsum | Perlebucht",         "Büsum, Perlebucht"),
     # Reiner Ortsname (kein " Kirche"-Suffix): Dorfkirche-Annahme → "Ort, Kirche"
     ("Hennstedt",                  "Hennstedt, Kirche"),
@@ -177,8 +178,8 @@ def test_extract_boyens_location(location_name, expected):
 # ---------------------------------------------------------------------------
 
 @pytest.mark.parametrize("location_name, expected", [
-    # St. Clemens ist NICHT Urlauberseelsorge — bleibt Büsum
-    ("Büsum - St. Clemens-Kirche",  "Büsum"),
+    # St. Clemens ist NICHT Urlauberseelsorge — Büsums einzige Kirche → "Büsum, Kirche"
+    ("Büsum - St. Clemens-Kirche",  "Büsum, Kirche"),
     # Urlauberseelsorge → Urlauberseelsorge in display mode
     ("Urlauberseelsorge",           "Urlauberseelsorge"),
     ("Urlauberseelsorge Büsum",     "Urlauberseelsorge"),
@@ -250,8 +251,8 @@ def test_format_pastor_vikar_propst(contributor, expected):
     # Pahlen — war nie in Multi-Church-Liste, bereits Single-Church
     ("Pahlen Kirche",   "Pahlen, Kirche"),
     ("Pahlen",          "Pahlen, Kirche"),
-    # Regression Buesum: Multi-Church bleibt
-    ("Büsum - St. Clemens-Kirche",  "Büsum"),
+    # Büsum: einzige Kirche (St. Clemens) → "Büsum, Kirche"; Perlebucht ausgeschrieben
+    ("Büsum - St. Clemens-Kirche",  "Büsum, Kirche"),
     ("Büsum - Perlebucht",          "Büsum, Perlebucht"),
     # Regression Heide: Multi-Church bleibt, Kirchenname ohne "-Kirche"-Suffix
     ("Heide St.-Jürgen-Kirche",     "Heide, St.-Jürgen"),

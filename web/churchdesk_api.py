@@ -423,17 +423,19 @@ def _resolve_location(location_name: str, location_obj: Dict = None, for_export:
 
     # 3) Multi-Kirchen-Orte: konkreten Kirchennamen nennen
     if city_lower in MULTI_CHURCH_CITIES:
-        # Büsum-Sonderfaelle
+        # Büsum-Sonderfaelle. Büsum hat real nur eine Kirche (St. Clemens) →
+        # wie alle Einzelkirchen-Orte "Büsum, Kirche". Nur die weltlichen
+        # Sonderorte (Perlebucht/Familienlagune etc.) werden ausgeschrieben.
         if city_lower == 'büsum':
             if rest and 'st. clemens' in rest.lower():
-                return 'Büsum'                       # Hauptkirche → nur Büsum
+                return 'Büsum, Kirche'               # Hauptkirche → Büsum, Kirche
             if rest and 'perlebucht' in rest.lower():
                 return 'Büsum, Perlebucht'
             if rest and _has_church_word(rest):
-                return 'Büsum, {}'.format(rest)
+                return 'Büsum, Kirche'               # generische Kirche
             if rest:
-                return 'Büsum, {}'.format(rest)      # Nicht-Kirche ausschreiben
-            return 'Büsum'
+                return 'Büsum, {}'.format(rest)      # weltlicher Ort ausschreiben
+            return 'Büsum, Kirche'                    # ohne Zusatz → Kirche
         # Heide/Brunsbüttel u.a. Multi-Kirchen-Orte
         if rest:
             # "-Kirche"- oder " Kirche"-Suffix aus dem Kirchennamen entfernen:
