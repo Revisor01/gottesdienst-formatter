@@ -299,3 +299,104 @@ def _reload_pastors():
     from flask import current_app
     from formatting import reload_pastors
     reload_pastors(current_app._get_current_object())
+
+
+# --- Location Rule CRUD (Orts-Mappings / Multi-Kirchen / Nicht-Kirchen) ---
+
+_KIND_LABELS = {
+    'mapping': 'Orts-Mapping',
+    'multi_church': 'Multi-Kirchen-Ort',
+    'non_church': 'Nicht-Kirchen-Stichwort',
+}
+
+
+@bp.route('/location-rules')
+@admin_required
+def location_rules():
+    from models import LocationRule
+    rules = LocationRule.query.order_by(LocationRule.kind, LocationRule.key).all()
+    grouped = {'mapping': [], 'multi_church': [], 'non_church': []}
+    for r in rules:
+        grouped.get(r.kind, grouped.setdefault(r.kind, [])).append(r)
+    return render_template('admin/location_rules.html', grouped=grouped, kind_labels=_KIND_LABELS)
+
+
+@bp.route('/location-rules/new', methods=['GET', 'POST'])
+@admin_required
+def create_location_rule():
+    from models import LocationRule
+    from admin.forms import LocationRuleForm
+    form = LocationRuleForm()
+    if request.method == 'GET':
+        form.is_active.data = True
+        form.kind.data = request.args.get('kind', 'mapping')
+    if form.validate_on_submit():
+        key = form.key.data.strip().lower()
+        kind = form.kind.data
+        if LocationRule.query.filter_by(kind=kind, key=key).first():
+            flash('Diese Regel existiert bereits.', 'danger')
+            return render_template('admin/edit_location_rule.html', form=form, title='Neue Regel', is_new=True)
+        rule = LocationRule(
+            kind=kind, key=key,
+            value=(form.value.data or '').strip() if kind == 'mapping' else '',
+            is_active=form.is_active.data,
+        )
+        db.session.add(rule)
+        db.session.commit()
+        _reload_location_rules()
+        flash('Regel angelegt.', 'success')
+        return redirect(url_for('admin.location_rules'))
+    return render_template('admin/edit_location_rule.html', form=form, title='Neue Regel', is_new=True)
+
+
+@bp.route('/location-rules/<int:rule_id>/edit', methods=['GET', 'POST'])
+@admin_required
+def edit_location_rule(rule_id):
+    from models import LocationRule
+    from admin.forms import LocationRuleForm
+    rule = db.session.get(LocationRule, rule_id)
+    if rule is None:
+        abort(404)
+    form = LocationRuleForm(obj=rule)
+    if request.method == 'GET':
+        form.kind.data = rule.kind
+        form.key.data = rule.key
+        form.value.data = rule.value
+        form.is_active.data = rule.is_active
+    if form.validate_on_submit():
+        new_key = form.key.data.strip().lower()
+        new_kind = form.kind.data
+        existing = LocationRule.query.filter_by(kind=new_kind, key=new_key).first()
+        if existing and existing.id != rule_id:
+            flash('Eine andere Regel mit diesem Schluessel/dieser Art existiert bereits.', 'danger')
+            return render_template('admin/edit_location_rule.html', form=form, rule=rule, title='Regel bearbeiten', is_new=False)
+        rule.kind = new_kind
+        rule.key = new_key
+        rule.value = (form.value.data or '').strip() if new_kind == 'mapping' else ''
+        rule.is_active = form.is_active.data
+        db.session.commit()
+        _reload_location_rules()
+        flash('Regel aktualisiert.', 'success')
+        return redirect(url_for('admin.location_rules'))
+    return render_template('admin/edit_location_rule.html', form=form, rule=rule, title='Regel bearbeiten', is_new=False)
+
+
+@bp.route('/location-rules/<int:rule_id>/delete', methods=['POST'])
+@admin_required
+def delete_location_rule(rule_id):
+    from models import LocationRule
+    rule = db.session.get(LocationRule, rule_id)
+    if rule is None:
+        abort(404)
+    db.session.delete(rule)
+    db.session.commit()
+    _reload_location_rules()
+    flash('Regel geloescht.', 'success')
+    return redirect(url_for('admin.location_rules'))
+
+
+def _reload_location_rules():
+    """Aktualisiert den Location-Rule-Cache nach CRUD-Operationen."""
+    from flask import current_app
+    from churchdesk_api import reload_location_rules
+    reload_location_rules(current_app._get_current_object())

@@ -138,6 +138,8 @@ def create_app(test_config=None):
         from formatting import load_custom_mappings, load_pastors
         load_custom_mappings(app)
         load_pastors(app)
+        from churchdesk_api import load_location_rules
+        load_location_rules(app)
 
     return app
 

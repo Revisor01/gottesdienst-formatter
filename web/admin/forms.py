@@ -50,3 +50,20 @@ class PastorForm(FlaskForm):
     title = StringField('Boyens-Abkuerzung (z.B. P., Pn., Diakon, Prä., R.)', validators=[DataRequired(), Length(max=64)])
     is_active = BooleanField('Aktiv')
     submit = SubmitField('Speichern')
+
+
+class LocationRuleForm(FlaskForm):
+    from wtforms import SelectField
+    kind = SelectField('Art', choices=[
+        ('mapping', 'Orts-Mapping (Kirchenname → Ort)'),
+        ('multi_church', 'Multi-Kirchen-Ort (Kirchenname nennen)'),
+        ('non_church', 'Nicht-Kirchen-Stichwort (weltlicher Ort)'),
+    ], validators=[DataRequired()])
+    key = StringField('Schluessel (Kleinschreibung)', validators=[DataRequired(), Length(max=256)])
+    value = StringField('Ziel-Ort (nur bei Orts-Mapping)', validators=[Optional(), Length(max=256)])
+    is_active = BooleanField('Aktiv')
+    submit = SubmitField('Speichern')
+
+    def validate_value(self, field):
+        if self.kind.data == 'mapping' and not (field.data or '').strip():
+            raise ValidationError('Bei einem Orts-Mapping muss ein Ziel-Ort angegeben werden.')

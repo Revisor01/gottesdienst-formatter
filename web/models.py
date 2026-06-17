@@ -80,6 +80,28 @@ class ServiceTypeMapping(db.Model):
         return '<ServiceTypeMapping {} -> {}>'.format(self.keyword, self.output_label)
 
 
+class LocationRule(db.Model):
+    """Pflegbare Regeln fuer die Boyens-Ortsausgabe (extract_boyens_location).
+
+    kind:
+      'mapping'      → key = Kirchen-/Roh-Location (lowercase), value = Boyens-Ort
+      'multi_church' → key = Ortsname (lowercase), value = leer (Ort mit mehreren Kirchen)
+      'non_church'   → key = Stichwort (lowercase), value = leer (weltlicher Ort)
+    """
+    __tablename__ = 'location_rules'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    kind = db.Column(db.String(32), nullable=False)            # mapping | multi_church | non_church
+    key = db.Column(db.String(256), nullable=False)            # immer lowercase gespeichert
+    value = db.Column(db.String(256), default='', nullable=False)
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+
+    __table_args__ = (db.UniqueConstraint('kind', 'key', name='uq_locationrule_kind_key'),)
+
+    def __repr__(self):
+        return '<LocationRule {} {} -> {}>'.format(self.kind, self.key, self.value)
+
+
 class Pastor(db.Model):
     __tablename__ = 'pastors'
 

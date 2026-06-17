@@ -218,17 +218,13 @@ class EventAnalyzer:
         return None
 
 
-# Orte mit MEHREREN Kirchen — hier muss der konkrete Kirchenname genannt werden
-# statt nur "Ort, Kirche". EXAKTER Ortsvergleich (kein Substring), damit
-# "Heide-Süderholm" o.ae. nicht faelschlich als Multi-Kirchen-Ort gelten.
-MULTI_CHURCH_CITIES = ['heide', 'brunsbüttel', 'büsum', 'burg', 'marne']
-
-# Wortbestandteile, die eine Location als Kirche kennzeichnen.
+# Wortbestandteile, die eine Location als Kirche kennzeichnen (sprachliche
+# Grundbegriffe — bleiben hartkodiert, sind nicht pflegebeduerftig).
 _CHURCH_WORDS = ('kirche', 'dom', 'kapelle', 'münster', 'muenster')
 
-# Stichwoerter, die eine separatorlose Location als NICHT-Kirche kennzeichnen
-# (weltliche Orte). Solche Eintraege bleiben unveraendert (kein ", Kirche").
-_NON_CHURCH_WORDS = (
+# --- Default-Werte (Fallback, falls DB-Tabelle location_rules fehlt) ---
+_DEFAULT_MULTI_CHURCH_CITIES = ['heide', 'brunsbüttel', 'büsum', 'burg', 'marne']
+_DEFAULT_NON_CHURCH_WORDS = [
     'badestelle', 'bootshafen', 'fähranleger', 'faehranleger', 'schwimmbad',
     'sportplatz', 'reitplatz', 'grundschule', 'schule', 'schulhof', 'mühle',
     'muehle', 'hof ', 'schutzhütte', 'schutzhuette', 'forst', 'wald', 'halle',
@@ -236,12 +232,8 @@ _NON_CHURCH_WORDS = (
     'gänsemarkt', 'gaensemarkt', 'markt', 'steinzeitpark', 'park', 'papenbusch',
     'familie ', 'altenhilfezentrum', 'gemeindezentrum', 'pastorat', 'küche',
     'kueche', 'blockhütte', 'blockhuette', 'feuerwehr', 'mühlenteich', 'ankerplatz',
-)
-
-# Exakte Kirchen-/Ortsmappings (nach Normalisierung exakt, NICHT als Substring,
-# sonst matcht z.B. "st. andreas-kirche" auch in "St. Andreas-Kirche Büsum").
-# Nur fuer Einzelkirchen-Orte: liefern den Boyens-Ortsnamen.
-_LOCATION_MAPPINGS = {
+]
+_DEFAULT_LOCATION_MAPPINGS = {
     'st. annen-kirche': 'St. Annen',
     'st. marien-kirche': 'Eddelak',
     'marien-kirche': 'Eddelak',
@@ -252,19 +244,58 @@ _LOCATION_MAPPINGS = {
     'st. bartholomäus': 'Wesselburen',
     'kreuzkirche wesseln': 'Wesseln',
     'kirche wesseln': 'Wesseln',
-    # Tellingstedt — St. Martins-Kirche (diverse Schreibweisen aus ChurchDesk)
     'st. martins-kirche': 'Tellingstedt',
     'st. martinskirche': 'Tellingstedt',
     'st. martins-kirche tellingstedt': 'Tellingstedt',
     'st. martinskirche tellingstedt': 'Tellingstedt',
     'tellingstedt st. martinskirche': 'Tellingstedt',
     'tellingstedt st. marinskirche': 'Tellingstedt',
-    # Albersdorf — St. Remigius-Kirche
     'st. remigius-kirche': 'Albersdorf',
     'st. remigius kirche': 'Albersdorf',
     'st. remigius-kirche albersdorf': 'Albersdorf',
     'st. remigius kirche albersdorf': 'Albersdorf',
 }
+
+# --- Aktive Caches (werden bei App-Start aus DB befuellt, sonst Defaults) ---
+MULTI_CHURCH_CITIES = list(_DEFAULT_MULTI_CHURCH_CITIES)
+_NON_CHURCH_WORDS = list(_DEFAULT_NON_CHURCH_WORDS)
+_LOCATION_MAPPINGS = dict(_DEFAULT_LOCATION_MAPPINGS)
+
+
+def load_location_rules(app):
+    """Laedt die pflegbaren Location-Regeln aus der DB in die Modul-Caches.
+
+    Faellt auf die hartkodierten Defaults zurueck, falls die Tabelle fehlt
+    (Tests, vor Migration) oder leer ist.
+    """
+    global MULTI_CHURCH_CITIES, _NON_CHURCH_WORDS, _LOCATION_MAPPINGS
+    try:
+        with app.app_context():
+            from models import LocationRule
+            rules = LocationRule.query.filter_by(is_active=True).all()
+            mappings, multi, nonchurch = {}, [], []
+            for r in rules:
+                if r.kind == 'mapping':
+                    mappings[r.key.lower()] = r.value
+                elif r.kind == 'multi_church':
+                    multi.append(r.key.lower())
+                elif r.kind == 'non_church':
+                    nonchurch.append(r.key.lower())
+            # Nur uebernehmen, wenn ueberhaupt Regeln vorhanden (sonst Defaults behalten)
+            if mappings or multi or nonchurch:
+                _LOCATION_MAPPINGS = mappings or dict(_DEFAULT_LOCATION_MAPPINGS)
+                MULTI_CHURCH_CITIES = multi or list(_DEFAULT_MULTI_CHURCH_CITIES)
+                _NON_CHURCH_WORDS = nonchurch or list(_DEFAULT_NON_CHURCH_WORDS)
+    except Exception:
+        # Tabelle fehlt → Defaults beibehalten
+        MULTI_CHURCH_CITIES = list(_DEFAULT_MULTI_CHURCH_CITIES)
+        _NON_CHURCH_WORDS = list(_DEFAULT_NON_CHURCH_WORDS)
+        _LOCATION_MAPPINGS = dict(_DEFAULT_LOCATION_MAPPINGS)
+
+
+def reload_location_rules(app):
+    """Alias — expliziter Name fuer post-CRUD-Aufrufe."""
+    load_location_rules(app)
 
 
 def _has_church_word(text: str) -> bool:
