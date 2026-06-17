@@ -1,0 +1,124 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e5]:
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - textbox "Startdatum" [ref=e9]
+        - generic "to" [ref=e11]:
+          - img "swap-right" [ref=e12]:
+            - img [ref=e13]
+        - textbox "Enddatum" [ref=e16]
+        - generic:
+          - img "calendar":
+            - img
+      - link "search Suchen" [ref=e17] [cursor=pointer]:
+        - /url: /w/2596/event/WTSm9Xrnr2vX/1/1356954/-/-/-/-/-/or/list?frameId=
+        - button "search Suchen" [ref=e18]:
+          - img "search" [ref=e20]:
+            - img [ref=e21]
+          - generic [ref=e23]: Suchen
+    - generic [ref=e24]:
+      - link "Small desk calendar displaying the number 1, placed on a soft white surface. JUNI 17 Feierabendandacht mit anschl. gemeinsamen Abendbrot Mittwoch, 17. Juni 2026, 18:30 Uhr Wöhrden | Gemeindehaus, Kirchenstraße 1, Kirchenstraße 1, 25797 Wöhrden" [ref=e26] [cursor=pointer]:
+        - /url: https://landing.churchdesk.com/de/e/48056299/Feierabendandacht-mit-anschl.-gemeinsamen-Abendbrot?utm_source=Widget+on+www.kirche-dithmarschen.de&utm_medium=Widgets
+        - generic [ref=e29]:
+          - generic [ref=e31]:
+            - img "Small desk calendar displaying the number 1, placed on a soft white surface." [ref=e35]
+            - generic [ref=e39]:
+              - generic [ref=e41]: JUNI
+              - heading "17" [level=2] [ref=e43]
+          - generic [ref=e49]:
+            - heading "Feierabendandacht mit anschl. gemeinsamen Abendbrot" [level=2] [ref=e51]
+            - generic [ref=e53]:
+              - img [ref=e55]
+              - generic [ref=e57]: Mittwoch, 17. Juni 2026, 18:30 Uhr
+            - generic [ref=e59]:
+              - img [ref=e61]
+              - generic [ref=e63]: Wöhrden | Gemeindehaus, Kirchenstraße 1, Kirchenstraße 1, 25797 Wöhrden
+      - 'link "Eine Gruppe von Menschen schaut bei Sonnenuntergang am Strand. © Christian Verwold JUNI 17 Abendsegen bei Sonnenuntergang Mittwoch, 17. Juni 2026, 21:45 Uhr Büsum | „Watt`n Insel“ in der Familienlagune Perlebucht, Nordseestraße 79X, 25761 Büsum" [ref=e65] [cursor=pointer]':
+        - /url: https://www.kirche-wesselburen.de/b/abendsegen-bei-sonnenuntergang-45545999?utm_source=Widget+on+www.kirche-dithmarschen.de&utm_medium=Widgets
+        - generic [ref=e68]:
+          - generic [ref=e70]:
+            - generic [ref=e71]:
+              - img "Eine Gruppe von Menschen schaut bei Sonnenuntergang am Strand." [ref=e74]
+              - generic [ref=e75]: © Christian Verwold
+            - generic [ref=e79]:
+              - generic [ref=e81]: JUNI
+              - heading "17" [level=2] [ref=e83]
+          - generic [ref=e89]:
+            - heading "Abendsegen bei Sonnenuntergang" [level=2] [ref=e91]
+            - generic [ref=e93]:
+              - img [ref=e95]
+              - generic [ref=e97]: Mittwoch, 17. Juni 2026, 21:45 Uhr
+            - generic [ref=e99]:
+              - img [ref=e101]
+              - generic [ref=e103]: "Büsum | „Watt`n Insel“ in der Familienlagune Perlebucht, Nordseestraße 79X, 25761 Büsum"
+      - link "Ein Sandwich auf einem Buch, das auf einem Regal liegt © Ulrike Verwold JUNI 18 Geistliche Mittagspause am Donnerstag \"Fischbrötchen-Segen\" Donnerstag, 18. Juni 2026, 12:00 - 12:15 Uhr Büsum | St. Clemens-Kirche, Kirchenstraße 13, 25761 Büsum Team der Urlauberseelsorge" [ref=e105] [cursor=pointer]:
+        - /url: https://www.kirche-wesselburen.de/b/geistliche-mittagspause-am-donnerstag-fischbrotchen-segen-47740500?utm_source=Widget+on+www.kirche-dithmarschen.de&utm_medium=Widgets
+        - generic [ref=e108]:
+          - generic [ref=e110]:
+            - generic [ref=e111]:
+              - img "Ein Sandwich auf einem Buch, das auf einem Regal liegt" [ref=e114]
+              - generic [ref=e115]: © Ulrike Verwold
+            - generic [ref=e119]:
+              - generic [ref=e121]: JUNI
+              - heading "18" [level=2] [ref=e123]
+          - generic [ref=e129]:
+            - heading "Geistliche Mittagspause am Donnerstag \"Fischbrötchen-Segen\"" [level=2] [ref=e131]
+            - generic [ref=e133]:
+              - img [ref=e135]
+              - generic [ref=e137]: Donnerstag, 18. Juni 2026, 12:00 - 12:15 Uhr
+            - generic [ref=e139]:
+              - img [ref=e141]
+              - generic [ref=e143]: Büsum | St. Clemens-Kirche, Kirchenstraße 13, 25761 Büsum
+            - generic [ref=e145]:
+              - img [ref=e147]
+              - generic [ref=e152]: Team der Urlauberseelsorge
+      - 'link "Small desk calendar displaying the number 1, placed on a soft white surface. JUNI 19 Marktandacht, Pastor Hose Freitag, 19. Juni 2026, 10:00 Uhr Meldorfer Dom, Nordermarkt 1, 25704 Meldorf Orgel: Domenico Lavena" [ref=e154] [cursor=pointer]':
+        - /url: https://landing.churchdesk.com/de/e/32367366/Marktandacht,-Pastor-Hose?utm_source=Widget+on+www.kirche-dithmarschen.de&utm_medium=Widgets
+        - generic [ref=e157]:
+          - generic [ref=e159]:
+            - img "Small desk calendar displaying the number 1, placed on a soft white surface." [ref=e163]
+            - generic [ref=e167]:
+              - generic [ref=e169]: JUNI
+              - heading "19" [level=2] [ref=e171]
+          - generic [ref=e177]:
+            - heading "Marktandacht, Pastor Hose" [level=2] [ref=e179]
+            - generic [ref=e181]:
+              - img [ref=e183]
+              - generic [ref=e185]: Freitag, 19. Juni 2026, 10:00 Uhr
+            - generic [ref=e187]:
+              - img [ref=e189]
+              - generic [ref=e191]: Meldorfer Dom, Nordermarkt 1, 25704 Meldorf
+            - generic [ref=e193]:
+              - img [ref=e195]
+              - generic [ref=e200]: "Orgel: Domenico Lavena"
+      - link "Kerze auf Metalltablett vor abstraktem Bild © Ulrike Verwold JUNI 19 Geistliche Mittagspause am Freitag \"Friedensgebet\" Freitag, 19. Juni 2026, 12:00 - 12:15 Uhr Büsum | St. Clemens-Kirche, Kirchenstraße 13, 25761 Büsum Team der Urlauberseelsorge" [ref=e202] [cursor=pointer]:
+        - /url: https://www.kirche-wesselburen.de/b/geistliche-mittagspause-am-freitag-friedensgebet-47740543?utm_source=Widget+on+www.kirche-dithmarschen.de&utm_medium=Widgets
+        - generic [ref=e205]:
+          - generic [ref=e207]:
+            - generic [ref=e208]:
+              - img "Kerze auf Metalltablett vor abstraktem Bild" [ref=e211]
+              - generic [ref=e212]: © Ulrike Verwold
+            - generic [ref=e216]:
+              - generic [ref=e218]: JUNI
+              - heading "19" [level=2] [ref=e220]
+          - generic [ref=e226]:
+            - heading "Geistliche Mittagspause am Freitag \"Friedensgebet\"" [level=2] [ref=e228]
+            - generic [ref=e230]:
+              - img [ref=e232]
+              - generic [ref=e234]: Freitag, 19. Juni 2026, 12:00 - 12:15 Uhr
+            - generic [ref=e236]:
+              - img [ref=e238]
+              - generic [ref=e240]: Büsum | St. Clemens-Kirche, Kirchenstraße 13, 25761 Büsum
+            - generic [ref=e242]:
+              - img [ref=e244]
+              - generic [ref=e249]: Team der Urlauberseelsorge
+    - generic [ref=e250]:
+      - link "Vorherige Seite" [ref=e252] [cursor=pointer]:
+        - /url: /w/2596/event/WTSm9Xrnr2vX/0/1356954/-/-/-/-/-/or/list?frameId=
+        - button "Vorherige Seite" [disabled] [ref=e253]:
+          - img
+      - link "Nächste Seite" [ref=e255] [cursor=pointer]:
+        - /url: /w/2596/event/WTSm9Xrnr2vX/2/1356954/-/-/-/-/-/or/list?frameId=
+        - button "Nächste Seite" [ref=e256]:
+          - img [ref=e257]
+  - alert [ref=e259]

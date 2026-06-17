@@ -1,0 +1,232 @@
+- generic [active] [ref=e1]:
+  - dialog "Diese Webseite verwendet Cookies" [ref=e2]:
+    - generic [ref=e3]:
+      - link "Cookiebot von Usercentrics - öffnet in einem neuen Fenster" [ref=e6] [cursor=pointer]:
+        - /url: https://www.cookiebot.com/de/was-steckt-hinter-powered-by-cookiebot/?utm_source=banner_cb&utm_medium=referral&utm_content=v2
+        - img [ref=e7]
+      - tabpanel "Zustimmung" [ref=e34]:
+        - generic [ref=e36]:
+          - heading "Diese Webseite verwendet Cookies" [level=2] [ref=e37]
+          - generic [ref=e38]: Wir verwenden Cookies, um Inhalte und Anzeigen zu personalisieren, Funktionen für soziale Medien anbieten zu können und die Zugriffe auf unsere Website zu analysieren. Außerdem geben wir Informationen zu Ihrer Verwendung unserer Website an unsere Partner für soziale Medien, Werbung und Analysen weiter. Unsere Partner führen diese Informationen möglicherweise mit weiteren Daten zusammen, die Sie ihnen bereitgestellt haben oder die sie im Rahmen Ihrer Nutzung der Dienste gesammelt haben.
+        - generic [ref=e39]:
+          - group "Einwilligungsauswahl" [ref=e45]:
+            - generic [ref=e46]: Einwilligungsauswahl
+            - generic [ref=e47]:
+              - generic [ref=e48]:
+                - strong [ref=e50]: Notwendig
+                - generic [ref=e51]:
+                  - checkbox "Notwendig" [checked] [disabled]
+              - generic [ref=e52]:
+                - strong [ref=e54] [cursor=pointer]: Präferenzen
+                - switch "Präferenzen" [ref=e56] [cursor=pointer]
+              - generic [ref=e57]:
+                - strong [ref=e59] [cursor=pointer]: Statistiken
+                - switch "Statistiken" [ref=e61] [cursor=pointer]
+              - generic [ref=e62]:
+                - strong [ref=e64] [cursor=pointer]: Marketing
+                - switch "Marketing" [ref=e66] [cursor=pointer]
+          - link "Details zeigen" [ref=e68] [cursor=pointer]:
+            - /url: "#"
+      - generic [ref=e72]:
+        - button "Nur notwendige Cookies" [ref=e73] [cursor=pointer]
+        - button "Auswahl erlauben" [ref=e74] [cursor=pointer]
+        - button "Cookies zulassen" [ref=e75] [cursor=pointer]
+  - generic [ref=e78]:
+    - banner [ref=e79]:
+      - generic [ref=e81]:
+        - link "Startseite" [ref=e83] [cursor=pointer]:
+          - /url: /?p=5000
+          - img "Startseite" [ref=e84]
+        - navigation "Navigation" [ref=e88]:
+          - list [ref=e89]:
+            - listitem [ref=e90]:
+              - link "Tauffest 2026" [ref=e91] [cursor=pointer]:
+                - /url: /tauffest-2026
+            - link "Erleben Gottesdienste Veranstaltungen Urlauberseelsorge Kirchenmusik Kirchen-Groove Kirchentag 2025 Weltmädchentag Hip-Hop meets EG D-Kurs Evangelische Kirchenmusik Dithmarscher Posaunenchöre Historischer Lernort Interreligiöser Dialog in Dithmarschen Himmlische Energie Schutzengel links" [ref=e92]:
+              - /url: /erleben/schutzengel
+              - link "Erleben" [ref=e93] [cursor=pointer]:
+                - /url: /erleben/gottesdienste
+              - generic "Gottesdienste Veranstaltungen Urlauberseelsorge Kirchenmusik Kirchen-Groove Kirchentag 2025 Weltmädchentag Hip-Hop meets EG D-Kurs Evangelische Kirchenmusik Dithmarscher Posaunenchöre Historischer Lernort Interreligiöser Dialog in Dithmarschen Himmlische Energie Schutzengel links" [ref=e94]
+            - link "Gemeinden Albersdorf Barlt Brunsbüttel Burg Büsum Delve Eddelak Heide Helgoland Hemme Hemmingstedt Hennstedt Lohe-Rickelshof Lunden Marne Meldorf Neuenkirchen Nordhastedt Pahlen Schlichting St. Annen St. Michaelisdonn Süderhastedt Tellingstedt Vereinigte Köge Weddingstedt Wesselburen Windbergen-Gudendorf Wöhrden links" [ref=e95]:
+              - /url: /gemeinden/woehrden
+              - link "Gemeinden" [ref=e96] [cursor=pointer]:
+                - /url: /gemeinden
+              - generic "Albersdorf Barlt Brunsbüttel Burg Büsum Delve Eddelak Heide Helgoland Hemme Hemmingstedt Hennstedt Lohe-Rickelshof Lunden Marne Meldorf Neuenkirchen Nordhastedt Pahlen Schlichting St. Annen St. Michaelisdonn Süderhastedt Tellingstedt Vereinigte Köge Weddingstedt Wesselburen Windbergen-Gudendorf Wöhrden links" [ref=e97]
+            - link "Glauben Taufe Konfirmation Hochzeit Trauer Wiedereintritt 12 gute Gründe Glaubensbekenntnis Vaterunser Psalm 23 Segen Tageslosung Tischgebete links" [ref=e98]:
+              - /url: /glauben/tischgebete
+              - link "Glauben" [ref=e99] [cursor=pointer]:
+                - /url: /glauben/taufe
+              - generic "Taufe Konfirmation Hochzeit Trauer Wiedereintritt 12 gute Gründe Glaubensbekenntnis Vaterunser Psalm 23 Segen Tageslosung Tischgebete links" [ref=e100]
+            - listitem [ref=e101]:
+              - link "Prävention" [ref=e102] [cursor=pointer]:
+                - /url: /praevention
+            - link "Rat und Hilfe Stopp Missbrauch! Diakonisches Werk Familienberatung Kinder im Blick Kurenvermittlung Migrationsberatung Jugendmigrationsdienst Schuldnerberatung Sozialberatung Suchtberatung Hilfe für Wohnungslose hoelp gGmbH links" [ref=e103]:
+              - /url: /rat-und-hilfe/hoelp-ggmbh
+              - link "Rat und Hilfe" [ref=e104] [cursor=pointer]:
+                - /url: /rat-und-hilfe
+              - generic "Stopp Missbrauch! Diakonisches Werk Familienberatung Kinder im Blick Kurenvermittlung Migrationsberatung Jugendmigrationsdienst Schuldnerberatung Sozialberatung Suchtberatung Hilfe für Wohnungslose hoelp gGmbH links" [ref=e105]
+            - link "Mitarbeit Ausbildung links" [ref=e106]:
+              - /url: /mitarbeit/ausbildung
+              - link "Mitarbeit" [ref=e107] [cursor=pointer]:
+                - /url: /mitarbeit
+              - generic "Ausbildung links" [ref=e108]
+            - link "Über uns Unser Kirchenkreis News Synode Propst und stellvertretende Pröpstin Kirchenkreisrat Verwaltung Kirchenkreisarchiv Kindertagesstätten Kitawerk Jugendwerk Frauenwerk Dithmarscher Friedhofswerk Mitarbeitervertretung Personalentwicklung Flüchtlingsbeauftragter Klinikseelsorge Ökumenische Arbeitsstelle Interkulturelle Orientierung Presse Hinweisgeberschutzgesetz Kontakt Formulare Satzungen links" [ref=e109]:
+              - /url: /ueber-uns/satzungen
+              - link "Über uns" [ref=e110] [cursor=pointer]:
+                - /url: /ueber-uns
+              - generic "Unser Kirchenkreis News Synode Propst und stellvertretende Pröpstin Kirchenkreisrat Verwaltung Kirchenkreisarchiv Kindertagesstätten Kitawerk Jugendwerk Frauenwerk Dithmarscher Friedhofswerk Mitarbeitervertretung Personalentwicklung Flüchtlingsbeauftragter Klinikseelsorge Ökumenische Arbeitsstelle Interkulturelle Orientierung Presse Hinweisgeberschutzgesetz Kontakt Formulare Satzungen links" [ref=e111]
+            - listitem [ref=e112]:
+              - link "Impressum" [ref=e113] [cursor=pointer]:
+                - /url: /impressum
+    - main [ref=e114]:
+      - generic [ref=e116]:
+        - heading "Gottesdienste" [level=1] [ref=e124]
+        - paragraph [ref=e129]: "In den 29 Kirchengemeinden unseres Kirchenkreises können Sie ein umfangreiches Angebot an Gottesdiensten und Andachten entdecken. Das beschränkt sich nicht allein auf den klassischen Sonntagsgottesdienst, es gibt auch viele weitere Angebote: Ob Gottesdienst zu einem der christlichen Feiertage, Marktandacht, Abendgottesdienst, Gottesdienst im Garten oder im Moor, oder vieles mehr - schauen Sie gern in unseren Kalender!"
+        - generic [ref=e131]:
+          - heading " Kommende Gottesdienste und Veranstaltungen" [level=2] [ref=e134]
+          - iframe [ref=e138]:
+            - generic [active] [ref=f2e1]:
+              - generic [ref=f2e5]:
+                - generic [ref=f2e6]:
+                  - generic [ref=f2e7]:
+                    - textbox "Startdatum" [ref=f2e9]
+                    - generic "to" [ref=f2e11]:
+                      - img "swap-right" [ref=f2e12]:
+                        - img [ref=f2e13]
+                    - textbox "Enddatum" [ref=f2e16]
+                    - generic:
+                      - img "calendar":
+                        - img
+                  - link "search Suchen" [ref=f2e17] [cursor=pointer]:
+                    - /url: /w/2596/event/WTSm9Xrnr2vX/1/1356954/-/-/-/-/-/or/list?frameId=WTSm9Xrnr2vX-1
+                    - button "search Suchen" [ref=f2e18]:
+                      - img "search" [ref=f2e20]:
+                        - img [ref=f2e21]
+                      - generic [ref=f2e23]: Suchen
+                - generic [ref=f2e24]:
+                  - link "Small desk calendar displaying the number 1, placed on a soft white surface. JUNI 17 Feierabendandacht mit anschl. gemeinsamen Abendbrot Mittwoch, 17. Juni 2026, 18:30 Uhr Wöhrden | Gemeindehaus, Kirchenstraße 1, Kirchenstraße 1, 25797 Wöhrden" [ref=f2e26] [cursor=pointer]:
+                    - /url: https://landing.churchdesk.com/de/e/48056299/Feierabendandacht-mit-anschl.-gemeinsamen-Abendbrot?utm_source=Widget+on+www.kirche-dithmarschen.de%2Ferleben%2Fgottesdienste&utm_medium=Widgets
+                    - generic [ref=f2e29]:
+                      - generic [ref=f2e31]:
+                        - img "Small desk calendar displaying the number 1, placed on a soft white surface." [ref=f2e35]
+                        - generic [ref=f2e39]:
+                          - generic [ref=f2e41]: JUNI
+                          - heading "17" [level=2] [ref=f2e43]
+                      - generic [ref=f2e49]:
+                        - heading "Feierabendandacht mit anschl. gemeinsamen Abendbrot" [level=2] [ref=f2e51]
+                        - generic [ref=f2e53]:
+                          - img [ref=f2e55]
+                          - generic [ref=f2e57]: Mittwoch, 17. Juni 2026, 18:30 Uhr
+                        - generic [ref=f2e59]:
+                          - img [ref=f2e61]
+                          - generic [ref=f2e63]: Wöhrden | Gemeindehaus, Kirchenstraße 1, Kirchenstraße 1, 25797 Wöhrden
+                  - 'link "Eine Gruppe von Menschen schaut bei Sonnenuntergang am Strand. © Christian Verwold JUNI 17 Abendsegen bei Sonnenuntergang Mittwoch, 17. Juni 2026, 21:45 Uhr Büsum | „Watt`n Insel“ in der Familienlagune Perlebucht, Nordseestraße 79X, 25761 Büsum" [ref=f2e65] [cursor=pointer]':
+                    - /url: https://www.kirche-wesselburen.de/b/abendsegen-bei-sonnenuntergang-45545999?utm_source=Widget+on+www.kirche-dithmarschen.de%2Ferleben%2Fgottesdienste&utm_medium=Widgets
+                    - generic [ref=f2e68]:
+                      - generic [ref=f2e70]:
+                        - generic [ref=f2e71]:
+                          - img "Eine Gruppe von Menschen schaut bei Sonnenuntergang am Strand." [ref=f2e74]
+                          - generic [ref=f2e75]: © Christian Verwold
+                        - generic [ref=f2e79]:
+                          - generic [ref=f2e81]: JUNI
+                          - heading "17" [level=2] [ref=f2e83]
+                      - generic [ref=f2e89]:
+                        - heading "Abendsegen bei Sonnenuntergang" [level=2] [ref=f2e91]
+                        - generic [ref=f2e93]:
+                          - img [ref=f2e95]
+                          - generic [ref=f2e97]: Mittwoch, 17. Juni 2026, 21:45 Uhr
+                        - generic [ref=f2e99]:
+                          - img [ref=f2e101]
+                          - generic [ref=f2e103]: "Büsum | „Watt`n Insel“ in der Familienlagune Perlebucht, Nordseestraße 79X, 25761 Büsum"
+                  - link "Ein Sandwich auf einem Buch, das auf einem Regal liegt © Ulrike Verwold JUNI 18 Geistliche Mittagspause am Donnerstag \"Fischbrötchen-Segen\" Donnerstag, 18. Juni 2026, 12:00 - 12:15 Uhr Büsum | St. Clemens-Kirche, Kirchenstraße 13, 25761 Büsum Team der Urlauberseelsorge" [ref=f2e105] [cursor=pointer]:
+                    - /url: https://www.kirche-wesselburen.de/b/geistliche-mittagspause-am-donnerstag-fischbrotchen-segen-47740500?utm_source=Widget+on+www.kirche-dithmarschen.de%2Ferleben%2Fgottesdienste&utm_medium=Widgets
+                    - generic [ref=f2e108]:
+                      - generic [ref=f2e110]:
+                        - generic [ref=f2e111]:
+                          - img "Ein Sandwich auf einem Buch, das auf einem Regal liegt" [ref=f2e114]
+                          - generic [ref=f2e115]: © Ulrike Verwold
+                        - generic [ref=f2e119]:
+                          - generic [ref=f2e121]: JUNI
+                          - heading "18" [level=2] [ref=f2e123]
+                      - generic [ref=f2e129]:
+                        - heading "Geistliche Mittagspause am Donnerstag \"Fischbrötchen-Segen\"" [level=2] [ref=f2e131]
+                        - generic [ref=f2e133]:
+                          - img [ref=f2e135]
+                          - generic [ref=f2e137]: Donnerstag, 18. Juni 2026, 12:00 - 12:15 Uhr
+                        - generic [ref=f2e139]:
+                          - img [ref=f2e141]
+                          - generic [ref=f2e143]: Büsum | St. Clemens-Kirche, Kirchenstraße 13, 25761 Büsum
+                        - generic [ref=f2e145]:
+                          - img [ref=f2e147]
+                          - generic [ref=f2e152]: Team der Urlauberseelsorge
+                  - 'link "Small desk calendar displaying the number 1, placed on a soft white surface. JUNI 19 Marktandacht, Pastor Hose Freitag, 19. Juni 2026, 10:00 Uhr Meldorfer Dom, Nordermarkt 1, 25704 Meldorf Orgel: Domenico Lavena" [ref=f2e154] [cursor=pointer]':
+                    - /url: https://landing.churchdesk.com/de/e/32367366/Marktandacht,-Pastor-Hose?utm_source=Widget+on+www.kirche-dithmarschen.de%2Ferleben%2Fgottesdienste&utm_medium=Widgets
+                    - generic [ref=f2e157]:
+                      - generic [ref=f2e159]:
+                        - img "Small desk calendar displaying the number 1, placed on a soft white surface." [ref=f2e163]
+                        - generic [ref=f2e167]:
+                          - generic [ref=f2e169]: JUNI
+                          - heading "19" [level=2] [ref=f2e171]
+                      - generic [ref=f2e177]:
+                        - heading "Marktandacht, Pastor Hose" [level=2] [ref=f2e179]
+                        - generic [ref=f2e181]:
+                          - img [ref=f2e183]
+                          - generic [ref=f2e185]: Freitag, 19. Juni 2026, 10:00 Uhr
+                        - generic [ref=f2e187]:
+                          - img [ref=f2e189]
+                          - generic [ref=f2e191]: Meldorfer Dom, Nordermarkt 1, 25704 Meldorf
+                        - generic [ref=f2e193]:
+                          - img [ref=f2e195]
+                          - generic [ref=f2e200]: "Orgel: Domenico Lavena"
+                  - link "Kerze auf Metalltablett vor abstraktem Bild © Ulrike Verwold JUNI 19 Geistliche Mittagspause am Freitag \"Friedensgebet\" Freitag, 19. Juni 2026, 12:00 - 12:15 Uhr Büsum | St. Clemens-Kirche, Kirchenstraße 13, 25761 Büsum Team der Urlauberseelsorge" [ref=f2e202] [cursor=pointer]:
+                    - /url: https://www.kirche-wesselburen.de/b/geistliche-mittagspause-am-freitag-friedensgebet-47740543?utm_source=Widget+on+www.kirche-dithmarschen.de%2Ferleben%2Fgottesdienste&utm_medium=Widgets
+                    - generic [ref=f2e205]:
+                      - generic [ref=f2e207]:
+                        - generic [ref=f2e208]:
+                          - img "Kerze auf Metalltablett vor abstraktem Bild" [ref=f2e211]
+                          - generic [ref=f2e212]: © Ulrike Verwold
+                        - generic [ref=f2e216]:
+                          - generic [ref=f2e218]: JUNI
+                          - heading "19" [level=2] [ref=f2e220]
+                      - generic [ref=f2e226]:
+                        - heading "Geistliche Mittagspause am Freitag \"Friedensgebet\"" [level=2] [ref=f2e228]
+                        - generic [ref=f2e230]:
+                          - img [ref=f2e232]
+                          - generic [ref=f2e234]: Freitag, 19. Juni 2026, 12:00 - 12:15 Uhr
+                        - generic [ref=f2e236]:
+                          - img [ref=f2e238]
+                          - generic [ref=f2e240]: Büsum | St. Clemens-Kirche, Kirchenstraße 13, 25761 Büsum
+                        - generic [ref=f2e242]:
+                          - img [ref=f2e244]
+                          - generic [ref=f2e249]: Team der Urlauberseelsorge
+                - generic [ref=f2e250]:
+                  - link "Vorherige Seite" [ref=f2e252] [cursor=pointer]:
+                    - /url: /w/2596/event/WTSm9Xrnr2vX/0/1356954/-/-/-/-/-/or/list?frameId=WTSm9Xrnr2vX-1
+                    - button "Vorherige Seite" [disabled] [ref=f2e253]:
+                      - img
+                  - link "Nächste Seite" [ref=f2e255] [cursor=pointer]:
+                    - /url: /w/2596/event/WTSm9Xrnr2vX/2/1356954/-/-/-/-/-/or/list?frameId=WTSm9Xrnr2vX-1
+                    - button "Nächste Seite" [ref=f2e256]:
+                      - img [ref=f2e257]
+              - alert [ref=f2e259]
+    - contentinfo [ref=e139]:
+      - generic [ref=e144]:
+        - text:  Kirchenkreis Dithmarschen
+        - generic [ref=e145]:
+          - text: · Nordermarkt 8, 25704 Meldorf
+          - generic [ref=e146]:
+            - text:  04832/972-200
+            - generic [ref=e147]:  oeffentlichkeit@kirche-dithmarschen.de
+    - generic [ref=e150]:
+      - generic [ref=e151]:
+        - link "Datenschutzerklärung" [ref=e152] [cursor=pointer]:
+          - /url: https://www.kirche-dithmarschen.de/datenschutz
+        - link " ChurchDesk-Login" [ref=e153] [cursor=pointer]:
+          - /url: https://app.churchdesk.com/login
+          - generic [ref=e154]: 
+          - text: ChurchDesk-Login
+      - link "ChurchDesk" [ref=e156] [cursor=pointer]:
+        - /url: https://churchdesk.com
+        - img "ChurchDesk" [ref=e157]
+  - iframe [ref=e158]:
+    

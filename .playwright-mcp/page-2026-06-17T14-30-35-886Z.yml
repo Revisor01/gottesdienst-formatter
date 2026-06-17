@@ -1,0 +1,4 @@
+- generic [active]:
+  - img "loading" [ref=e3]:
+    - img [ref=e4]
+  - alert [ref=e6]
