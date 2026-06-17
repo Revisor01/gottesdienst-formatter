@@ -132,10 +132,11 @@ None.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 260322-dpr | Fix location extraction: remove Kirche suffix, fix separators, strip church names | 2026-03-22 | e668a72 | [260322-dpr](./quick/260322-dpr-fix-location-extraction-remove-kirche-su/) |
+| 260617-u0x | Boyens-Output-Fixes Juli-Feedback (None-Härtung, Vik./Pr., Single-Church Burg/Marne/Büsum, Serverfehler, Ort?-Platzhalter) | 2026-06-17 | bf2e8fd | [260617-u0x](./quick/260617-u0x-boyens-output-fixes-juli-feedback/) |
 
 ## Session Continuity
 
-Last session: 2026-03-22T12:59:24.849Z
-Stopped at: Completed 06-03-PLAN.md
+Last session: 2026-06-17
+Stopped at: Completed quick task 260617-u0x (Boyens-Output-Fixes Juli-Feedback)
 Resume file: None
 Next action: `/gsd:plan-phase 4`
