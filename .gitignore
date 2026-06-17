@@ -54,3 +54,6 @@ Thumbs.db
 CLAUDE.md
 node_modules/
 web/data/
+
+# Handoff mit Secrets — NICHT committen
+HANDOFF-kirchenkreis-karte.md
