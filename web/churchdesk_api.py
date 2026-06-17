@@ -218,198 +218,160 @@ class EventAnalyzer:
         return None
 
 
-# Multi-church cities that need explicit church specification (module-level,
-# damit der Wrapper extract_boyens_location dieselbe Liste nutzen kann).
-MULTI_CHURCH_CITIES = ['heide', 'brunsbüttel', 'büsum']
+# Orte mit MEHREREN Kirchen — hier muss der konkrete Kirchenname genannt werden
+# statt nur "Ort, Kirche". EXAKTER Ortsvergleich (kein Substring), damit
+# "Heide-Süderholm" o.ae. nicht faelschlich als Multi-Kirchen-Ort gelten.
+MULTI_CHURCH_CITIES = ['heide', 'brunsbüttel', 'büsum', 'burg', 'marne']
+
+# Wortbestandteile, die eine Location als Kirche kennzeichnen.
+_CHURCH_WORDS = ('kirche', 'dom', 'kapelle', 'münster', 'muenster')
+
+# Exakte Kirchen-/Ortsmappings (nach Normalisierung exakt, NICHT als Substring,
+# sonst matcht z.B. "st. andreas-kirche" auch in "St. Andreas-Kirche Büsum").
+# Nur fuer Einzelkirchen-Orte: liefern den Boyens-Ortsnamen.
+_LOCATION_MAPPINGS = {
+    'st. annen-kirche': 'St. Annen',
+    'st. marien-kirche': 'Eddelak',
+    'marien-kirche': 'Eddelak',
+    'st. laurentius-kirche': 'Lunden',
+    'st. rochus-kirche': 'Schlichting',
+    'st. andreas-kirche': 'Weddingstedt',
+    'st. secundus-kirche': 'Hennstedt',
+    'st. bartholomäus': 'Wesselburen',
+    'kreuzkirche wesseln': 'Wesseln',
+    'kirche wesseln': 'Wesseln',
+}
+
+
+def _has_church_word(text: str) -> bool:
+    """True, wenn der Text eine Kirche bezeichnet.
+
+    Erkennt explizite Kirchen-Woerter (Kirche/Dom/Kapelle/Münster) sowie
+    Heiligen-Patrozinien ohne das Wort 'Kirche' (z.B. "St. Jacobi",
+    "St. Bartholomäus") — typische Einzelkirchen-Namen.
+    """
+    t = text.strip().lower()
+    if any(w in t for w in _CHURCH_WORDS):
+        return True
+    # Patrozinium: "St. <Name>" / "St.<Name>" als Kirchenname
+    if t.startswith('st. ') or t.startswith('st.') or t.startswith('sankt '):
+        return True
+    return False
+
+
+def _strip_church_suffix(name: str) -> str:
+    """Entfernt ein abschliessendes ' Kirche' (mit Space) — fuer 'Hennstedt Kirche'."""
+    for suf in (' Kirche', ' kirche'):
+        if name.endswith(suf):
+            return name[:-len(suf)].strip()
+    return name
 
 
 def extract_boyens_location(location_name: str, location_obj: Dict = None, for_export: bool = True) -> str:
     """
     Boyens-Ortsausgabe.
 
-    Ermittelt zunaechst den normalisierten Ort/Kirchennamen (_resolve_location).
-    Beim Export wird laut Boyens-Vorgabe je Einzel-Kirchen-Ort ", Kirche"
-    ergaenzt; Multi-Kirchen-Orte (Heide/Brunsbuettel/Buesum) behalten ihren
-    konkreten Kirchennamen und bekommen kein generisches ", Kirche".
+    Ermittelt den normalisierten Ort/Kirchennamen (_resolve_location). Beim Export
+    wird je Einzel-Kirchen-Ort ", Kirche" ergaenzt; Multi-Kirchen-Orte
+    (Heide/Brunsbuettel/Buesum/Burg/Marne) nennen ihren konkreten Kirchennamen,
+    Nicht-Kirchen-Orte (Gemeindehaus, Saal, ...) schreiben die Location aus.
     """
     resolved = _resolve_location(location_name, location_obj, for_export)
 
     if not for_export or not resolved:
         return resolved
 
-    # Bereits eine Kirchen-/Ortsbezeichnung mit Komma (z.B. "Buesum, Perlebucht",
-    # "Heide, St.-Juergen", "Brunsbuettel, Jakobuskirche") → unveraendert lassen.
-    # Faengt automatisch alle Multi-Kirchen-Orte MIT Kirchenname ab.
+    # Bereits eine zusammengesetzte Bezeichnung mit Komma (Kirchenname oder
+    # ausgeschriebene Location) → unveraendert lassen.
     if ',' in resolved:
         return resolved
-    # Multi-Kirchen-Ort OHNE Kirchenname (z.B. "Buesum" via St. Clemens): kein
-    # generisches ", Kirche". EXAKTER Vergleich, damit Orte wie "Heide-Suederholm"
-    # oder "Suederheide" NICHT faelschlich als Multi-Kirchen-Ort gelten (D-Substring-Bug).
+    # Multi-Kirchen-Ort OHNE konkrete Kirche (z.B. "Büsum" via St. Clemens):
+    # kein generisches ", Kirche". Exakter Vergleich (Substring-Bug-Schutz).
     if resolved.lower() in MULTI_CHURCH_CITIES:
         return resolved
+    # Reiner Ortsname → Dorfkirche-Annahme: "Ort, Kirche"
     return "{}, Kirche".format(resolved)
 
 
 def _resolve_location(location_name: str, location_obj: Dict = None, for_export: bool = True) -> str:
-    """
-    Extract location name according to Boyens Media format rules:
-    - Single church per city: just city name
-    - Multiple churches per city: "City, Church Name"
-    - Special handling for known multi-church cities
+    """Normalisiert eine rohe ChurchDesk-Location zu Ort bzw. Ort+Kirche/Location.
+
+    Gibt den reinen Ortsnamen zurueck (ohne ", Kirche"-Suffix — das ergaenzt der
+    Wrapper), oder bei Multi-Kirchen/Nicht-Kirchen eine "Ort, X"-Bezeichnung.
     """
     if not location_name:
         return ""
 
-    # Clean and normalize location name
     location = location_name.strip()
-    
-    # Handle pipe separator format: "City | Church"
-    if ' | ' in location:
-        parts = location.split(' | ')
-        city = parts[0].strip()
-        church = parts[1].strip()
+    if not location:
+        return ""
 
-        # Check if city has multiple churches
-        city_lower = city.lower()
-        if any(multi_city in city_lower for multi_city in MULTI_CHURCH_CITIES):
-            # Special case for Büsum churches
-            if city_lower == 'büsum':
-                if 'st. clemens' in church.lower():
-                    return "Büsum"  # St. Clemens is main church = just Büsum
-                elif 'perlebucht' in church.lower():
-                    return "Büsum, Perlebucht"  # Keep Perlebucht specification
-                else:
-                    return f"Büsum, {church}"
-            # Special case for Heide: remove -Kirche suffix (D-27)
-            elif city_lower == 'heide':
-                if church.endswith('-Kirche') or church.endswith('-kirche'):
-                    church = church[:-len('-Kirche')]
-                return f"{city}, {church}"
-            # Special case for Brunsbüttel: keep church name (D-27)
-            elif city_lower == 'brunsbüttel':
-                return f"{city}, {church}"
-            else:
-                return f"{city}, {church}"
-        else:
-            return city  # Single church cities: just city name
-
-    # Handle comma separator format: "City, Church"
-    if ', ' in location:
-        parts = location.split(', ', 1)
-        city = parts[0].strip()
-        church = parts[1].strip()
-
-        city_lower = city.lower()
-        if any(multi_city in city_lower for multi_city in MULTI_CHURCH_CITIES):
-            # For Heide: show church name but remove -Kirche suffix (D-27)
-            if city_lower == 'heide':
-                if church.endswith('-Kirche') or church.endswith('-kirche'):
-                    church = church[:-len('-Kirche')]
-                return f"{city}, {church}"
-            # For Büsum, handle special cases (D-28)
-            elif city_lower == 'büsum':
-                if 'st. clemens' in church.lower():
-                    return "Büsum"  # St. Clemens is main church = just Büsum
-                elif 'perlebucht' in church.lower():
-                    return "Büsum, Perlebucht"  # Keep Perlebucht specification
-                else:
-                    return f"Büsum, {church}"
-            # For Brunsbüttel: keep church name (D-27)
-            elif city_lower == 'brunsbüttel':
-                return location  # Keep "Brunsbüttel, Jakobuskirche"
-            else:
-                return city  # Standard single-church cities: just city
-        else:
-            return city  # Single church cities: just city name
-    
-    # Handle dash separator: "Büsum - St. Clemens-Kirche", "Büsum - Perlebucht"
-    if ' - ' in location:
-        parts = location.split(' - ', 1)
-        city = parts[0].strip()
-        church = parts[1].strip()
-        # Strip -Kirche / -kirche suffix from church
-        if church.endswith('-Kirche') or church.endswith('-kirche'):
-            church = church[:-len('-Kirche')]
-        city_lower = city.lower()
-        if city_lower == 'büsum':
-            if 'st. clemens' in church.lower():
-                return "Büsum"  # St. Clemens ist Hauptkirche = nur Büsum
-            elif 'perlebucht' in church.lower():
-                return "Büsum, Perlebucht"
-            else:
-                return "Büsum, {}".format(church)
-        elif any(mc in city_lower for mc in MULTI_CHURCH_CITIES):
-            return "{}, {}".format(city, church)
-        else:
-            return city
-
-    # No separator found - likely just city name or direct church name
-    location_lower = location.lower()
-
-    # Handle "Ort Kirche" without separator — detect multi-church cities first
-    # Heide-Süderholm (hyphen): must NOT be split — eigener Ort
-    # Heide + church: "Heide St.-Jürgen-Kirche", "Heide Erlöserkirche"
-    for multi_city in MULTI_CHURCH_CITIES:
-        # Match "City Church..." where City is a multi-church city
-        # But NOT "City-Something" (hyphenated compounds like Heide-Süderholm)
-        if location_lower.startswith(multi_city + ' ') and not location_lower.startswith(multi_city + '-'):
-            city_cap = location[:len(multi_city)]  # preserve original casing
-            church = location[len(multi_city) + 1:].strip()
-            # Strip -Kirche / -kirche suffix
-            if church.endswith('-Kirche') or church.endswith('-kirche'):
-                church = church[:-len('-Kirche')]
-            if church.endswith(' Kirche') or church.endswith(' kirche'):
-                church = church[:-len(' Kirche')]
-            city_lower_val = city_cap.lower()
-            if city_lower_val == 'büsum':
-                if 'st. clemens' in church.lower():
-                    return "Büsum"
-                elif 'perlebucht' in church.lower():
-                    return "Büsum, Perlebucht"
-                else:
-                    return "Büsum, {}".format(church)
-            else:
-                return "{}, {}".format(city_cap, church)
-
-    # Single-church towns: strip trailing " Kirche" / " kirche"
-    if location.endswith(' Kirche') or location.endswith(' kirche'):
-        return location[:-len(' Kirche')].strip()
-
-    # Special mappings - different for display vs export
-    if for_export:
-        LOCATION_MAPPINGS = {
-            'st. annen-kirche': 'St. Annen',
-            'st. marien-kirche': 'Eddelak',
-            'marien-kirche': 'Eddelak',
-            'st. laurentius-kirche': 'Lunden',
-            'st. rochus-kirche': 'Schlichting',
-            'st. andreas-kirche': 'Weddingstedt',
-            'st. secundus-kirche': 'Hennstedt',
-            'st. bartholomäus': 'Wesselburen',
-            'kreuzkirche wesseln': 'Wesseln',
-            'kirche wesseln': 'Wesseln',
-            'urlauberseelsorge büsum': 'Büsum',
-            'urlauberseelsorge': 'Büsum'
-        }
+    # 1) Separatoren vereinheitlichen: "Ort | X" / "Ort - X" → (Ort, X)
+    city, rest = location, None
+    for sep in (' | ', ' - '):
+        if sep in location:
+            city, rest = location.split(sep, 1)
+            city, rest = city.strip(), rest.strip()
+            break
     else:
-        LOCATION_MAPPINGS = {
-            'st. annen-kirche': 'St. Annen',
-            'st. marien-kirche': 'Eddelak',
-            'marien-kirche': 'Eddelak',
-            'st. laurentius-kirche': 'Lunden',
-            'st. rochus-kirche': 'Schlichting',
-            'st. andreas-kirche': 'Weddingstedt',
-            'st. secundus-kirche': 'Hennstedt',
-            'st. bartholomäus': 'Wesselburen',
-            'kreuzkirche wesseln': 'Wesseln',
-            'kirche wesseln': 'Wesseln',
-            'urlauberseelsorge büsum': 'Urlauberseelsorge',
-            'urlauberseelsorge': 'Urlauberseelsorge'
-        }
-    
-    for church_pattern, boyens_name in LOCATION_MAPPINGS.items():
-        if church_pattern in location_lower:
-            return boyens_name
+        # Komma-Separator: "Ort, X"
+        if ', ' in location:
+            city, rest = location.split(', ', 1)
+            city, rest = city.strip(), rest.strip()
+        else:
+            # Space-Separator NUR fuer Multi-Kirchen-Orte: "Heide St.-Jürgen-Kirche".
+            # Nicht bei Bindestrich-Kompositum ("Heide-Süderholm" bleibt ganz).
+            loc_lower = location.lower()
+            for mc in MULTI_CHURCH_CITIES:
+                if loc_lower.startswith(mc + ' ') and not loc_lower.startswith(mc + '-'):
+                    city = location[:len(mc)]
+                    rest = location[len(mc) + 1:].strip()
+                    break
+
+    city_lower = city.lower()
+
+    # 2) Exakte Mappings auf der GESAMT-Location (z.B. "St. Secundus-Kirche")
+    mapped = _LOCATION_MAPPINGS.get(location.lower())
+    if mapped:
+        return mapped
+    # Urlauberseelsorge — Anzeige behaelt den Begriff, Export → Büsum
+    if location.lower() in ('urlauberseelsorge', 'urlauberseelsorge büsum'):
+        return 'Büsum' if for_export else 'Urlauberseelsorge'
+
+    # 3) Multi-Kirchen-Orte: konkreten Kirchennamen nennen
+    if city_lower in MULTI_CHURCH_CITIES:
+        # Büsum-Sonderfaelle
+        if city_lower == 'büsum':
+            if rest and 'st. clemens' in rest.lower():
+                return 'Büsum'                       # Hauptkirche → nur Büsum
+            if rest and 'perlebucht' in rest.lower():
+                return 'Büsum, Perlebucht'
+            if rest and _has_church_word(rest):
+                return 'Büsum, {}'.format(rest)
+            if rest:
+                return 'Büsum, {}'.format(rest)      # Nicht-Kirche ausschreiben
+            return 'Büsum'
+        # Heide/Brunsbüttel/Burg/Marne
+        if rest:
+            return '{}, {}'.format(city, rest)       # Kirchenname/Location nennen
+        return city
+
+    # 4) Einzelkirchen-Ort
+    if rest is not None:
+        # Rest ist eine Kirche → "Ort, Kirche"; sonst Location ausschreiben
+        if _has_church_word(rest):
+            return '{}, Kirche'.format(city)
+        return '{}, {}'.format(city, rest)
+
+    # 5) Kein Separator. "Ort Kirche" (Space-Suffix) → Ort; danach reiner Ort.
+    if _has_church_word(location):
+        stripped = _strip_church_suffix(location)
+        if stripped != location:
+            return stripped              # "Hennstedt Kirche" → "Hennstedt"
+        # Location IST ein Kirchenname ohne Ort davor (z.B. "Meldorfer Dom") →
+        # unveraendert lassen, damit der Wrapper kein ", Kirche" anhaengt waere falsch;
+        # solche Faelle bleiben als Eigenname stehen.
+        return location
 
     return location
 
