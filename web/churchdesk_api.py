@@ -237,12 +237,15 @@ def extract_boyens_location(location_name: str, location_obj: Dict = None, for_e
     if not for_export or not resolved:
         return resolved
 
-    resolved_lower = resolved.lower()
-    # Multi-Kirchen-Ort (mit oder ohne Kirchenname) → nichts anhaengen
-    if any(mc in resolved_lower for mc in MULTI_CHURCH_CITIES):
-        return resolved
-    # Bereits eine Kirchen-/Ortsbezeichnung mit Komma (z.B. "Buesum, Perlebucht") → unveraendert
+    # Bereits eine Kirchen-/Ortsbezeichnung mit Komma (z.B. "Buesum, Perlebucht",
+    # "Heide, St.-Juergen", "Brunsbuettel, Jakobuskirche") → unveraendert lassen.
+    # Faengt automatisch alle Multi-Kirchen-Orte MIT Kirchenname ab.
     if ',' in resolved:
+        return resolved
+    # Multi-Kirchen-Ort OHNE Kirchenname (z.B. "Buesum" via St. Clemens): kein
+    # generisches ", Kirche". EXAKTER Vergleich, damit Orte wie "Heide-Suederholm"
+    # oder "Suederheide" NICHT faelschlich als Multi-Kirchen-Ort gelten (D-Substring-Bug).
+    if resolved.lower() in MULTI_CHURCH_CITIES:
         return resolved
     return "{}, Kirche".format(resolved)
 

@@ -152,6 +152,11 @@ def convert_churchdesk_events_to_boyens(events):
 
     for event in events:
         start_date = datetime.fromisoformat(event['startDate'])
+        # tzinfo entfernen → naive lokale Zeit, konsistent mit dem Excel-Pfad.
+        # Verhindert "can't compare offset-naive and offset-aware" falls beide
+        # Quellen je zusammengefuehrt werden; Anzeige/Sortierung bleibt identisch.
+        if start_date.tzinfo is not None:
+            start_date = start_date.replace(tzinfo=None)
         date_key = start_date.date()
 
         if date_key not in events_by_date:
