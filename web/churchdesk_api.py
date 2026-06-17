@@ -218,7 +218,36 @@ class EventAnalyzer:
         return None
 
 
+# Multi-church cities that need explicit church specification (module-level,
+# damit der Wrapper extract_boyens_location dieselbe Liste nutzen kann).
+MULTI_CHURCH_CITIES = ['heide', 'brunsbüttel', 'büsum']
+
+
 def extract_boyens_location(location_name: str, location_obj: Dict = None, for_export: bool = True) -> str:
+    """
+    Boyens-Ortsausgabe.
+
+    Ermittelt zunaechst den normalisierten Ort/Kirchennamen (_resolve_location).
+    Beim Export wird laut Boyens-Vorgabe je Einzel-Kirchen-Ort ", Kirche"
+    ergaenzt; Multi-Kirchen-Orte (Heide/Brunsbuettel/Buesum) behalten ihren
+    konkreten Kirchennamen und bekommen kein generisches ", Kirche".
+    """
+    resolved = _resolve_location(location_name, location_obj, for_export)
+
+    if not for_export or not resolved:
+        return resolved
+
+    resolved_lower = resolved.lower()
+    # Multi-Kirchen-Ort (mit oder ohne Kirchenname) → nichts anhaengen
+    if any(mc in resolved_lower for mc in MULTI_CHURCH_CITIES):
+        return resolved
+    # Bereits eine Kirchen-/Ortsbezeichnung mit Komma (z.B. "Buesum, Perlebucht") → unveraendert
+    if ',' in resolved:
+        return resolved
+    return "{}, Kirche".format(resolved)
+
+
+def _resolve_location(location_name: str, location_obj: Dict = None, for_export: bool = True) -> str:
     """
     Extract location name according to Boyens Media format rules:
     - Single church per city: just city name
@@ -227,10 +256,7 @@ def extract_boyens_location(location_name: str, location_obj: Dict = None, for_e
     """
     if not location_name:
         return ""
-    
-    # Multi-church cities that need church specification
-    MULTI_CHURCH_CITIES = ['heide', 'brunsbüttel', 'büsum']
-    
+
     # Clean and normalize location name
     location = location_name.strip()
     
@@ -381,7 +407,7 @@ def extract_boyens_location(location_name: str, location_obj: Dict = None, for_e
     for church_pattern, boyens_name in LOCATION_MAPPINGS.items():
         if church_pattern in location_lower:
             return boyens_name
-    
+
     return location
 
 

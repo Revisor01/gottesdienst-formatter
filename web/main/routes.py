@@ -46,7 +46,7 @@ def _build_location_entries(day_items):
 
     Gibt sortierte Liste von Zeilen zurueck: ["Ort: Eintrag1; Eintrag2, jeweils Pn. X", ...]
     """
-    location_entries = {}  # {location: [{'time', 'service_type', 'pastor', 'suffix'}]}
+    location_entries = {}  # {location: [{'sort_key', 'time_str', 'service_type', 'pastor', 'suffix'}]}
 
     for item in day_items:
         loc = item['location']
@@ -54,9 +54,18 @@ def _build_location_entries(day_items):
             location_entries[loc] = []
         location_entries[loc].append(item)
 
-    lines = []
-    for location in sorted(location_entries.keys()):  # D-29: alphabetisch
+    # Innerhalb jedes Ortes nach Uhrzeit sortieren; Orte nach fruehester Uhrzeit
+    # ordnen (bei Gleichstand alphabetisch) — Tagesablauf chronologisch.
+    def _location_sort_key(location):
         entries = location_entries[location]
+        earliest = min((e.get('sort_key') for e in entries if e.get('sort_key') is not None),
+                       default=None)
+        return (earliest is None, earliest, location)
+
+    lines = []
+    for location in sorted(location_entries.keys(), key=_location_sort_key):
+        entries = sorted(location_entries[location],
+                         key=lambda e: (e.get('sort_key') is None, e.get('sort_key')))
         pastors = [e['pastor'] for e in entries]
 
         # D-20 / FMT-08: jeweils-Logik
@@ -119,6 +128,7 @@ def process_excel_file(file_path):
                 mitwirkender = str(row['Mitwirkender']) if not pd.isna(row['Mitwirkender']) else ''
                 day_items.append({
                     'location': location,
+                    'sort_key': row['Startdatum'],
                     'time_str': format_time(row['Startdatum']),
                     'service_type': format_service_type(titel),
                     'pastor': format_pastor(mitwirkender),
@@ -181,6 +191,7 @@ def convert_churchdesk_events_to_boyens(events):
             titel = event['title'] or ''
             day_items.append({
                 'location': location,
+                'sort_key': event['startDate'],
                 'time_str': format_time(event['startDate']),
                 'service_type': format_service_type(titel),
                 'pastor': format_pastor(event['contributor']),
