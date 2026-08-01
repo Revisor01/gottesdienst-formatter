@@ -144,7 +144,10 @@ def create_app(test_config=None):
     return app
 
 
-# Fuer lokale Entwicklung: SECRET_KEY=dev python app.py
+# Fuer lokale Entwicklung: SECRET_KEY=dev FLASK_DEBUG=true python app.py
+# Produktiv laeuft die App ueber gunicorn (siehe entrypoint.sh) — dieser
+# Block wird dort nie ausgefuehrt. Debug ist bewusst opt-in.
 if __name__ == '__main__':
     app = create_app()
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    debug = os.getenv('FLASK_DEBUG', '').lower() in ('1', 'true', 'yes')
+    app.run(debug=debug, host='127.0.0.1', port=5000)
