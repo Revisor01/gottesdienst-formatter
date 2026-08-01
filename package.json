@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "scripts": {
+    "tw:build": "npx tailwindcss -c web/tailwind.config.js -i web/static/css/input.css -o web/static/css/output.css --minify",
+    "tw:watch": "npx tailwindcss -c web/tailwind.config.js -i web/static/css/input.css -o web/static/css/output.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.0"
+  }
+}

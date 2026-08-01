@@ -1,0 +1,411 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Haupt-Routes als Flask Blueprint — alle bestehenden Routes aus app.py.
+"""
+import os
+import tempfile
+import json
+from datetime import datetime
+import io
+
+import pandas as pd
+from flask import render_template, request, send_file, flash, redirect, url_for
+from flask_login import login_required
+
+from churchdesk_api import ChurchDeskAPI, EventAnalyzer, create_multi_org_client, extract_boyens_location
+from formatting import format_date, format_time, format_service_type, format_pastor
+from config import ORGANIZATIONS
+from main import bp
+
+
+@bp.app_template_filter('format_parish')
+def format_parish_name(parish_title):
+    """Format parish name for display using location mappings"""
+    if not parish_title:
+        return ""
+
+    # Remove KG prefix if present
+    if parish_title.startswith('KG '):
+        parish_title = parish_title[3:]
+
+    # Apply location mapping for display (not export)
+    return extract_boyens_location(parish_title, for_export=False)
+
+
+def _extract_suffix(titel):
+    """Keine Zusatzinfos im Boyens-Output — strikt nur Typ + Pastor."""
+    return ''
+
+
+def _build_location_entries(day_items):
+    """
+    Gruppiert Termineintraege nach Ort und wendet jeweils-Logik an (D-20, D-29, D-31).
+
+    day_items: Liste von Dicts mit keys: location, time_str, service_type, pastor, suffix
+
+    Gibt sortierte Liste von Zeilen zurueck: ["Ort: Eintrag1; Eintrag2, jeweils Pn. X", ...]
+    """
+    location_entries = {}  # {location: [{'sort_key', 'time_str', 'service_type', 'pastor', 'suffix'}]}
+
+    for item in day_items:
+        # Fehlender Ort (None/leer) → sichtbarer Platzhalter statt fuehrendem
+        # ": " in der Export-Zeile. Faellt der Redaktion sofort auf und ist
+        # leicht per Suche/Ersetzen zu finden.
+        loc = (item['location'] or '').strip() or 'Ort?'
+        if loc not in location_entries:
+            location_entries[loc] = []
+        location_entries[loc].append(item)
+
+    # Innerhalb jedes Ortes nach Uhrzeit sortieren; Orte nach fruehester Uhrzeit
+    # ordnen (bei Gleichstand alphabetisch) — Tagesablauf chronologisch.
+    def _location_sort_key(location):
+        entries = location_entries[location]
+        earliest = min((e.get('sort_key') for e in entries if e.get('sort_key') is not None),
+                       default=None)
+        return (earliest is None, earliest, location)
+
+    lines = []
+    for location in sorted(location_entries.keys(), key=_location_sort_key):
+        entries = sorted(location_entries[location],
+                         key=lambda e: (e.get('sort_key') is None, e.get('sort_key')))
+        pastors = [e['pastor'] for e in entries]
+
+        # D-20 / FMT-08: jeweils-Logik
+        if len(entries) > 1 and len(set(pastors)) == 1 and pastors[0]:
+            # Alle Eintraege haben denselben Pastor → Pastor einmal am Ende
+            entry_strings = []
+            for e in entries:
+                s = "{}, {}".format(e['time_str'], e['service_type'])
+                if e.get('suffix'):
+                    s += e['suffix']
+                entry_strings.append(s)
+            line = "{}: {}, jeweils {}".format(location, '; '.join(entry_strings), pastors[0])
+        else:
+            # Unterschiedliche Pastoren → Pastor bei jedem Eintrag einzeln
+            entry_strings = []
+            for e in entries:
+                s = "{}, {}".format(e['time_str'], e['service_type'])
+                if e.get('suffix'):
+                    s += e['suffix']
+                if e['pastor']:
+                    s += ", {}".format(e['pastor'])
+                entry_strings.append(s)
+            line = "{}: {}".format(location, '; '.join(entry_strings))  # D-31
+
+        lines.append(line)
+
+    return lines
+
+
+def process_excel_file(file_path):
+    """Verarbeitet Excel-Datei und gibt formatierten Text zurueck"""
+    try:
+        df = pd.read_excel(file_path)
+
+        # Validierung der benoetigten Spalten
+        required_columns = ['Startdatum', 'Titel', 'Standortnamen', 'Mitwirkender', 'Gemeinden']
+        missing_columns = [col for col in required_columns if col not in df.columns]
+        if missing_columns:
+            raise ValueError("Fehlende Spalten: {}".format(', '.join(missing_columns)))
+
+        # Daten nach Datum sortieren
+        df = df.sort_values('Startdatum')
+
+        # Gruppiere nach Datum
+        grouped = df.groupby(df['Startdatum'].dt.date)
+
+        output_lines = []
+
+        for date, group in grouped:
+            # Datum formatieren
+            date_str = format_date(pd.to_datetime(date))
+            output_lines.append("{}:".format(date_str))
+
+            # Sammle Termineintraege fuer diesen Tag
+            day_items = []
+            for _, row in group.iterrows():
+                _standort = row['Standortnamen']
+                _gemeinde = row['Gemeinden']
+                _standort_ok = _standort is not None and not pd.isna(_standort)
+                _gemeinde_ok = _gemeinde is not None and not pd.isna(_gemeinde)
+                raw_ort = _standort if _standort_ok else (_gemeinde if _gemeinde_ok else '')
+                location = extract_boyens_location(str(raw_ort) if raw_ort else '', for_export=True)
+                titel = str(row['Titel']) if not pd.isna(row['Titel']) else ''
+                mitwirkender = str(row['Mitwirkender']) if not pd.isna(row['Mitwirkender']) else ''
+                day_items.append({
+                    'location': location,
+                    'sort_key': row['Startdatum'],
+                    'time_str': format_time(row['Startdatum']),
+                    'service_type': format_service_type(titel),
+                    'pastor': format_pastor(mitwirkender),
+                    'suffix': _extract_suffix(titel),
+                })
+
+            # Alphabetisch sortieren, Multi-Termin zusammenfassen, jeweils-Logik anwenden
+            output_lines.extend(_build_location_entries(day_items))
+            output_lines.append("")  # Leerzeile nach jedem Tag
+
+        return '\n'.join(output_lines), len(df)
+
+    except Exception as e:
+        raise Exception("Fehler beim Verarbeiten der Excel-Datei: {}".format(str(e)))
+
+
+def convert_churchdesk_events_to_boyens(events):
+    """Convert ChurchDesk events to Boyens format with location extraction"""
+    # Group events by date
+    events_by_date = {}
+
+    for event in events:
+        # startDate defensiv: fehlender/leerer/unparsebahrer Wert → Event ueberspringen
+        raw_start = event.get('startDate')
+        if not raw_start:
+            continue
+        try:
+            start_date = datetime.fromisoformat(raw_start)
+        except (ValueError, TypeError):
+            continue
+        # tzinfo entfernen → naive lokale Zeit, konsistent mit dem Excel-Pfad.
+        # Verhindert "can't compare offset-naive and offset-aware" falls beide
+        # Quellen je zusammengefuehrt werden; Anzeige/Sortierung bleibt identisch.
+        if start_date.tzinfo is not None:
+            start_date = start_date.replace(tzinfo=None)
+        date_key = start_date.date()
+
+        if date_key not in events_by_date:
+            events_by_date[date_key] = []
+
+        events_by_date[date_key].append({
+            'startDate': start_date,
+            'title': event.get('title') or '',
+            'location': event.get('location') or '',
+            'contributor': event.get('contributor') or '',
+            'parishes': event.get('parishes') or [],
+            'organization_name': event.get('organization_name', '')
+        })
+
+    # Sort dates
+    sorted_dates = sorted(events_by_date.keys())
+
+    output_lines = []
+
+    for date in sorted_dates:
+        # Format date
+        date_obj = datetime.combine(date, datetime.min.time())
+        date_str = format_date(date_obj)
+        output_lines.append("{}:".format(date_str))
+
+        # Sort events by time for this date
+        day_events = sorted(events_by_date[date], key=lambda x: x['startDate'])
+
+        # Sammle Termineintraege fuer diesen Tag
+        day_items = []
+        for event in day_events:
+            # Extract Boyens-conform location for export (Urlauberseelsorge → Buesum)
+            location = extract_boyens_location(event['location'], for_export=True)
+            if not location and event['parishes']:
+                location = extract_boyens_location(event['parishes'][0].get('title', ''), for_export=True)
+
+            titel = event['title'] or ''
+            day_items.append({
+                'location': location,
+                'sort_key': event['startDate'],
+                'time_str': format_time(event['startDate']),
+                'service_type': format_service_type(titel),
+                'pastor': format_pastor(event['contributor']),
+                'suffix': _extract_suffix(titel),
+            })
+
+        # Alphabetisch sortieren, Multi-Termin zusammenfassen, jeweils-Logik anwenden
+        output_lines.extend(_build_location_entries(day_items))
+        output_lines.append("")  # Empty line after each date
+
+    return '\n'.join(output_lines)
+
+
+@bp.route('/health')
+def health():
+    return {'status': 'ok'}, 200
+
+
+@bp.route('/')
+@login_required
+def index():
+    current_year = datetime.now().year
+    return render_template('index.html', organizations=ORGANIZATIONS,
+                           current_year=current_year)
+
+
+@bp.route('/upload', methods=['POST'])
+@login_required
+def upload_file():
+    if 'file' not in request.files:
+        flash('Keine Datei ausgewaehlt')
+        return redirect(url_for('main.index'))
+
+    file = request.files['file']
+    if file.filename == '':
+        flash('Keine Datei ausgewaehlt')
+        return redirect(url_for('main.index'))
+
+    if file and file.filename.endswith('.xlsx'):
+        try:
+            # Temporaere Datei erstellen
+            with tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx') as tmp_file:
+                file.save(tmp_file.name)
+                tmp_path = tmp_file.name
+
+            # Verarbeitung
+            formatted_text, count = process_excel_file(tmp_path)
+
+            # Aufraeumen
+            os.unlink(tmp_path)
+
+            return render_template('result.html',
+                                   formatted_text=formatted_text,
+                                   count=count,
+                                   source='Excel')
+
+        except Exception as e:
+            flash('Fehler beim Verarbeiten der Datei: {}'.format(str(e)))
+            return redirect(url_for('main.index'))
+    else:
+        flash('Bitte waehlen Sie eine Excel-Datei (.xlsx) aus')
+        return redirect(url_for('main.index'))
+
+
+@bp.route('/download', methods=['POST'])
+@login_required
+def download_file():
+    formatted_text = request.form.get('formatted_text')
+    if not formatted_text:
+        flash('Keine Daten zum Download verfuegbar')
+        return redirect(url_for('main.index'))
+
+    # Erstelle temporaere Datei
+    output = io.StringIO()
+    output.write(formatted_text)
+    output.seek(0)
+
+    # Konvertiere zu BytesIO fuer Flask
+    mem_file = io.BytesIO()
+    mem_file.write(output.getvalue().encode('utf-8'))
+    mem_file.seek(0)
+
+    return send_file(
+        mem_file,
+        as_attachment=True,
+        download_name='gottesdienste_formatiert.txt',
+        mimetype='text/plain'
+    )
+
+
+@bp.route('/fetch_churchdesk_events', methods=['POST'])
+@login_required
+def fetch_churchdesk_events():
+    """Fetch events from ChurchDesk API for multiple organizations"""
+    try:
+        # Get form data
+        year = int(request.form.get('year'))
+        month = int(request.form.get('month'))
+        selected_orgs = request.form.getlist('selected_organizations')
+
+        if not selected_orgs:
+            flash('Bitte waehlen Sie mindestens eine Organisation aus')
+            return redirect(url_for('main.index'))
+
+        # Convert to integers
+        selected_org_ids = [int(org_id) for org_id in selected_orgs]
+
+        # Create multi-organization API client
+        multi_client = create_multi_org_client(selected_org_ids)
+
+        # Fetch events for the specified month from all selected organizations
+        events = multi_client.get_monthly_events(year, month, gottesdienst_only=True)
+
+        # Process events for display
+        processed_events = []
+        for event in events:
+            formatted_event = EventAnalyzer.format_event_for_boyens(event)
+            if formatted_event:
+                # Add formatted date/time for display
+                formatted_event['formatted_date'] = format_date(formatted_event['startDate'])
+                formatted_event['formatted_time'] = format_time(formatted_event['startDate'])
+
+                # Add organization info
+                formatted_event['organization_name'] = event.get('organization_name', 'Unbekannt')
+                formatted_event['organization_id'] = event.get('organization_id', 0)
+
+                processed_events.append(formatted_event)
+
+        # Sort by date
+        processed_events.sort(key=lambda x: x['startDate'])
+
+        # Month names for display
+        month_names = {
+            1: 'Januar', 2: 'Februar', 3: 'Maerz', 4: 'April',
+            5: 'Mai', 6: 'Juni', 7: 'Juli', 8: 'August',
+            9: 'September', 10: 'Oktober', 11: 'November', 12: 'Dezember'
+        }
+
+        # Get organization names for display
+        selected_org_names = [ORGANIZATIONS.get(org_id, {}).get('name', 'Org {}'.format(org_id))
+                              for org_id in selected_org_ids]
+
+        return render_template('churchdesk_events.html',
+                               events=processed_events,
+                               events_json=json.dumps([{
+                                   'id': e['id'],
+                                   'title': e['title'],
+                                   'startDate': e['startDate'].isoformat(),
+                                   'location': e['location'],
+                                   'contributor': e['contributor'],
+                                   'parishes': e['parishes'],
+                                   'organization_id': e.get('organization_id', 0),
+                                   'organization_name': e.get('organization_name', 'Unbekannt')
+                               } for e in processed_events]),
+                               year=year,
+                               month=month,
+                               month_name=month_names[month],
+                               selected_organizations=selected_org_names)
+
+    except Exception as e:
+        flash('Fehler beim Abrufen der ChurchDesk Events: {}'.format(str(e)))
+        return redirect(url_for('main.index'))
+
+
+@bp.route('/export_selected_events', methods=['POST'])
+@login_required
+def export_selected_events():
+    """Export selected events to Boyens format"""
+    try:
+        # Bevorzugt: editierte Auswahl-Events als JSON (enthaelt evtl. korrigierte
+        # Felder aus der Oberflaeche). Fallback: altes Schema (events_data + IDs).
+        selected_data = request.form.get('selected_events_data')
+        if selected_data:
+            selected_events = json.loads(selected_data)
+        else:
+            events_data = request.form.get('events_data')
+            selected_event_ids = request.form.getlist('selected_events')
+            if not events_data or not selected_event_ids:
+                flash('Keine Events ausgewaehlt')
+                return redirect(url_for('main.index'))
+            events = json.loads(events_data)
+            selected_events = [e for e in events if str(e['id']) in selected_event_ids]
+
+        if not selected_events:
+            flash('Keine gueltigen Events ausgewaehlt')
+            return redirect(url_for('main.index'))
+
+        # Convert to Boyens format
+        formatted_text = convert_churchdesk_events_to_boyens(selected_events)
+
+        return render_template('result.html',
+                               formatted_text=formatted_text,
+                               count=len(selected_events),
+                               source='ChurchDesk')
+
+    except Exception as e:
+        flash('Fehler beim Exportieren der Events: {}'.format(str(e)))
+        return redirect(url_for('main.index'))

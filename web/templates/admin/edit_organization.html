@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="max-w-lg">
+  <h1 class="text-2xl font-bold text-gray-900 mb-1">{{ title }}</h1>
+  {% if not is_new %}
+  <p class="text-gray-500 mb-6">ID: {{ org.id }}</p>
+  {% else %}
+  <div class="mb-6"></div>
+  {% endif %}
+
+  <div class="card p-6">
+    <form method="POST">
+      {{ form.hidden_tag() }}
+
+      {% if is_new %}
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">ChurchDesk Org-ID</label>
+        {{ form.id(class="input-field", placeholder="z.B. 2596") }}
+        {% for error in form.id.errors %}
+        <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+        {{ form.name(class="input-field", placeholder="z.B. Kirchspiel Heide") }}
+        {% for error in form.name.errors %}
+        <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+        {% endfor %}
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">API-Token</label>
+        {{ form.token(class="input-field font-mono text-xs", placeholder="ChurchDesk Partner-Token") }}
+        {% for error in form.token.errors %}
+        <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+        {% endfor %}
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Beschreibung <span class="font-normal text-gray-400">(optional)</span></label>
+        {{ form.description(class="input-field", rows=2, placeholder="z.B. Heide (St.-Jürgen, Erlöser), Wesseln ...") }}
+        {% for error in form.description.errors %}
+        <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+        {% endfor %}
+      </div>
+
+      <div class="mb-6 flex items-center gap-2">
+        {{ form.is_active(class="rounded text-primary-600 w-4 h-4") }}
+        <label class="text-sm text-gray-700">Aktiv</label>
+      </div>
+
+      <div class="flex gap-3 mt-2">
+        <button type="submit" class="btn-primary">Speichern</button>
+        <a href="{{ url_for('admin.organizations') }}" class="btn-secondary">Abbrechen</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

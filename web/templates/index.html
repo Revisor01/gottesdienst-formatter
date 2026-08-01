@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}Gottesdienste abrufen - Formatter{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold text-gray-900 mb-6">Gottesdienste abrufen</h1>
+
+<div class="card p-6">
+  <form method="POST" action="{{ url_for('main.fetch_churchdesk_events') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+    <div class="grid grid-cols-2 gap-4 mb-4">
+      <div>
+        <label for="year" class="block text-sm font-medium text-gray-700 mb-1">Jahr</label>
+        <select name="year" id="year" class="input-field" required>
+              <option value="{{ current_year }}" selected>{{ current_year }}</option>
+          <option value="{{ current_year + 1 }}">{{ current_year + 1 }}</option>
+          <option value="{{ current_year - 1 }}">{{ current_year - 1 }}</option>
+        </select>
+      </div>
+      <div>
+        <label for="month" class="block text-sm font-medium text-gray-700 mb-1">Monat</label>
+        <select name="month" id="month" class="input-field" required>
+          <option value="1">Januar</option>
+          <option value="2">Februar</option>
+          <option value="3">März</option>
+          <option value="4">April</option>
+          <option value="5">Mai</option>
+          <option value="6">Juni</option>
+          <option value="7">Juli</option>
+          <option value="8">August</option>
+          <option value="9">September</option>
+          <option value="10">Oktober</option>
+          <option value="11">November</option>
+          <option value="12">Dezember</option>
+        </select>
+      </div>
+    </div>
+
+    {% if organizations %}
+    <div class="card p-4 mt-4">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="font-semibold text-gray-700">Kirchspiele</h3>
+        <label class="flex items-center gap-2 text-sm cursor-pointer">
+          <input type="checkbox" id="select-all-orgs" checked class="rounded text-primary-600">
+          Alle
+        </label>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+        {% for org_id, org in organizations.items() %}
+        <label class="flex items-start gap-2 p-2 rounded hover:bg-gray-50 cursor-pointer">
+          <input type="checkbox" name="selected_organizations" value="{{ org_id }}"
+                 class="mt-1 rounded text-primary-600 org-checkbox" checked>
+          <div>
+            <span class="font-medium text-gray-800">{{ org.name }}</span>
+            {% if org.description %}<br><span class="text-sm text-gray-500">{{ org.description }}</span>{% endif %}
+          </div>
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+    {% else %}
+    <div class="alert-warning flex items-start gap-2 mt-4">
+      <svg class="w-5 h-5 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+      </svg>
+      <span>Keine Organisationen konfiguriert. Bitte <code class="bg-yellow-100 px-1 rounded">CHURCHDESK_ORG_IDS</code> und zugehörige Env-Vars setzen.</span>
+    </div>
+    {% endif %}
+
+    <button type="submit" class="btn-primary w-full text-lg mt-6 flex items-center justify-center gap-2">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
+      </svg>
+      Gottesdienste von ChurchDesk abrufen
+    </button>
+  </form>
+</div>
+
+<div class="flex items-center gap-4 my-8">
+  <div class="flex-1 border-t border-gray-200"></div>
+  <span class="text-sm font-medium text-gray-400 uppercase tracking-wide">oder</span>
+  <div class="flex-1 border-t border-gray-200"></div>
+</div>
+
+<div class="card p-6">
+  <h2 class="text-lg font-semibold text-gray-900 mb-1">Excel-Datei hochladen</h2>
+  <p class="text-sm text-gray-500 mb-4">
+    Lade eine <code class="bg-gray-100 px-1 rounded">.xlsx</code>-Datei mit den Spalten
+    <em>Startdatum, Titel, Standortnamen, Mitwirkender, Gemeinden</em> hoch.
+  </p>
+
+  <form method="POST" action="{{ url_for('main.upload_file') }}" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+    <label for="file"
+           class="flex flex-col items-center justify-center w-full p-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary-400 hover:bg-gray-50 transition-colors">
+      <svg class="w-8 h-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
+      </svg>
+      <span class="text-sm text-gray-600"><span class="font-medium text-primary-600">Datei auswählen</span> oder hierher ziehen</span>
+      <span id="file-name" class="text-sm text-gray-400 mt-1">Keine Datei ausgewählt</span>
+      <input type="file" name="file" id="file" accept=".xlsx" required class="hidden">
+    </label>
+
+    <button type="submit" class="btn-primary w-full text-lg mt-6 flex items-center justify-center gap-2">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+      </svg>
+      Excel-Datei formatieren
+    </button>
+  </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const selectAllCheckbox = document.getElementById('select-all-orgs');
+  const orgCheckboxes = document.querySelectorAll('.org-checkbox');
+
+  function updateSelectAllState() {
+    const checkedCount = document.querySelectorAll('.org-checkbox:checked').length;
+    const totalCount = orgCheckboxes.length;
+    selectAllCheckbox.checked = checkedCount === totalCount;
+    selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < totalCount;
+  }
+
+  if (selectAllCheckbox) {
+    selectAllCheckbox.addEventListener('change', function() {
+      orgCheckboxes.forEach(checkbox => {
+        checkbox.checked = this.checked;
+      });
+    });
+  }
+
+  orgCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+      updateSelectAllState();
+    });
+  });
+
+  updateSelectAllState();
+
+  // Aktuellen Monat vorauswaehlen
+  const currentMonth = new Date().getMonth() + 1;
+  const monthSelect = document.getElementById('month');
+  if (monthSelect) {
+    monthSelect.value = currentMonth;
+  }
+
+  // Dateinamen anzeigen bei Excel-Upload
+  const fileInput = document.getElementById('file');
+  const fileNameLabel = document.getElementById('file-name');
+  if (fileInput && fileNameLabel) {
+    fileInput.addEventListener('change', function() {
+      fileNameLabel.textContent = this.files.length ? this.files[0].name : 'Keine Datei ausgewählt';
+    });
+  }
+
+});
+</script>
+{% endblock %}

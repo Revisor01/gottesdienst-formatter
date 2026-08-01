@@ -1,0 +1,34 @@
+[
+  {
+    "date": "2025-04-06",
+    "time_hour": 10,
+    "time_minute": 0,
+    "location": "Heide, St.-Jürgen",
+    "title": "Gottesdienst",
+    "contributor": "Pastor Mueller"
+  },
+  {
+    "date": "2025-04-06",
+    "time_hour": 10,
+    "time_minute": 0,
+    "location": "Meldorf",
+    "title": "Abendmahlsgottesdienst",
+    "contributor": "Pastorin Schmidt"
+  },
+  {
+    "date": "2025-04-06",
+    "time_hour": 11,
+    "time_minute": 0,
+    "location": "Heide, St.-Jürgen",
+    "title": "Kinderkirche",
+    "contributor": "Pastorin Schmidt"
+  },
+  {
+    "date": "2025-04-13",
+    "time_hour": 9,
+    "time_minute": 30,
+    "location": "Wesselburen",
+    "title": "Familiengottesdienst",
+    "contributor": "Diakon Weber"
+  }
+]
