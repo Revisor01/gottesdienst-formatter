@@ -5,6 +5,29 @@ Alle nennenswerten Änderungen an diesem Projekt werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [Semantic Versioning](https://semver.org/lang/de/).
 
+## [1.1.0] - 2026-08-01
+
+### Geändert
+
+- Abhängigkeiten auf gepatchte Versionen angehoben: Flask 3.1.3, Werkzeug 3.1.6,
+  requests 2.33.0, gunicorn 23.0.0, cryptography 48.0.1 — behebt 20 Dependabot-Alerts
+  (7 hoch, 13 mittel/niedrig). Testsuite (153 Tests) läuft unverändert grün.
+- npm-Abhängigkeiten aktualisiert (postcss, picomatch) — 0 verbleibende Findings
+
+### Behoben
+
+- **Open Redirect beim Login**: Der `next`-Parameter akzeptierte protokoll-relative
+  URLs (`//fremder-host`), die Browser als externe Adresse auflösen. Jetzt werden
+  nur projekt-interne Pfade übernommen.
+- **Stack-Trace-Preisgabe** im SMTP-Test: Exception-Texte gingen an den Client;
+  Details landen jetzt im Log, der Client erhält eine generische Meldung.
+- Debug-Modus im `__main__`-Block ist opt-in über `FLASK_DEBUG` und bindet auf
+  `127.0.0.1` statt auf allen Interfaces
+
+### Sicherheit
+
+- `permissions: contents: read` im CI/CD-Workflow (Least Privilege)
+
 ## [1.0.0] - 2026-08-01
 
 Erster Release nach vollständigem Neuaufbau der Git-Historie. Die bisherige
@@ -41,4 +64,5 @@ Historie wurde verworfen, weil ChurchDesk-API-Tokens in Commits eines
 - `.gitignore` um `.env`, `web/data/`, `web/uploads/` und Planungsartefakte ergänzt
 - Dependabot-Alerts, automatische Security-Updates und CodeQL-Code-Scanning aktiviert
 
+[1.1.0]: https://github.com/Revisor01/gottesdienst-formatter/releases/tag/v1.1.0
 [1.0.0]: https://github.com/Revisor01/gottesdienst-formatter/releases/tag/v1.0.0

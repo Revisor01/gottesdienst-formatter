@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [main]
 
+# Least privilege — einzelne Jobs erhoehen bei Bedarf selbst.
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest

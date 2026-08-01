@@ -24,8 +24,14 @@ def login():
 
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
-        # Sicherheit: nur relative URLs akzeptieren
-        if next_page and not next_page.startswith('/'):
+        # Sicherheit: nur projekt-interne Pfade akzeptieren.
+        # '//host' und '/\host' waeren protokoll-relative URLs und damit
+        # ein Open Redirect auf fremde Hosts.
+        if next_page and (
+            not next_page.startswith('/')
+            or next_page.startswith('//')
+            or next_page.startswith('/\\')
+        ):
             next_page = None
         return redirect(next_page or url_for('main.index'))
 
