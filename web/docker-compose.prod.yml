@@ -1,0 +1,26 @@
+services:
+  gottesdienst-formatter:
+    image: ghcr.io/revisor01/gottesdienst-formatter:latest
+    container_name: gottesdienst-formatter
+    ports:
+      - "5001:5000"
+    volumes:
+      - ./uploads:/app/uploads
+      - ./data:/app/data
+    restart: unless-stopped
+    environment:
+      - FLASK_ENV=production
+      - FLASK_DEBUG=false
+      - FLASK_APP=app:create_app()
+      - SECRET_KEY=${SECRET_KEY}
+
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower-gd
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WATCHTOWER_POLL_INTERVAL=300
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_INCLUDE_STOPPED=false
+    restart: unless-stopped

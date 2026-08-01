@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Ergebnis - Gottesdienst-Formatter{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-2xl font-bold text-gray-900">Formatierte Gottesdiensttermine</h1>
+  <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800">
+    {{ count }} Termine
+  </span>
+</div>
+
+<div class="alert-success flex items-start gap-3 mb-6">
+  <svg class="w-5 h-5 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+  </svg>
+  <span>Die Gottesdienste wurden erfolgreich in das Boyens-Format konvertiert.</span>
+</div>
+
+{% if warnings %}
+  {% for warning in warnings %}
+  <div class="alert-warning flex items-start gap-2 mb-3">
+    <svg class="w-5 h-5 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+      <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+    </svg>
+    <span>{{ warning }}</span>
+  </div>
+  {% endfor %}
+{% endif %}
+
+<div class="flex gap-3 mb-4">
+  <button onclick="copyToClipboard(this)" class="btn-primary flex items-center gap-2">
+    <svg id="copy-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+    </svg>
+    <span id="copy-label">In Zwischenablage kopieren</span>
+  </button>
+
+  <form method="POST" action="{{ url_for('main.download_file') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <input type="hidden" name="formatted_text" value="{{ formatted_text }}">
+    <button type="submit" class="btn-outline flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+      </svg>
+      Als .txt herunterladen
+    </button>
+  </form>
+</div>
+
+<div class="card p-6">
+  <pre class="font-mono text-sm whitespace-pre-wrap text-gray-800 leading-relaxed" id="resultText">{{ formatted_text }}</pre>
+</div>
+
+<div class="mt-4">
+  <a href="{{ url_for('main.index') }}" class="btn-secondary">
+    Zurueck zur Uebersicht
+  </a>
+</div>
+
+<script>
+function copyToClipboard(btn) {
+  const text = document.getElementById('resultText').textContent;
+  const label = document.getElementById('copy-label');
+  navigator.clipboard.writeText(text).then(function() {
+    const originalClass = btn.className;
+    label.textContent = 'Kopiert!';
+    btn.className = btn.className.replace('btn-primary', '') + ' bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center gap-2';
+    setTimeout(() => {
+      label.textContent = 'In Zwischenablage kopieren';
+      btn.className = originalClass;
+    }, 2000);
+  }, function(err) {
+    alert('Fehler beim Kopieren: ' + err);
+  });
+}
+</script>
+{% endblock %}

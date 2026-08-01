@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Personen verwalten{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-2xl font-bold text-gray-900">Personen</h1>
+  <a href="{{ url_for('admin.create_pastor') }}" class="btn-primary">Neue Person</a>
+</div>
+
+<div class="card overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+        <tr>
+          <th class="px-4 py-3">Nachname</th>
+          <th class="px-4 py-3">Vorname</th>
+          <th class="px-4 py-3">Boyens-Abkürzung</th>
+          <th class="px-4 py-3">Ausgabe</th>
+          <th class="px-4 py-3">Aktiv</th>
+          <th class="px-4 py-3"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for pastor in pastors %}
+        <tr class="border-b border-gray-100 hover:bg-gray-50">
+          <td class="px-4 py-3 font-medium">{{ pastor.last_name }}</td>
+          <td class="px-4 py-3 text-gray-500">{{ pastor.first_name or '—' }}</td>
+          <td class="px-4 py-3 font-mono text-xs">{{ pastor.title }}</td>
+          <td class="px-4 py-3 text-gray-600 text-xs">{{ pastor.title }} {{ pastor.last_name }}</td>
+          <td class="px-4 py-3">
+            {% if pastor.is_active %}
+            <span class="text-green-600 text-xs font-medium">Aktiv</span>
+            {% else %}
+            <span class="text-red-500 text-xs font-medium">Inaktiv</span>
+            {% endif %}
+          </td>
+          <td class="px-4 py-3 flex items-center gap-3">
+            <a href="{{ url_for('admin.edit_pastor', pastor_id=pastor.id) }}" class="text-primary-600 hover:text-primary-800 underline text-sm">Bearbeiten</a>
+            <form method="POST" action="{{ url_for('admin.delete_pastor', pastor_id=pastor.id) }}"
+                  onsubmit="return confirm('Person &quot;{{ pastor.title }} {{ pastor.last_name }}&quot; wirklich löschen?');">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="text-red-500 hover:text-red-700 underline text-sm">Löschen</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+        {% if not pastors %}
+        <tr>
+          <td colspan="6" class="px-4 py-6 text-center text-gray-400 text-sm">Keine Personen vorhanden.</td>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
