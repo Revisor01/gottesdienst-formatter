@@ -5,6 +5,15 @@ Alle nennenswerten Änderungen an diesem Projekt werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [Semantic Versioning](https://semver.org/lang/de/).
 
+## [Unreleased] - 1.1.1
+
+### Behoben
+
+- **Keine Gottesdienste mehr abrufbar**: Die Abfrage an ChurchDesk wurde für
+  alle Organisationen abgewiesen, die Übersicht blieb für jeden Monat leer.
+  Ursache war das Datumsformat der Anfrage, das ChurchDesk nicht mehr
+  akzeptiert. Termine werden wieder wie gewohnt geladen.
+
 ## [1.1.0] - 2026-08-01
 
 ### Geändert

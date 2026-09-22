@@ -13,6 +13,18 @@ import pytz
 from config import ORGANIZATIONS
 from formatting import format_pastor
 
+def _format_api_date(value: datetime) -> str:
+    """
+    Format a datetime for the ChurchDesk API date parameters.
+
+    The API validates startDate/endDate strictly: it accepts either a plain
+    date (2026-09-01) or an ISO datetime carrying a timezone
+    (2026-09-01T00:00:00Z). A naive isoformat() is rejected with 400.
+    Only the calendar day matters for the queried range, so send the day.
+    """
+    return value.strftime('%Y-%m-%d')
+
+
 class ChurchDeskAPI:
     """Client for ChurchDesk API interactions"""
     
@@ -67,8 +79,8 @@ class ChurchDeskAPI:
             items_per_page: Number of items per page (max 100)
         """
         params = {
-            'startDate': start_date.isoformat(),
-            'endDate': end_date.isoformat(),
+            'startDate': _format_api_date(start_date),
+            'endDate': _format_api_date(end_date),
             'itemsNumber': min(items_per_page, 100)
         }
         
