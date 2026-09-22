@@ -17,8 +17,8 @@ die Versionierung folgt [Semantic Versioning](https://semver.org/lang/de/).
 ### Sicherheit
 
 - Verschlüsselungsbibliothek auf eine gepatchte Version angehoben (behebt ein
-  als hoch eingestuftes Finding). Die gespeicherten SMTP-Zugangsdaten bleiben
-  unverändert lesbar.
+  als hoch eingestuftes Finding). Das Format gespeicherter Zugangsdaten
+  ändert sich dadurch nicht.
 - Zwei Schwachstellen in Build-Werkzeugen behoben; die Oberfläche ist davon
   nicht betroffen.
 
