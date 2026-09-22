@@ -5,7 +5,7 @@ Alle nennenswerten Änderungen an diesem Projekt werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [Semantic Versioning](https://semver.org/lang/de/).
 
-## [Unreleased] - 1.1.1
+## [1.1.1] - 2026-09-22
 
 ### Behoben
 
@@ -13,6 +13,14 @@ die Versionierung folgt [Semantic Versioning](https://semver.org/lang/de/).
   alle Organisationen abgewiesen, die Übersicht blieb für jeden Monat leer.
   Ursache war das Datumsformat der Anfrage, das ChurchDesk nicht mehr
   akzeptiert. Termine werden wieder wie gewohnt geladen.
+
+### Sicherheit
+
+- Verschlüsselungsbibliothek auf eine gepatchte Version angehoben (behebt ein
+  als hoch eingestuftes Finding). Die gespeicherten SMTP-Zugangsdaten bleiben
+  unverändert lesbar.
+- Zwei Schwachstellen in Build-Werkzeugen behoben; die Oberfläche ist davon
+  nicht betroffen.
 
 ## [1.1.0] - 2026-08-01
 
