@@ -81,5 +81,6 @@ Historie wurde verworfen, weil ChurchDesk-API-Tokens in Commits eines
 - `.gitignore` um `.env`, `web/data/`, `web/uploads/` und Planungsartefakte ergänzt
 - Dependabot-Alerts, automatische Security-Updates und CodeQL-Code-Scanning aktiviert
 
+[1.1.1]: https://github.com/Revisor01/gottesdienst-formatter/releases/tag/v1.1.1
 [1.1.0]: https://github.com/Revisor01/gottesdienst-formatter/releases/tag/v1.1.0
 [1.0.0]: https://github.com/Revisor01/gottesdienst-formatter/releases/tag/v1.0.0

@@ -89,14 +89,11 @@ npm run tw:build      # oder: npm run tw:watch
 
 ## Deployment
 
-Docker auf `«server»`, Pfad `«installationsordner»`.
-Container-Port 5000 → Host 5001, davor ein Reverse Proxy.
-
-```bash
-git add . && git commit -m "..." && git push && \
-ssh root@«server» "cd «installationsordner» && git pull origin main && \
-cd web && docker compose build && docker compose down && docker compose up -d"
-```
+Jeder Push auf `main` baut nach grünen Tests das Image
+`ghcr.io/revisor01/gottesdienst-formatter` (Tags `latest` und Commit-SHA).
+Für den Betrieb ist `web/docker-compose.prod.yml` gedacht: Es zieht `latest`, und
+Watchtower holt neue Images innerhalb von fünf Minuten. Container-Port 5000 → Host 5001, davor ein
+Reverse Proxy. `SECRET_KEY` kommt aus der Umgebung.
 
 Persistente Daten liegen in `web/data/` (SQLite) — das Volume `./data:/app/data` ist
 zwingend, sonst geht die Datenbank bei jedem Rebuild verloren.
