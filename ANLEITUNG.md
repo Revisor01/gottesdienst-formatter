@@ -5,7 +5,7 @@ Dieses Script konvertiert Excel-Tabellen mit Gottesdienstdaten automatisch in da
 
 ## Vorbereitung (nur einmal nötig)
 1. Terminal/Eingabeaufforderung öffnen
-2. Zu diesem Ordner navigieren: `cd «pfad»`
+2. In den Ordner dieses Projekts wechseln: `cd <Projektordner>`
 3. Virtual Environment aktivieren: `source venv/bin/activate`
 
 ## Verwendung
