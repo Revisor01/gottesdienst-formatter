@@ -130,5 +130,5 @@ Alle Werte über Environment-Variablen bzw. `.env` (siehe `.env.example`):
 
 ## Lizenz
 
-© 2025–2026 Pastor Simon Luthe, Kirchenkreis Dithmarschen —
-entwickelt für den internen Gebrauch des Kirchenkreises Dithmarschen.
+© 2025–2026 Simon Luthe. Veröffentlicht unter der
+[GNU General Public License v3.0](LICENSE).
