@@ -142,8 +142,12 @@ Grundsätze für Beiträge stehen in [CLAUDE.md](CLAUDE.md).
 
 ## Lizenz
 
-Der Gottesdienst-Formatter steht unter der
-[GNU General Public License v3.0](LICENSE).
+Gottesdienst-Formatter steht unter der
+[GNU Affero General Public License v3.0](LICENSE). Wer Gottesdienst-Formatter verändert und
+anderen zur Verfügung stellt, auch als Webdienst, legt seinen Quelltext unter
+derselben Lizenz offen. Wer das nicht möchte, bekommt auf Anfrage eine
+kommerzielle Lizenz ([mail@simonluthe.de](mailto:mail@simonluthe.de)). Für
+Beiträge gilt [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Hinweis
 

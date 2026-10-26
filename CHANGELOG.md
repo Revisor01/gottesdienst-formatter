@@ -7,6 +7,9 @@ die Versionierung folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Geändert
+- Neue Lizenz: GNU AGPL v3.0 statt GPL-3.0: Die Pflicht, Änderungen offenzulegen, gilt jetzt auch für den Betrieb als Webdienst. Eine kommerzielle Lizenz gibt es auf Anfrage.
+
 ### Sonstiges
 
 - Der Quelltext steht jetzt unter der GNU General Public License v3.0.
