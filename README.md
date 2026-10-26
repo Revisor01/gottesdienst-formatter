@@ -6,6 +6,10 @@
 </p>
 
 <p align="center">
+  <b>Deutsch</b> · <a href="README.en.md">English</a>
+</p>
+
+<p align="center">
   <img src="https://img.shields.io/badge/Python-3.11-3776ab?logo=python" alt="Python">
   <img src="https://img.shields.io/badge/Flask-SQLite-000000?logo=flask" alt="Flask">
   <img src="https://img.shields.io/github/license/Revisor01/gottesdienst-formatter" alt="Lizenz">
@@ -138,16 +142,15 @@ Fehlermeldungen und Vorschläge sind willkommen — gern als
 [Issue](https://github.com/Revisor01/gottesdienst-formatter/issues).
 Sicherheitslücken bitte vertraulich melden, wie in [SECURITY.md](SECURITY.md)
 beschrieben. Pull Requests laufen durch Tests und einen Secret-Scan; die
-Grundsätze für Beiträge stehen in [CLAUDE.md](CLAUDE.md).
+Grundsätze für Beiträge stehen in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Lizenz
 
 Gottesdienst-Formatter steht unter der
-[GNU Affero General Public License v3.0](LICENSE). Wer Gottesdienst-Formatter verändert und
-anderen zur Verfügung stellt, auch als Webdienst, legt seinen Quelltext unter
-derselben Lizenz offen. Wer das nicht möchte, bekommt auf Anfrage eine
-kommerzielle Lizenz ([mail@simonluthe.de](mailto:mail@simonluthe.de)). Für
-Beiträge gilt [CONTRIBUTING.md](CONTRIBUTING.md).
+[GNU Affero General Public License v3.0](LICENSE). Wer Gottesdienst-Formatter
+verändert und anderen zur Verfügung stellt, auch als Webdienst, legt seinen
+Quelltext unter derselben Lizenz offen. Für Beiträge gilt
+[CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Hinweis
 
