@@ -1,36 +1,13 @@
-# Gottesdienst-Formatter für Boyens Medien
+# Kommandozeile: Excel → Text
 
-## Beschreibung
-Dieses Script konvertiert Excel-Tabellen mit Gottesdienstdaten automatisch in das von Boyens Medien geforderte Fließtext-Format.
+Wandelt eine Excel-Datei ohne Server in den Fließtext für Boyens Medien um.
+Die Spalten der Datei stehen im README unter „Excel-Format“.
 
-## Vorbereitung (nur einmal nötig)
-1. Terminal/Eingabeaufforderung öffnen
-2. In den Ordner dieses Projekts wechseln: `cd <Projektordner>`
-3. Virtual Environment aktivieren: `source venv/bin/activate`
-
-## Verwendung
-1. Excel-Datei mit Gottesdienstdaten in diesen Ordner legen
-2. Terminal öffnen und zu diesem Ordner navigieren
-3. Virtual Environment aktivieren: `source venv/bin/activate`
-4. Script ausführen: `python gottesdienst_formatter_final.py`
-5. Bei mehreren Excel-Dateien: gewünschte Datei auswählen
-6. Ergebnis wird in `gottesdienste_formatiert.txt` gespeichert
-
-## Ausgabeformat
-Das Script erstellt automatisch das korrekte Format:
-- Nach Datum sortiert und gruppiert
-- Format: "Ort: Zeit, Gottesdiensttyp, Pastor"
-- Deutsche Wochentage und Monate
-- Keine Tabellen oder zusätzliche Formatierung
-
-## Beispiel-Ausgabe
-```
-Sonntag, 1. Juni:
-Albersdorf, St. Remigius Kirche: 9.30 Uhr, Gd., P. Keppel
-Büsum, St. Clemens-Kirche: 9.30 Uhr, Gd. m. A., Pn. Ulrike Verwold
+```bash
+python3 -m venv venv && source venv/bin/activate
+pip install pandas openpyxl
+python gottesdienst_formatter_final.py
 ```
 
-## Hinweise
-- Das Script erkennt automatisch Gottesdiensttypen (Abendmahl, Taufe, etc.)
-- Pastoren-Titel werden automatisch korrekt formatiert
-- Bei Problemen: Überprüfen Sie die Spaltenüberschriften in der Excel-Datei
+Das Skript nimmt die `.xlsx`-Datei im aktuellen Ordner (bei mehreren fragt es
+nach) und schreibt das Ergebnis nach `gottesdienste_formatiert.txt`.
