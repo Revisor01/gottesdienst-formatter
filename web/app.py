@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Gottesdienst-Formatter Web Interface — App Factory.
-Pastor Simon Luthe - Kirchenkreis Dithmarschen
-"""
+"""Gottesdienst-Formatter: App-Factory."""
 import os
 from flask import Flask
 
@@ -11,7 +8,7 @@ from flask import Flask
 def create_app(test_config=None):
     app = Flask(__name__)
 
-    # SECRET_KEY — MUSS gesetzt sein, kein Fallback (Pitfall 1)
+    # SECRET_KEY ohne Fallback, damit kein Standardschlüssel produktiv läuft
     secret_key = os.getenv('SECRET_KEY')
     if not secret_key:
         raise RuntimeError(
@@ -144,9 +141,7 @@ def create_app(test_config=None):
     return app
 
 
-# Fuer lokale Entwicklung: SECRET_KEY=dev FLASK_DEBUG=true python app.py
-# Produktiv laeuft die App ueber gunicorn (siehe entrypoint.sh) — dieser
-# Block wird dort nie ausgefuehrt. Debug ist bewusst opt-in.
+# Nur für lokale Entwicklung, produktiv startet gunicorn: SECRET_KEY=dev FLASK_DEBUG=true python app.py
 if __name__ == '__main__':
     app = create_app()
     debug = os.getenv('FLASK_DEBUG', '').lower() in ('1', 'true', 'yes')

@@ -4,12 +4,6 @@ Revision ID: c3d4e5f6a7b8
 Revises: b2c3d4e5f6a7
 Create Date: 2026-06-17 20:00:00.000000
 
-Burg und Marne sind Single-Church-Orte (je eine Kirche) und sollen nicht
-als Multi-Kirchen-Orte behandelt werden. Damit gibt extract_boyens_location
-fuer Burg/Marne "Ort, Kirche" aus statt eines konkreten Kirchennamens.
-
-Daten-Korrektur ist idempotent: DELETE auf nicht-existente Rows ist
-wirkungslos. Kein Schema-Change.
 """
 from alembic import op
 
@@ -28,8 +22,7 @@ def upgrade():
 
 
 def downgrade():
-    # Seed-Zustand wiederherstellen. INSERT OR IGNORE fuer SQLite-Idempotenz
-    # (verhindert UniqueConstraint-Fehler falls Zeilen bereits existieren).
+    # INSERT OR IGNORE, damit die Wiederherstellung idempotent bleibt.
     op.execute(
         "INSERT OR IGNORE INTO location_rules (kind, key, value, is_active)"
         " VALUES ('multi_church', 'burg', '', 1), ('multi_church', 'marne', '', 1)"

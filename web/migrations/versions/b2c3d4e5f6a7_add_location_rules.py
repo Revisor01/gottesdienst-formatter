@@ -4,9 +4,6 @@ Revision ID: b2c3d4e5f6a7
 Revises: a1b2c3d4e5f6
 Create Date: 2026-06-17 16:30:00.000000
 
-Macht die Location-Listen (Orts-Mappings, Multi-Kirchen-Orte, Nicht-Kirchen-
-Stichwoerter) ueber die Admin-Oberflaeche pflegbar. Seedet die bisher
-hartkodierten Werte aus churchdesk_api.py.
 """
 from alembic import op
 import sqlalchemy as sa

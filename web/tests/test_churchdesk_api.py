@@ -1,13 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Tests fuer den ChurchDesk-API-Client — insbesondere das Datumsformat.
-
-ChurchDesk validiert startDate/endDate seit 09/2026 strikt (Zod-Schema):
-akzeptiert wird entweder ein reines Datum (2026-09-01) oder ein
-ISO-Datetime MIT Zeitzone (2026-09-01T00:00:00Z). Ein naives
-isoformat() ohne Zeitzone liefert 400 Bad Request.
-"""
+"""ChurchDesk-Client: die API lehnt seit 09/2026 Zeiten ohne Zeitzone mit 400 ab."""
 
 import re
 from datetime import datetime
@@ -18,8 +11,7 @@ import pytest
 from churchdesk_api import ChurchDeskAPI
 
 
-# Das Zod-Schema der API, auf die relevanten Faelle reduziert:
-# reines Datum ODER Datetime mit Zeitzone (Z oder +HH:MM).
+# Zod-Schema der API: reines Datum oder Datetime mit Zeitzone.
 DATE_ONLY = re.compile(r'^\d{4}-\d{2}-\d{2}$')
 DATETIME_WITH_TZ = re.compile(
     r'^\d{4}-\d{2}-\d{2}T'

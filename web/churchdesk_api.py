@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-ChurchDesk API Client
-Pastor Simon Luthe - Kirchenkreis Dithmarschen
-"""
+"""ChurchDesk-API-Client."""
 
 import requests
 import os
@@ -14,14 +11,7 @@ from config import ORGANIZATIONS
 from formatting import format_pastor
 
 def _format_api_date(value: datetime) -> str:
-    """
-    Format a datetime for the ChurchDesk API date parameters.
-
-    The API validates startDate/endDate strictly: it accepts either a plain
-    date (2026-09-01) or an ISO datetime carrying a timezone
-    (2026-09-01T00:00:00Z). A naive isoformat() is rejected with 400.
-    Only the calendar day matters for the queried range, so send the day.
-    """
+    """Nur das Datum: die API lehnt naive ISO-Zeiten ohne Zeitzone mit 400 ab."""
     return value.strftime('%Y-%m-%d')
 
 
@@ -68,16 +58,7 @@ class ChurchDeskAPI:
                    category_ids: List[int] = None,
                    resource_ids: List[int] = None,
                    items_per_page: int = 100) -> List[Dict]:
-        """
-        Fetch events for specified date range
-        
-        Args:
-            start_date: Start date for events
-            end_date: End date for events
-            category_ids: List of category IDs to filter by
-            resource_ids: List of resource IDs to filter by
-            items_per_page: Number of items per page (max 100)
-        """
+        """Termine im Zeitraum, optional nach Kategorie und Ressource gefiltert (max. 100 je Seite)."""
         params = {
             'startDate': _format_api_date(start_date),
             'endDate': _format_api_date(end_date),
@@ -106,13 +87,7 @@ class ChurchDeskAPI:
         return None
     
     def get_gottesdienst_events(self, start_date: datetime, end_date: datetime) -> List[Dict]:
-        """
-        Fetch only 'Gottesdienst' (church service) events
-        
-        Args:
-            start_date: Start date for events
-            end_date: End date for events
-        """
+        """Nur Termine der Kategorie Gottesdienst."""
         gottesdienst_category_id = self.get_gottesdienst_category_id()
         
         if gottesdienst_category_id:
@@ -122,13 +97,7 @@ class ChurchDeskAPI:
             return self.get_events(start_date, end_date)
     
     def get_monthly_events(self, year: int, month: int) -> List[Dict]:
-        """
-        Fetch events for a specific month
-        
-        Args:
-            year: Year (e.g., 2025)
-            month: Month (1-12)
-        """
+        """Termine eines Monats."""
         # First day of month
         start_date = datetime(year, month, 1)
         
@@ -146,12 +115,7 @@ class EventAnalyzer:
     
     @staticmethod
     def analyze_event_completeness(event: Dict) -> Dict:
-        """
-        Analyze an event for missing required data
-        
-        Returns:
-            Dict with missing_fields list and completeness score
-        """
+        """Fehlende Pflichtfelder und Vollständigkeit eines Termins."""
         required_fields = {
             'title': event.get('title'),
             'startDate': event.get('startDate'),
@@ -187,12 +151,7 @@ class EventAnalyzer:
     
     @staticmethod
     def format_event_for_boyens(event: Dict) -> Optional[Dict]:
-        """
-        Format ChurchDesk event for Boyens Media output
-        
-        Returns:
-            Dict with formatted event data or None if essential data missing
-        """
+        """Termin im Boyens-Format oder None, wenn Wesentliches fehlt."""
         analysis = EventAnalyzer.analyze_event_completeness(event)
         
         if 'startDate' not in analysis['missing_fields']:
@@ -230,8 +189,7 @@ class EventAnalyzer:
         return None
 
 
-# Wortbestandteile, die eine Location als Kirche kennzeichnen (sprachliche
-# Grundbegriffe — bleiben hartkodiert, sind nicht pflegebeduerftig).
+# Sprachliche Grundbegriffe, deshalb fest im Code statt pflegbar.
 _CHURCH_WORDS = ('kirche', 'dom', 'kapelle', 'münster', 'muenster')
 
 # --- Default-Werte (Fallback, falls DB-Tabelle location_rules fehlt) ---
@@ -275,11 +233,7 @@ _LOCATION_MAPPINGS = dict(_DEFAULT_LOCATION_MAPPINGS)
 
 
 def load_location_rules(app):
-    """Laedt die pflegbaren Location-Regeln aus der DB in die Modul-Caches.
-
-    Faellt auf die hartkodierten Defaults zurueck, falls die Tabelle fehlt
-    (Tests, vor Migration) oder leer ist.
-    """
+    """Lädt die Location-Regeln aus der DB; ohne Tabelle oder Einträge gelten die Defaults."""
     global MULTI_CHURCH_CITIES, _NON_CHURCH_WORDS, _LOCATION_MAPPINGS
     try:
         with app.app_context():
@@ -311,12 +265,7 @@ def reload_location_rules(app):
 
 
 def _has_church_word(text: str) -> bool:
-    """True, wenn der Text eine Kirche bezeichnet.
-
-    Erkennt explizite Kirchen-Woerter (Kirche/Dom/Kapelle/Münster) sowie
-    Heiligen-Patrozinien ohne das Wort 'Kirche' (z.B. "St. Jacobi",
-    "St. Bartholomäus") — typische Einzelkirchen-Namen.
-    """
+    """True bei Kirchen-Wörtern oder Patrozinium ohne 'Kirche' (z. B. "St. Jacobi")."""
     t = text.strip().lower()
     if any(w in t for w in _CHURCH_WORDS):
         return True
@@ -335,15 +284,9 @@ def _strip_church_suffix(name: str) -> str:
 
 
 def _is_standalone_name(text: str) -> bool:
-    """True, wenn der Text als Eigenname stehen bleibt und KEIN ", Kirche" bekommt.
-
-    Trifft auf eigenstaendige Kirchennamen (Dom/Kirche/Patrozinium) und auf
-    weltliche Orte (Badestelle, Sportplatz, Hof, ...) zu.
-    """
+    """True, wenn der Text als Eigenname bleibt und kein ", Kirche" bekommt."""
     t = text.lower()
-    # Nur ECHTE Kirchen-Woerter (NICHT das "St."-Patrozinium-Praefix) — sonst
-    # wuerde der Ortsname "St. Annen" faelschlich als Kirche gelten und kein
-    # ", Kirche" bekommen.
+    # Ohne "St.", sonst gälte der Ort "St. Annen" als Kirche.
     if any(w in t for w in _CHURCH_WORDS):
         return True
     if any(w in t for w in _NON_CHURCH_WORDS):
@@ -352,36 +295,24 @@ def _is_standalone_name(text: str) -> bool:
 
 
 def extract_boyens_location(location_name: str, location_obj: Dict = None, for_export: bool = True) -> str:
-    """
-    Boyens-Ortsausgabe.
-
-    Ermittelt den normalisierten Ort/Kirchennamen (_resolve_location). Beim Export
-    wird je Einzel-Kirchen-Ort ", Kirche" ergaenzt; Multi-Kirchen-Orte
-    (Heide/Brunsbuettel/Buesum/Burg/Marne) nennen ihren konkreten Kirchennamen,
-    Nicht-Kirchen-Orte (Gemeindehaus, Saal, ...) schreiben die Location aus.
-    """
+    """Boyens-Ort: Einzelkirchen-Orte bekommen ", Kirche", Multi-Kirchen-Orte den Kirchennamen, andere Orte die Location."""
     resolved = _resolve_location(location_name, location_obj, for_export)
 
     if not for_export or not resolved:
         return resolved
 
-    # Bereits eine zusammengesetzte Bezeichnung mit Komma (Kirchenname oder
-    # ausgeschriebene Location) → unveraendert lassen.
+    # Schon zusammengesetzt mit Komma, also unverändert.
     if ',' in resolved:
         return resolved
-    # Multi-Kirchen-Ort OHNE konkrete Kirche (z.B. "Büsum" via St. Clemens):
-    # kein generisches ", Kirche". Exakter Vergleich (Substring-Bug-Schutz).
+    # Multi-Kirchen-Ort ohne konkrete Kirche bekommt kein ", Kirche"; exakter Vergleich gegen Substring-Treffer.
     if resolved.lower() in MULTI_CHURCH_CITIES:
         return resolved
-    # Bindestrich-Kompositum mit Multi-Church-Prefix ("Heide-Suerholm"):
-    # kein generisches ", Kirche" — der Rest nach dem Bindestrich ist der Ortsteil.
+    # Bindestrich-Kompositum ("Heide-Süderholm"): der Rest ist der Ortsteil, kein ", Kirche".
     if '-' in resolved:
         prefix = resolved.split('-', 1)[0].lower()
         if prefix in MULTI_CHURCH_CITIES:
             return resolved
-    # Eigenstaendiger Kirchenname (z.B. "Meldorfer Dom", "St. Martins-Kirche")
-    # oder weltlicher Ort (Badestelle, Sportplatz, ...) → unveraendert lassen,
-    # KEIN doppeltes / falsches ", Kirche".
+    # Eigenständiger Kirchenname oder weltlicher Ort bleibt ohne ", Kirche".
     if _is_standalone_name(resolved):
         return resolved
     # Reiner Ortsname → Dorfkirche-Annahme: "Ort, Kirche"
@@ -389,11 +320,7 @@ def extract_boyens_location(location_name: str, location_obj: Dict = None, for_e
 
 
 def _resolve_location(location_name: str, location_obj: Dict = None, for_export: bool = True) -> str:
-    """Normalisiert eine rohe ChurchDesk-Location zu Ort bzw. Ort+Kirche/Location.
-
-    Gibt den reinen Ortsnamen zurueck (ohne ", Kirche"-Suffix — das ergaenzt der
-    Wrapper), oder bei Multi-Kirchen/Nicht-Kirchen eine "Ort, X"-Bezeichnung.
-    """
+    """Normalisiert eine ChurchDesk-Location zum Ort ohne ", Kirche" oder zu "Ort, X"."""
     if not location_name:
         return ""
 
@@ -414,8 +341,7 @@ def _resolve_location(location_name: str, location_obj: Dict = None, for_export:
             city, rest = location.split(', ', 1)
             city, rest = city.strip(), rest.strip()
         else:
-            # Space-Separator NUR fuer Multi-Kirchen-Orte: "Heide St.-Jürgen-Kirche".
-            # Nicht bei Bindestrich-Kompositum ("Heide-Süderholm" bleibt ganz).
+            # Leerzeichen als Trenner nur bei Multi-Kirchen-Orten, "Heide-Süderholm" bleibt ganz.
             loc_lower = location.lower()
             for mc in MULTI_CHURCH_CITIES:
                 if loc_lower.startswith(mc + ' ') and not loc_lower.startswith(mc + '-'):
@@ -433,13 +359,9 @@ def _resolve_location(location_name: str, location_obj: Dict = None, for_export:
     if location.lower() in ('urlauberseelsorge', 'urlauberseelsorge büsum'):
         return 'Büsum' if for_export else 'Urlauberseelsorge'
 
-    # 3) Multi-Kirchen-Orte: konkreten Kirchennamen nennen.
-    # NUR Heide und Brunsbüttel haben mehrere Kirchen. Büsum ist KEIN
-    # Multi-Kirchen-Ort (nur St. Clemens) → laeuft durch die normale
-    # Einzelkirchen-Logik (Schritt 4): "Büsum, Kirche" bzw. "Büsum, Perlebucht".
+    # 3) Nur Heide und Brunsbüttel haben mehrere Kirchen; Büsum (nur St. Clemens) läuft durch Schritt 4.
     if city_lower in MULTI_CHURCH_CITIES:
         if rest:
-            # "-Kirche"- oder " Kirche"-Suffix aus dem Kirchennamen entfernen:
             # "St.-Juergen-Kirche" → "St.-Juergen", "Erloeserkirche" bleibt.
             for ksuf in ('-Kirche', ' Kirche', '-kirche', ' kirche'):
                 if rest.endswith(ksuf):
@@ -456,15 +378,12 @@ def _resolve_location(location_name: str, location_obj: Dict = None, for_export:
             return '{}, Kirche'.format(city)
         return '{}, {}'.format(city, rest)
 
-    # 5) Kein Separator.
-    # 5a) "Ort Kirche" (Space-Suffix) → reiner Ort, Wrapper macht "Ort, Kirche".
+    # 5a) "Ort Kirche" → reiner Ort, der Wrapper ergänzt ", Kirche".
     stripped = _strip_church_suffix(location)
     if stripped != location:
         return stripped                  # "Hennstedt Kirche" → "Hennstedt"
 
-    # 5b/5c) Eigenstaendiger Kirchenname (z.B. "Meldorfer Dom") oder weltlicher
-    # Ort (Badestelle, Sportplatz, ...) → unveraendert. Der Wrapper erkennt das
-    # ebenfalls ueber _is_standalone_name() und haengt KEIN ", Kirche" an.
+    # 5b/5c) Eigenständiger Kirchenname oder weltlicher Ort bleibt unverändert.
     return location
 
 
@@ -472,12 +391,7 @@ class MultiOrganizationChurchDeskAPI:
     """Client for managing multiple ChurchDesk organizations"""
     
     def __init__(self, selected_org_ids: List[int] = None):
-        """
-        Initialize multi-organization API client
-        
-        Args:
-            selected_org_ids: List of organization IDs to include. If None, include all available.
-        """
+        """selected_org_ids=None nimmt alle verfügbaren Organisationen."""
         if selected_org_ids is None:
             selected_org_ids = list(ORGANIZATIONS.keys())
         
@@ -503,17 +417,7 @@ class MultiOrganizationChurchDeskAPI:
     
     def get_all_events(self, start_date: datetime, end_date: datetime, 
                        gottesdienst_only: bool = True) -> List[Dict]:
-        """
-        Fetch events from all selected organizations
-        
-        Args:
-            start_date: Start date for events
-            end_date: End date for events
-            gottesdienst_only: If True, fetch only Gottesdienst events
-        
-        Returns:
-            List of events with organization info added
-        """
+        """Termine aller gewählten Organisationen, mit Organisationsangabe."""
         all_events = []
         
         for org_id, client in self.clients.items():
@@ -539,14 +443,7 @@ class MultiOrganizationChurchDeskAPI:
     
     def get_monthly_events(self, year: int, month: int, 
                           gottesdienst_only: bool = True) -> List[Dict]:
-        """
-        Fetch events for a specific month from all organizations
-        
-        Args:
-            year: Year (e.g., 2025)
-            month: Month (1-12)
-            gottesdienst_only: If True, fetch only Gottesdienst events
-        """
+        """Termine eines Monats aus allen Organisationen."""
         # Calculate start and end dates
         start_date = datetime(year, month, 1)
         if month == 12:

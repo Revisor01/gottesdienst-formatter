@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Smoke-Tests fuer App-Factory-Refactor und User-Modell.
-"""
+"""Smoke-Tests für App-Factory und User-Modell."""
 import os
 import pytest
 

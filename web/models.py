@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Datenbankmodelle fuer die Gottesdienst-Formatter Web-App.
-"""
+"""Datenbankmodelle."""
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timezone
@@ -27,8 +25,7 @@ class User(UserMixin, db.Model):
 
     @property
     def is_active(self):
-        # Ueberschreibt UserMixin.is_active — Flask-Login prueft diesen Wert automatisch.
-        # Das DB-Feld heisst is_active_user um Konflikte mit der Property zu vermeiden.
+        # Das DB-Feld heißt is_active_user, damit es nicht mit UserMixin.is_active kollidiert.
         return self.is_active_user
 
     def __repr__(self):
@@ -81,13 +78,7 @@ class ServiceTypeMapping(db.Model):
 
 
 class LocationRule(db.Model):
-    """Pflegbare Regeln fuer die Boyens-Ortsausgabe (extract_boyens_location).
-
-    kind:
-      'mapping'      → key = Kirchen-/Roh-Location (lowercase), value = Boyens-Ort
-      'multi_church' → key = Ortsname (lowercase), value = leer (Ort mit mehreren Kirchen)
-      'non_church'   → key = Stichwort (lowercase), value = leer (weltlicher Ort)
-    """
+    """Regeln für die Boyens-Ortsausgabe; kind ist 'mapping', 'multi_church' oder 'non_church'."""
     __tablename__ = 'location_rules'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)

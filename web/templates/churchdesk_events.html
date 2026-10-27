@@ -218,8 +218,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (exportBtn) exportBtn.disabled = count === 0;
   }
 
-  // Liest die (evtl. editierten) Werte einer Zeile und baut das Event-Dict,
-  // wie es convert_churchdesk_events_to_boyens erwartet.
+  // Baut aus einer (editierten) Zeile das Event-Dict für convert_churchdesk_events_to_boyens.
   function collectRow(checkbox) {
     const row = checkbox.closest('tr.event-row');
     const dtLocal = row.querySelector('.edit-datetime').value;  // "YYYY-MM-DDTHH:MM"

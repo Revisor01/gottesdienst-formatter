@@ -17,8 +17,7 @@ branch_labels = None
 depends_on = None
 
 
-# (id, name, description) — Tokens kommen aus der Umgebung, nie aus dem Code.
-# Erwartete Variable je Organisation: CHURCHDESK_ORG_<ID>_TOKEN
+# Tokens kommen aus CHURCHDESK_ORG_<ID>_TOKEN, nie aus dem Code.
 SEED = [
     (2596, 'Kirchenkreis Dithmarschen', 'Zentrale Verwaltung'),
     (6572, 'Kirchspiel Heide',
@@ -41,8 +40,7 @@ def upgrade():
     )
     # ### end Alembic commands ###
 
-    # Seed initial organizations — nur Orgs, deren Token in der Umgebung steht.
-    # Ohne Token wird die Org uebersprungen statt mit leerem Token angelegt.
+    # Ohne Token in der Umgebung wird die Org übersprungen statt leer angelegt.
     to_insert = []
     for oid, name, desc in SEED:
         token = os.environ.get('CHURCHDESK_ORG_{}_TOKEN'.format(oid))

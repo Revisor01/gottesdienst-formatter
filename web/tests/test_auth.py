@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Auth-Tests: Login/Logout, geschuetzte Routes, /health Whitelist.
-"""
+"""Login, Logout, geschützte Routes, /health."""
 import pytest
 import os
 

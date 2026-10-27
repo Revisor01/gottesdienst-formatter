@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Flask-Extensions als Singletons — werden in create_app() per init_app() an die App gebunden.
-"""
+"""Flask-Extensions, gebunden in create_app() per init_app()."""
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager

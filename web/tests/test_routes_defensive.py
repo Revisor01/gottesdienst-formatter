@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Defensive Tests fuer None-Haertung im Export-/Excel-Pfad.
-Task 1 (260617-u0x): None-Normalisierung + Serverfehler-Haertung.
-"""
+"""None-Härtung im Export- und Excel-Pfad."""
 import pytest
 from datetime import datetime
 
@@ -11,9 +8,7 @@ from formatting import format_pastor
 from main.routes import convert_churchdesk_events_to_boyens
 
 
-# ---------------------------------------------------------------------------
-# format_pastor — "None"-String-Haertung
-# ---------------------------------------------------------------------------
+# --- format_pastor: "None"-String ---
 
 @pytest.mark.parametrize("contributor, expected", [
     (None,    ""),
@@ -35,9 +30,7 @@ def test_format_pastor_none_not_substring():
     assert result == "Nonenberg"
 
 
-# ---------------------------------------------------------------------------
-# convert_churchdesk_events_to_boyens — KeyError/TypeError-Haertung
-# ---------------------------------------------------------------------------
+# --- convert_churchdesk_events_to_boyens: KeyError/TypeError ---
 
 def _make_event(**overrides):
     """Hilfsfunktion: vollstaendiges minimales Event-Dict."""
@@ -118,8 +111,7 @@ def test_convert_none_location_uses_parish_fallback():
 
 
 def test_convert_empty_location_uses_placeholder():
-    """location komplett leer (kein Parish-Fallback) → 'Ort?'-Platzhalter,
-    keine Export-Zeile mit fuehrendem ': '."""
+    """Leere Location ohne Parish-Fallback ergibt 'Ort?' statt führendem ': '."""
     event = _make_event(location=None, parishes=[])
     result = convert_churchdesk_events_to_boyens([event])
     assert 'Ort?:' in result

@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-pytest conftest: sys.path-Fix und globale Fixtures.
-"""
+"""sys.path-Fix und globale Fixtures."""
 import os
 import sys
 

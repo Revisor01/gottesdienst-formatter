@@ -4,11 +4,6 @@ Revision ID: a1b2c3d4e5f6
 Revises: f8614177200d
 Create Date: 2026-06-17 15:30:00.000000
 
-Ergaenzt die 10 einzelnen Kirchengemeinde-Organisationen. Org-IDs wurden ueber
-den Gesamtkalender (kirche-dithmarschen.de) und die ChurchDesk-API verifiziert
-(HTTP 200). Die API-Tokens kommen aus der Umgebung (CHURCHDESK_ORG_<ID>_TOKEN),
-nie aus dem Code.
-Idempotent: bestehende Eintraege (gleiche id) werden nicht doppelt angelegt.
 """
 from alembic import op
 import sqlalchemy as sa
@@ -50,8 +45,7 @@ def upgrade():
             ))
         )
     }
-    # Nur Orgs anlegen, die noch nicht existieren UND deren Token in der
-    # Umgebung steht. Ohne Token wird die Org uebersprungen.
+    # Ohne Token in der Umgebung wird die Org übersprungen.
     to_insert = []
     for oid, name, desc in SEED:
         if oid in existing:

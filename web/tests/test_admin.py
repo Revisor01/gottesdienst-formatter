@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Admin-Tests: Zugriffskontrolle, User-CRUD, CLI create-admin.
-"""
+"""Admin: Zugriff, User-CRUD, CLI create-admin."""
 import pytest
 import os
 
@@ -86,8 +84,7 @@ class TestAdminAccess:
         with self.app.app_context():
             user = User.query.filter_by(username='normal').first()
             user_id = user.id
-        # Submit-Button muss immer mitgesendet werden (sonst denkt Flask-WTF: kein Formular)
-        # Checkboxen werden weggelassen wenn deaktiviert (kein Wert = False)
+        # Ohne Submit-Button gilt das Formular für Flask-WTF als nicht abgeschickt.
         resp = self.client.post('/admin/users/{}/edit'.format(user_id),
                                 data={'submit': 'Speichern'},
                                 follow_redirects=True)

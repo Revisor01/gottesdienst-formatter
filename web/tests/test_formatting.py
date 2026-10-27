@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Unit-Tests fuer alle Formatierungsfunktionen in web/formatting.py.
-"""
+"""Tests für web/formatting.py."""
 import pytest
 from datetime import datetime
 
@@ -10,9 +8,7 @@ from formatting import format_date, format_time, format_service_type, format_pas
 from churchdesk_api import extract_boyens_location
 
 
-# ---------------------------------------------------------------------------
-# format_date
-# ---------------------------------------------------------------------------
+# --- format_date ---
 
 @pytest.mark.parametrize("date_obj, expected", [
     (datetime(2025, 4, 5),  "Sonnabend, 5. April"),
@@ -31,9 +27,7 @@ def test_format_date_none():
     assert format_date(None) == ""
 
 
-# ---------------------------------------------------------------------------
-# format_time
-# ---------------------------------------------------------------------------
+# --- format_time ---
 
 @pytest.mark.parametrize("hour, minute, expected", [
     (9,  30, "9.30 Uhr"),
@@ -53,9 +47,7 @@ def test_format_time_none():
     assert format_time(None) == ""
 
 
-# ---------------------------------------------------------------------------
-# format_service_type
-# ---------------------------------------------------------------------------
+# --- format_service_type ---
 
 @pytest.mark.parametrize("titel, expected", [
     ("Gottesdienst",                        "Gd."),
@@ -88,9 +80,7 @@ def test_format_service_type_case_insensitive():
     assert format_service_type("abendmahlsgottesdienst") == "Gd. m. A."
 
 
-# ---------------------------------------------------------------------------
-# format_pastor (DB-Lookup basiert)
-# ---------------------------------------------------------------------------
+# --- format_pastor ---
 
 @pytest.mark.parametrize("contributor, expected", [
     # Einfache Matches — Nachname in DB
@@ -138,28 +128,23 @@ def test_format_pastor(contributor, expected):
     assert format_pastor(contributor) == expected
 
 
-# ---------------------------------------------------------------------------
-# extract_boyens_location (for_export=True)
-# ---------------------------------------------------------------------------
+# --- extract_boyens_location (for_export=True) ---
 
 @pytest.mark.parametrize("location_name, expected", [
-    # Multi-church city Heide: space-separated, no separator
-    # Kirchennamen bekommen "-Kirche"-Suffix entfernt (ist Typ-Wort, nicht Name)
+    # "-Kirche" ist Typ-Wort, nicht Name.
     ("Heide St.-Jürgen-Kirche",     "Heide, St.-Jürgen"),
     ("Heide Erlöserkirche",          "Heide, Erlöserkirche"),
     ("Heide Auferstehungskirche",    "Heide, Auferstehungskirche"),
     # Heide-Süderholm: Bindestrich-Kompositum, darf NICHT gesplittet werden
     ("Heide-Süderholm",             "Heide-Süderholm"),
-    # Single-church towns: " Kirche"-Suffix wird gestrippt, Wrapper ergaenzt ", Kirche"
-    # Resultat: "Ort, Kirche" (nicht nur "Ort" ohne Kirchen-Info)
+    # Einzelkirchen-Orte: Ergebnis "Ort, Kirche".
     ("Hennstedt Kirche",            "Hennstedt, Kirche"),
     ("Hemme Kirche",                "Hemme, Kirche"),
     ("Lunden Kirche",               "Lunden, Kirche"),
     ("Weddingstedt Kirche",         "Weddingstedt, Kirche"),
     ("Schlichting Kirche",          "Schlichting, Kirche"),
     ("St. Annen Kirche",            "St. Annen, Kirche"),
-    # Büsum hat nur eine Kirche (St. Clemens) → "Büsum, Kirche";
-    # nur der weltliche Sonderort Perlebucht wird ausgeschrieben.
+    # Büsum hat nur eine Kirche; nur die Perlebucht wird ausgeschrieben.
     ("Büsum - St. Clemens-Kirche",  "Büsum, Kirche"),
     ("Büsum - Perlebucht",          "Büsum, Perlebucht"),
     # Existing pipe/comma cases still pass
@@ -173,9 +158,7 @@ def test_extract_boyens_location(location_name, expected):
     assert extract_boyens_location(location_name, for_export=True) == expected
 
 
-# ---------------------------------------------------------------------------
-# extract_boyens_location (for_export=False) — display mode
-# ---------------------------------------------------------------------------
+# --- extract_boyens_location (for_export=False) ---
 
 @pytest.mark.parametrize("location_name, expected", [
     # St. Clemens ist NICHT Urlauberseelsorge — Büsums einzige Kirche → "Büsum, Kirche"
@@ -188,9 +171,7 @@ def test_extract_boyens_location_display(location_name, expected):
     assert extract_boyens_location(location_name, for_export=False) == expected
 
 
-# ---------------------------------------------------------------------------
-# format_service_type — Strikt Boyens: nur Typ, keine Untertitel
-# ---------------------------------------------------------------------------
+# --- format_service_type: nur Typ, keine Untertitel ---
 
 @pytest.mark.parametrize("titel, expected", [
     # Doppelpunkt-Titel: nur Typ vor dem Doppelpunkt matchen, Untertitel wegwerfen
@@ -213,18 +194,14 @@ def test_format_service_type_strikt_boyens(titel, expected):
     assert format_service_type(titel) == expected
 
 
-# ---------------------------------------------------------------------------
-# format_pastor — Vikar:in + Pröpst:in (Task 2, 260617-u0x)
-# ---------------------------------------------------------------------------
+# --- format_pastor: Vikar:in und Pröpst:in ---
 
 @pytest.mark.parametrize("contributor, expected", [
     # Vikarin — weiblich, Vorname entfernt
     ("Vikarin Laura Karlsen",      "Vik. Karlsen"),
     # Vikar — maennlich, Vorname entfernt
     ("Vikar Max Mustermann",       "Vik. Mustermann"),
-    # Propst — _extract_surname bei 3+ Teilen nimmt nur das letzte Wort.
-    # "Dr. Andreas Crystall": parts[-2]="Andreas" ist kein Dr./Prof. → "Crystall".
-    # Falls Redaktion "Pr. Dr. Crystall" will, muss ein DB-Eintrag angelegt werden.
+    # Bei drei Teilen nur das letzte Wort; "Pr. Dr. Crystall" bräuchte einen DB-Eintrag.
     ("Propst Dr. Andreas Crystall", "Pr. Crystall"),
     # Proepstin — weiblich, Vorname entfernt
     ("Pröpstin Anna Beispiel",     "Pr. Beispiel"),
@@ -252,9 +229,7 @@ def test_format_pastor_punctless_prefix(contributor, expected):
     assert format_pastor(contributor) == expected
 
 
-# ---------------------------------------------------------------------------
-# extract_boyens_location — Burg/Marne Single-Church + Pahlen (Task 3, 260617-u0x)
-# ---------------------------------------------------------------------------
+# --- extract_boyens_location: Burg/Marne und Pahlen ---
 
 @pytest.mark.parametrize("location_name, expected", [
     # Burg — Single-Church nach Entfernung aus MULTI_CHURCH_CITIES

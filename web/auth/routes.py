@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Login/Logout-Routes fuer den Auth Blueprint.
-"""
+"""Login- und Logout-Routes."""
 from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
 from auth import bp
@@ -24,9 +22,7 @@ def login():
 
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
-        # Sicherheit: nur projekt-interne Pfade akzeptieren.
-        # '//host' und '/\host' waeren protokoll-relative URLs und damit
-        # ein Open Redirect auf fremde Hosts.
+        # Nur interne Pfade: '//host' und '/\host' wären protokoll-relativ und ein Open Redirect.
         if next_page and (
             not next_page.startswith('/')
             or next_page.startswith('//')

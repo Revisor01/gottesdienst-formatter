@@ -1,11 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Excel-Import: die Termine des Boyens-Fixtures als ChurchDesk-Export (xlsx)
-durch process_excel_file. Sichert die pandas-Pfade (read_excel, .dt.date,
-isna) gegen Versionswechsel ab; Erwartung aufgenommen mit pandas 2.3.1.
-Der Export-Pfad hängt an Orte ohne Kirchennamen ", Kirche" an.
-"""
+"""Excel-Import gegen pandas-Versionswechsel, Erwartung aufgenommen mit pandas 2.3.1."""
 import json
 import os
 from datetime import datetime
