@@ -12,7 +12,6 @@ die Versionierung folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sonstiges
 - README, Vorlagen und Hinweise gibt es nur noch auf Deutsch.
-- Der Quelltext steht jetzt unter der GNU General Public License v3.0.
 
 ## [1.1.1] - 2026-09-22
 
