@@ -39,7 +39,7 @@ jobs:
     with:
       image: ghcr.io/${{ github.repository }}
       kontext: ./web
-      node-version: "24"
+      node-version: "26"
       vorbereitung: |
         npm ci
         npm run tw:build
