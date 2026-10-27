@@ -1,12 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-APScheduler-Integration fuer automatischen monatlichen Boyens-Mail-Versand.
-
-Taeglicher Job um 8:00 Uhr prueft welche User heute eine Mail bekommen sollen.
-Wochenend-Logik: Sa/So wird auf den vorherigen Freitag verschoben.
-Retry: 1x nach 1 Stunde bei Fehler.
-"""
+"""Täglicher Mail-Check um 8:00 für den monatlichen Boyens-Versand, ein Retry nach einer Stunde."""
 import os
 import logging
 import datetime
@@ -17,22 +11,11 @@ logger = logging.getLogger(__name__)
 
 
 def init_scheduler(app):
-    """Initialisiert den APScheduler und registriert den taeglichen Mail-Check.
-
-    Wird NICHT gestartet wenn:
-    - app.config['TESTING'] ist True
-    - Werkzeug-Reloader Unter-Prozess (WERKZEUG_RUN_MAIN == 'false')
-
-    Args:
-        app: Flask-App-Instanz (wird an Jobs weitergegeben fuer app_context)
-    """
+    """Startet den Scheduler, nicht in Tests und nicht im Reloader-Kindprozess."""
     if app.config.get('TESTING'):
         logger.debug('init_scheduler: TESTING=True — Scheduler nicht gestartet')
         return
 
-    # Im Werkzeug-Reloader-Modus nur im Main-Prozess starten
-    # WERKZEUG_RUN_MAIN ist 'true' im Reloader-Child-Prozess,
-    # nicht gesetzt in Gunicorn/Produktion (dort direkt starten)
     if os.environ.get('WERKZEUG_RUN_MAIN') == 'false':
         logger.debug('init_scheduler: Werkzeug Reloader-Prozess — Scheduler nicht gestartet')
         return
@@ -65,15 +48,7 @@ def init_scheduler(app):
 
 
 def check_and_send_mails(app):
-    """Taeglicher Job: Prueft welche User heute eine Mail bekommen und verschickt sie.
-
-    Logik:
-    1. Alle UserSettings mit auto_send_enabled=True und smtp_server laden.
-    2. Fuer jeden User effective_date berechnen.
-    3. Wenn effective_date == heute UND nicht bereits in diesem Monat gesendet:
-       Export generieren und Mail schicken.
-    4. Bei Fehler: Retry nach 1 Stunde einplanen.
-    """
+    """Verschickt fällige Exporte einmal je Monat und plant bei Fehler einen Retry."""
     from extensions import db
     from models import UserSettings
     from mail_service import generate_next_month_export, send_boyens_mail, get_effective_send_date
@@ -175,10 +150,7 @@ def _process_user_mail(app, settings, today):
 
 
 def retry_send_mail(app, settings_id: int, export_text: str):
-    """Einmaliger Retry-Job nach 1 Stunde bei fehlgeschlagenem Erstversand.
-
-    Setzt last_send_date auch bei Fehler (markiert als "versucht").
-    """
+    """Einmaliger Retry; last_send_date wird auch bei Fehler gesetzt."""
     from extensions import db
     from models import UserSettings
     from mail_service import send_boyens_mail

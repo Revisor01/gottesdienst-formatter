@@ -1,13 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Mail-Service fuer automatischen Boyens-Export.
-
-Stellt bereit:
-  - generate_next_month_export() → str
-  - send_boyens_mail(user_settings, export_text, secret_key) → (bool, str)
-  - get_effective_send_date(year, month, day) → datetime.date
-"""
+"""Mail-Service für den automatischen Boyens-Export."""
 import smtplib
 import socket
 import logging
@@ -23,22 +16,9 @@ logger = logging.getLogger(__name__)
 
 
 def get_effective_send_date(year: int, month: int, day: int) -> datetime.date:
-    """Berechnet den effektiven Versandtag unter Beruecksichtigung der Wochenend-Logik.
-
-    Samstag (weekday 5) → 1 Tag zurueck (Freitag).
-    Sonntag  (weekday 6) → 2 Tage zurueck (Freitag).
-
-    Args:
-        year:  Jahr
-        month: Monat (1-12)
-        day:   Geplanter Versandtag (1-28)
-
-    Returns:
-        datetime.date — tatsaechlicher Versandtag
-    """
+    """Versandtag; Samstag und Sonntag rücken auf den Freitag davor."""
     import calendar
-    # Auf letzten Tag des Monats begrenzen (Constraint 1-28 sollte das nie treffen,
-    # aber sicherheitshalber)
+    # Auf das Monatsende begrenzen, auch wenn 1–28 das nie trifft.
     max_day = calendar.monthrange(year, month)[1]
     day = min(day, max_day)
 
@@ -53,15 +33,7 @@ def get_effective_send_date(year: int, month: int, day: int) -> datetime.date:
 
 
 def generate_next_month_export() -> str:
-    """Generiert den Boyens-Export fuer den Folgemonat.
-
-    Berechnet automatisch Jahr/Monat des Folgemonats (Dezember → Januar naechstes Jahr).
-    Nutzt alle konfigurierten ORGANIZATIONS.
-
-    Returns:
-        Formatierter Boyens-Text als String.
-        Leerer String wenn keine Events gefunden oder ORGANIZATIONS leer.
-    """
+    """Boyens-Export des Folgemonats für alle Organisationen, leer ohne Termine."""
     # Folgemonat berechnen
     today = datetime.date.today()
     if today.month == 12:
@@ -123,16 +95,7 @@ def generate_next_month_export() -> str:
 
 
 def send_boyens_mail(user_settings, export_text: str, secret_key: str) -> tuple:
-    """Verschickt den Boyens-Export per Mail an den konfigurierten Empfaenger.
-
-    Args:
-        user_settings:  UserSettings-Objekt mit SMTP-Konfiguration.
-        export_text:    Formatierter Boyens-Text.
-        secret_key:     SECRET_KEY fuer SMTP-Passwort-Entschluesselung.
-
-    Returns:
-        (True, 'Erfolgreich gesendet') oder (False, 'Fehler: ...')
-    """
+    """Verschickt den Export, Rückgabe (ok, Meldung)."""
     # Folgemonat fuer Betreff / Dateiname berechnen
     today = datetime.date.today()
     if today.month == 12:

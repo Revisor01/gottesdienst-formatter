@@ -4,14 +4,6 @@ Revision ID: d4e5f6a7b8c9
 Revises: c3d4e5f6a7b8
 Create Date: 2026-06-17 21:10:00.000000
 
-Büsum hat nur eine Kirche (St. Clemens) und ist damit KEIN Multi-Kirchen-Ort.
-Die Seed-Migration b2c3d4e5f6a7 hatte 'büsum' faelschlich als multi_church
-eingetragen. Diese Regel wird entfernt, damit load_location_rules Büsum nicht
-wieder in MULTI_CHURCH_CITIES laedt — Büsum laeuft dann durch die normale
-Einzelkirchen-Logik ("Büsum, Kirche" / "Büsum, Perlebucht").
-
-Daten-Korrektur ist idempotent: DELETE auf nicht-existente Rows ist wirkungslos.
-Kein Schema-Change.
 """
 from alembic import op
 

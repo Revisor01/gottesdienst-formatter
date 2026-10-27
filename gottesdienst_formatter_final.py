@@ -1,14 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Gottesdienst-Formatter für Boyens Medien
-Konvertiert Excel-Tabelle in das gewünschte Fließtext-Format
-
-Verwendung:
-1. Excel-Datei in den gleichen Ordner wie dieses Script legen
-2. Script ausführen: python gottesdienst_formatter_final.py
-3. Ergebnis wird in 'gottesdienste_formatiert.txt' gespeichert
-"""
+"""Excel-Tabelle in Boyens-Fließtext. Aufruf: python gottesdienst_formatter_final.py (Ergebnis in gottesdienste_formatiert.txt)"""
 
 import sys
 import os

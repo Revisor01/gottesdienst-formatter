@@ -1,17 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Zentrale Formatierungsfunktionen fuer Boyens-Medien-Output.
-Einzige Quelle der Wahrheit — alle Codepfade importieren von hier.
-"""
+"""Formatierung für den Boyens-Export; alle Codepfade importieren von hier."""
 import re
 
-# Modul-globale Liste der Custom-Typ-Zuordnungen (aus DB geladen).
-# Jedes Element: {'keyword': str, 'output_label': str, 'priority': int}
+# Typ-Zuordnungen aus der DB: {'keyword', 'output_label', 'priority'}
 _custom_mappings = []
 
-# Modul-globaler Pastor-Cache (aus DB geladen).
-# Jedes Element: {'first_name': str|None, 'last_name': str, 'title': str}
+# Pastor-Cache aus der DB: {'first_name', 'last_name', 'title'}
 _pastor_cache = []
 
 
@@ -118,27 +113,26 @@ def _match_service_type(titel):
         return 'Goldene Konfirmation'
     elif 'silberne konfirmation' in titel_lower:
         return 'Silberne Konfirmation'
-    # D-08: Konfirmandenprüfung — VOR generischem Konfirmation-Check
+    # Konfirmandenprüfung vor dem allgemeinen Konfirmation-Check
     elif 'konfirmandenprüfung' in titel_lower or 'konfirmandenpruefung' in titel_lower:
         return 'Gd. m. Konfirmandenprüfung'
-    # D-06: Nummerierte Konfirmation (z.B. "1. Konfirmation")
+    # Nummerierte Konfirmation (z.B. "1. Konfirmation")
     elif re.search(r'(\d+)\.\s*konfirmation', titel_lower):
         match = re.search(r'(\d+)\.\s*konfirmation', titel_lower)
         return '{}. Konfirmation'.format(match.group(1))
     elif 'konfirmation' in titel_lower:
         return 'Konfirmation'
-    # D-04: Abendmahl + Taufe kombiniert — VOR den einzelnen Checks
-    # Pruefe auf 'tauf' (deckt "Taufe", "Taufgottesdienst" ab)
+    # Abendmahl mit Taufe vor den Einzelprüfungen.
     elif 'abendmahl' in titel_lower and 'tauf' in titel_lower:
         return 'Abendmahlgd. m. T.'
     elif 'abendmahl' in titel_lower:
         return 'Gd. m. A.'
     elif 'tauf' in titel_lower:
         return 'Gd. m. T.'
-    # D-07: Popularmusik
+    # Popularmusik
     elif 'popularmusik' in titel_lower:
         return 'Gd. m. Popularmusik'
-    # D-11: Gemeinschaft
+    # Gemeinschaft
     elif 'gemeinschaft' in titel_lower:
         return 'Gd. der Gemeinschaft'
     elif 'abendsegen' in titel_lower:
@@ -191,13 +185,7 @@ def _is_noise_contributor(text):
 
 
 def _lookup_pastor(text):
-    """
-    Sucht im Pastor-Cache ob ein bekannter Nachname im Text vorkommt.
-
-    Gibt das formatierte 'Titel Nachname' zurueck oder None wenn kein Match.
-    Disambiguierung: Wenn Vorname auch im Text → exakter Match.
-    Wenn mehrere gleiche Nachnamen: Vorname-Match bevorzugen, sonst erster Eintrag.
-    """
+    """'Titel Nachname' bei bekanntem Nachnamen, bei Gleichnamigen gewinnt der Vorname-Treffer."""
     text_lower = text.lower()
     matches = []
     for p in _pastor_cache:
@@ -223,14 +211,8 @@ def _lookup_pastor(text):
 
 
 def _regex_fallback_pastor(contrib):
-    """
-    Fallback fuer Pastoren die NICHT in der DB stehen.
-    Regex-basiertes Prefix-Parsing: Pastor → P., Pastorin → Pn., etc.
-    Nur Nachname ausgeben (Vorname entfernen).
-    """
-    # Bekannte Prefixe und ihre Boyens-Abkuerzungen.
-    # Reihenfolge: laengere/spezifischere Prefixe zuerst (weiblich vor maennlich),
-    # damit kein kuerzerer Prefix einen laengeren unbeabsichtigt kapert.
+    """Fallback für Pastoren, die nicht in der DB stehen: Prefix abkürzen, nur Nachname."""
+    # Längere Prefixe zuerst, sonst kapert ein kürzerer einen längeren.
     prefix_map = [
         ('Diakonin ',      'Diakonin'),
         ('Diakon ',        'Diakon'),
@@ -244,8 +226,7 @@ def _regex_fallback_pastor(contrib):
         ('Pfarrer ',       'P.'),
         ('Pn. ',           'Pn.'),
         ('P. ',            'P.'),
-        # Punktlose Eingaben aus ChurchDesk normalisieren ("Pn Brandt" → "Pn. Brandt").
-        # 'Pn ' MUSS vor 'P ' stehen, sonst kapert 'P ' das 'Pn '.
+        # Punktlose ChurchDesk-Eingaben; 'Pn ' muss vor 'P ' stehen.
         ('Pn ',            'Pn.'),
         ('Ps ',            'Ps.'),
         ('P ',             'P.'),
@@ -265,14 +246,7 @@ def _regex_fallback_pastor(contrib):
 
 
 def format_pastor(contributor: str) -> str:
-    """
-    Formatiert Mitwirkende nach Boyens-Standard.
-
-    Strategie:
-    1. DB-Lookup: Nachname im Pastor-Cache? → exakter Match mit Titel
-    2. Regex-Fallback: Prefix-Parsing fuer unbekannte Pastoren
-    3. Durchreichen: Gruppen (Kantorei, WGT-Team, Frauenhilfe, etc.)
-    """
+    """Mitwirkende nach Boyens: erst DB-Lookup, dann Prefix-Fallback, Gruppen unverändert."""
     if not contributor:
         return ""
 
@@ -289,7 +263,7 @@ def format_pastor(contributor: str) -> str:
     if any(p in name_lower for p in wgt_patterns):
         return 'Weltgebetstagsteam'
 
-    # D-19: "& Team" vor dem Splitten merken und spaeter anhaengen
+    # "& Team" vor dem Splitten merken und später anhängen
     has_team = name.endswith('& Team') or name.endswith('&amp; Team')
     if has_team:
         name = name.replace('&amp; Team', '').replace('& Team', '').strip()
@@ -357,10 +331,10 @@ def format_pastor(contributor: str) -> str:
             seen.append(fc)
     formatted_contributors = seen
 
-    # D-18: Komma als Trenner
+    # Komma als Trenner
     result = ', '.join(formatted_contributors)
 
-    # D-19: "& Team" wieder anhaengen
+    # "& Team" wieder anhängen
     if has_team:
         result += ' & Team'
 

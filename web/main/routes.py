@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Haupt-Routes als Flask Blueprint — alle bestehenden Routes aus app.py.
-"""
+"""Haupt-Routes."""
 import os
 import tempfile
 import json
@@ -39,26 +37,17 @@ def _extract_suffix(titel):
 
 
 def _build_location_entries(day_items):
-    """
-    Gruppiert Termineintraege nach Ort und wendet jeweils-Logik an (D-20, D-29, D-31).
-
-    day_items: Liste von Dicts mit keys: location, time_str, service_type, pastor, suffix
-
-    Gibt sortierte Liste von Zeilen zurueck: ["Ort: Eintrag1; Eintrag2, jeweils Pn. X", ...]
-    """
+    """Gruppiert Einträge eines Tages nach Ort zu Zeilen "Ort: Eintrag1; Eintrag2, jeweils Pn. X"."""
     location_entries = {}  # {location: [{'sort_key', 'time_str', 'service_type', 'pastor', 'suffix'}]}
 
     for item in day_items:
-        # Fehlender Ort (None/leer) → sichtbarer Platzhalter statt fuehrendem
-        # ": " in der Export-Zeile. Faellt der Redaktion sofort auf und ist
-        # leicht per Suche/Ersetzen zu finden.
+        # Sichtbarer Platzhalter statt führendem ": ", damit die Redaktion es findet.
         loc = (item['location'] or '').strip() or 'Ort?'
         if loc not in location_entries:
             location_entries[loc] = []
         location_entries[loc].append(item)
 
-    # Innerhalb jedes Ortes nach Uhrzeit sortieren; Orte nach fruehester Uhrzeit
-    # ordnen (bei Gleichstand alphabetisch) — Tagesablauf chronologisch.
+    # Orte nach frühester Uhrzeit, damit der Tag chronologisch bleibt.
     def _location_sort_key(location):
         entries = location_entries[location]
         earliest = min((e.get('sort_key') for e in entries if e.get('sort_key') is not None),
@@ -71,7 +60,7 @@ def _build_location_entries(day_items):
                          key=lambda e: (e.get('sort_key') is None, e.get('sort_key')))
         pastors = [e['pastor'] for e in entries]
 
-        # D-20 / FMT-08: jeweils-Logik
+        # jeweils-Logik
         if len(entries) > 1 and len(set(pastors)) == 1 and pastors[0]:
             # Alle Eintraege haben denselben Pastor → Pastor einmal am Ende
             entry_strings = []
@@ -91,7 +80,7 @@ def _build_location_entries(day_items):
                 if e['pastor']:
                     s += ", {}".format(e['pastor'])
                 entry_strings.append(s)
-            line = "{}: {}".format(location, '; '.join(entry_strings))  # D-31
+            line = "{}: {}".format(location, '; '.join(entry_strings))
 
         lines.append(line)
 
@@ -166,9 +155,7 @@ def convert_churchdesk_events_to_boyens(events):
             start_date = datetime.fromisoformat(raw_start)
         except (ValueError, TypeError):
             continue
-        # tzinfo entfernen → naive lokale Zeit, konsistent mit dem Excel-Pfad.
-        # Verhindert "can't compare offset-naive and offset-aware" falls beide
-        # Quellen je zusammengefuehrt werden; Anzeige/Sortierung bleibt identisch.
+        # Naive lokale Zeit wie im Excel-Pfad, sonst scheitert ein Vergleich naiv/aware.
         if start_date.tzinfo is not None:
             start_date = start_date.replace(tzinfo=None)
         date_key = start_date.date()
@@ -380,8 +367,7 @@ def fetch_churchdesk_events():
 def export_selected_events():
     """Export selected events to Boyens format"""
     try:
-        # Bevorzugt: editierte Auswahl-Events als JSON (enthaelt evtl. korrigierte
-        # Felder aus der Oberflaeche). Fallback: altes Schema (events_data + IDs).
+        # Bevorzugt die in der Oberfläche editierten Events, sonst das alte Schema.
         selected_data = request.form.get('selected_events_data')
         if selected_data:
             selected_events = json.loads(selected_data)

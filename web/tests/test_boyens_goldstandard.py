@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-End-to-End-Goldstandard-Test: Statische Eingabedaten werden durch die
-Formatierungspipeline geschickt und mit dem erwarteten Boyens-Output verglichen.
-"""
+"""Goldstandard: feste Eingabe durch die Formatierung gegen den erwarteten Boyens-Text."""
 import json
 import os
 from datetime import datetime
@@ -28,10 +25,7 @@ def load_fixture_output():
 
 
 def build_boyens_text_from_fixture(events):
-    """
-    Konvertiert die strukturierten Fixture-Events in Boyens-Fliesstext.
-    Repliziert die Logik aus app.convert_churchdesk_events_to_boyens.
-    """
+    """Repliziert app.convert_churchdesk_events_to_boyens für die Fixture."""
     # Gruppiere nach Datum
     events_by_date = {}
     for evt in events:

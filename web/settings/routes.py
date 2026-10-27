@@ -106,8 +106,7 @@ def test_mail():
         return jsonify({'success': True, 'message': 'Test-Mail erfolgreich gesendet!'})
 
     except Exception as e:
-        # Details ins Log, dem Client nur eine generische Meldung —
-        # Exception-Texte koennen Server-Interna preisgeben.
+        # Nur generische Meldung an den Client, Exception-Texte könnten Interna zeigen.
         current_app.logger.exception('Test-Mail fehlgeschlagen: %s', e)
         return jsonify({
             'success': False,
