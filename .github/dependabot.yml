@@ -16,6 +16,7 @@ updates:
   - package-ecosystem: pip
     directory: /web
     schedule: { interval: weekly, day: monday, time: "06:00", timezone: Europe/Berlin }
+    open-pull-requests-limit: 10
     groups:
       minor-und-patch:
         update-types: [minor, patch]
@@ -24,6 +25,8 @@ updates:
   - package-ecosystem: npm
     directory: /
     schedule: { interval: weekly, day: monday, time: "06:00", timezone: Europe/Berlin }
+    versioning-strategy: increase
+    open-pull-requests-limit: 10
     groups:
       minor-und-patch:
         update-types: [minor, patch]

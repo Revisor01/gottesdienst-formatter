@@ -15,6 +15,8 @@ die Versionierung folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sonstiges
 - README, Vorlagen und Hinweise gibt es nur noch auf Deutsch.
+- Bibliothek zum Einlesen der Excel-Exporte auf die neue Hauptversion gehoben; ein neuer Test sichert das Ergebnis des Excel-Imports ab.
+- Das Stylesheet wird mit der neuen Hauptversion des CSS-Werkzeugs gebaut. Die Oberfläche sieht aus wie bisher.
 
 ## [1.1.1] - 2026-09-22
 
