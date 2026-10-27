@@ -10,10 +10,11 @@ die Versionierung folgt [Semantic Versioning](https://semver.org/lang/de/).
 ### Geändert
 - Neue Lizenz: GNU AGPL v3.0 statt GPL-3.0: Die Pflicht, Änderungen offenzulegen, gilt jetzt auch für den Betrieb als Webdienst. Eine kommerzielle Lizenz gibt es auf Anfrage.
 
-### Sonstiges
-- Englische Fassung der README und der Vorlagen für Fehlermeldungen.
+### Sicherheit
+- Zwei Werkzeuge, mit denen das Stylesheet gebaut wird, auf Versionen ohne bekannte Sicherheitslücken angehoben. Das ausgelieferte Stylesheet ist unverändert.
 
-- Der Quelltext steht jetzt unter der GNU General Public License v3.0.
+### Sonstiges
+- README, Vorlagen und Hinweise gibt es nur noch auf Deutsch.
 
 ## [1.1.1] - 2026-09-22
 

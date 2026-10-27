@@ -6,10 +6,6 @@
 </p>
 
 <p align="center">
-  <b>Deutsch</b> · <a href="README.en.md">English</a>
-</p>
-
-<p align="center">
   <img src="https://img.shields.io/badge/Python-3.11-3776ab?logo=python" alt="Python">
   <img src="https://img.shields.io/badge/Flask-SQLite-000000?logo=flask" alt="Flask">
   <img src="https://img.shields.io/github/license/Revisor01/gottesdienst-formatter" alt="Lizenz">
