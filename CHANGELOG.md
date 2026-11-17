@@ -7,6 +7,8 @@ die Versionierung folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-11-17
+
 ### Geändert
 - Neue Lizenz: GNU AGPL v3.0 statt GPL-3.0: Die Pflicht, Änderungen offenzulegen, gilt jetzt auch für den Betrieb als Webdienst. Eine kommerzielle Lizenz gibt es auf Anfrage.
 
@@ -96,7 +98,8 @@ Historie wurde verworfen, weil ChurchDesk-API-Tokens in Commits eines
 - `.gitignore` um `.env`, `web/data/`, `web/uploads/` und Planungsartefakte ergänzt
 - Dependabot-Alerts, automatische Security-Updates und CodeQL-Code-Scanning aktiviert
 
-[Unreleased]: https://github.com/Revisor01/gottesdienst-formatter/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/Revisor01/gottesdienst-formatter/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/Revisor01/gottesdienst-formatter/releases/tag/v1.2.0
 [1.1.1]: https://github.com/Revisor01/gottesdienst-formatter/releases/tag/v1.1.1
 [1.1.0]: https://github.com/Revisor01/gottesdienst-formatter/releases/tag/v1.1.0
 [1.0.0]: https://github.com/Revisor01/gottesdienst-formatter/releases/tag/v1.0.0
